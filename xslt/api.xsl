@@ -29,9 +29,9 @@
                         <head>Editions</head>
                         <xsl:for-each select="collection('../data/editions?select=*.xml')//tei:TEI">
                             <xsl:sort>
-                                <xsl:value-of select="current()/@xml:id"/>
+                                <xsl:value-of select="@xml:id"/>
                             </xsl:sort>
-                            <xsl:variable name="xmlid" select="current()/@xml:id"/>
+                            <xsl:variable name="xmlid" select="@xml:id"/>
                             <xsl:variable name="title" select="normalize-space(string-join(.//tei:titleStmt/tei:title[1]//text()))"/>
                             <item>
                                 <title><xsl:value-of select="$title"/></title>
@@ -39,7 +39,7 @@
                             </item>
                         </xsl:for-each>
                     </list>
-                    <list>
+                    <!-- <list>
                         <head>Indices</head>
                         <xsl:for-each select="collection('../data/indices?select=*.xml')//tei:TEI">
                             <xsl:sort>
@@ -52,14 +52,14 @@
                                 <ptr target="{$xmlid}"/>
                             </item>
                         </xsl:for-each>
-                    </list>
+                    </list> -->
                     <list>
                         <head>Meta</head>
                         <xsl:for-each select="collection('../data/meta?select=*.xml')//tei:TEI">
                             <xsl:sort>
-                                <xsl:value-of select="current()/@xml:id"/>
+                                <xsl:value-of select="@xml:id"/>
                             </xsl:sort>
-                            <xsl:variable name="xmlid" select="current()/@xml:id"/>
+                            <xsl:variable name="xmlid" select="@xml:id"/>
                             <xsl:variable name="title" select="normalize-space(string-join(.//tei:titleStmt/tei:title[1]//text()))"/>
                             <item>
                                 <title><xsl:value-of select="$title"/></title>
@@ -70,16 +70,6 @@
                 </body>
             </text>
         </TEI>
-        
-        
-            <xsl:for-each
-                select="collection('../data/*/?select=*.xml')//tei:TEI">
-                <xsl:sort>
-                    <xsl:value-of select="current()/@xml:id"/>
-                </xsl:sort>
-                
-                
-            </xsl:for-each>
     </xsl:template>
     
 </xsl:stylesheet>
