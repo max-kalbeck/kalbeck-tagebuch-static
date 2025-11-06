@@ -39,7 +39,7 @@
                                  <br />
                                   <span class="display-6">1896–1897</span>
                              </h1>
-                            <p class="text-end">Herausgegeben von Henrike Rost. Wien 2021-2024</p>
+                            <p class="text-end">Herausgegeben von Henrike Rost. Wien 2025–</p>
                             <p class="lead">Die digitale Edition der Tagbücher des Musikkritikers Max Kalbeck bietet tiefe Einblicke in das kulturelle Netzwerk in Wien um 1900.
                                 </p>
                             <div class="d-grid gap-2 d-md-flex justify-content-md-start">

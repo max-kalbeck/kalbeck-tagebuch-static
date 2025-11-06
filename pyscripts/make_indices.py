@@ -69,7 +69,7 @@ for x in INDICES:
         uris = ent.xpath("./tei:idno/text()", namespaces=NSMAP)
         for pmb_uri in PMB_URIS:
             if pmb_uri["uri"] in uris:
-                ent.attrib["{http://www.w3.org/XML/1998/namespace}id"] = pmb_uri[
+                ent.attrib["{http://www.w3.org/XML/1998/namespace}id"] = pmb_uri[  # noqa
                     "pmb_id"
                 ]
                 break
