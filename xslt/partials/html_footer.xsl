@@ -35,7 +35,7 @@
             </div>
         </div>
         <div class="text-center">
-            <a href="https://github.com/acdh-oeaw/eurotort">
+            <a href="{$github_url}">
                 <i aria-hidden="true" class="bi bi-github fs-2"></i>
                 <span class="visually-hidden">GitHub repo</span>
             </a>
