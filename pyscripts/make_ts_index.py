@@ -71,7 +71,7 @@ for x in tqdm(files, total=len(files)):
     record = {}
     record["id"] = os.path.split(x)[-1].replace(".xml", "")
     record["rec_id"] = os.path.split(x)[-1].replace(".xml", "")
-    record["title"] = doc.any_xpath(".//tei:titleStmt/tei:title[1]")[0].text
+    record["title"] = doc.any_xpath(".//tei:titleStmt/tei:title[@level='a']")[0].text
     record["full_text"] = extract_fulltext(body, tag_blacklist=tag_blacklist)
 
     record["person_entities"] = []
@@ -80,7 +80,7 @@ for x in tqdm(files, total=len(files)):
         item["id"] = get_xmlid(y)
         item["label"] = make_entity_label(
             y.xpath("./tei:persName[1]", namespaces=namespaces)[0]
-        )
+        )[0]
         record["person_entities"].append(item)
 
     record["place_entities"] = []
@@ -89,7 +89,7 @@ for x in tqdm(files, total=len(files)):
         item["id"] = get_xmlid(y)
         item["label"] = make_entity_label(
             y.xpath("./tei:placeName[1]", namespaces=namespaces)[0]
-        )
+        )[0]
         record["place_entities"].append(item)
 
     record["org_entities"] = []
@@ -98,7 +98,7 @@ for x in tqdm(files, total=len(files)):
         item["id"] = get_xmlid(y)
         item["label"] = make_entity_label(
             y.xpath("./tei:orgName[1]", namespaces=namespaces)[0]
-        )
+        )[0]
         record["org_entities"].append(item)
 
     record["bibl_entities"] = []
@@ -111,7 +111,6 @@ for x in tqdm(files, total=len(files)):
         record["bibl_entities"].append(item)
 
     records.append(record)
-    print(record)
 
 
 make_index = client.collections[COLLECTION_NAME].documents.import_(records)

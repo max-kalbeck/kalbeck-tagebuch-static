@@ -1,6 +1,6 @@
 const indexName = "kalbeck-tagebuch-static";
 
-const apiKey = "0drlT8CHD6T9z8QxQjYXvSWT2dZ75nPv"; /* change this */
+const apiKey = "QXrvdzA1egS1JuzjM05QzPkgNXwuesTP";
 
 const typesenseInstantsearchAdapter = new TypesenseInstantSearchAdapter({
   server: {
@@ -35,6 +35,10 @@ const searchClient = typesenseInstantsearchAdapter.searchClient;
 const search = instantsearch({
   indexName: indexName,
   searchClient,
+  routing: {
+    router: instantsearch.routers.history(),
+    stateMapping: instantsearch.stateMappings.simple(),
+  },
 });
 
 search.addWidgets([

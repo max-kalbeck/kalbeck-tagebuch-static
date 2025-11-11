@@ -44,6 +44,8 @@ jobs:
         run: ./shellscripts/process.sh
       - name: Build the app
         run: ant
+      - name: Build the search index
+        run: uv run pyscripts/make_ts_index.py
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
