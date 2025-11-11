@@ -15,12 +15,12 @@
                 <xsl:choose>
                     <xsl:when test="$currentTitle">
                         <p>
-                            <xsl:value-of select="$currentTitle"/>, in: <xsl:value-of select="$project_title"/>, herausgegeben vom Austrian Centre for Digital Humanities (ACDH), Wien 2025 (<a href="{$fullUrl}"><xsl:value-of select="$fullUrl"/></a>)
+                            <xsl:value-of select="$currentTitle"/>, in: <xsl:value-of select="$project_title"/>, herausgegeben von Henrike Rost, Wien 2025 (<a href="{$fullUrl}"><xsl:value-of select="$fullUrl"/></a>)
                         </p>
                     </xsl:when>
                     <xsl:otherwise>
                         <p>
-                            <xsl:value-of select="$project_title"/>, herausgegeben vom Austrian Centre for Digital Humanities (ACDH), Wien 2025 (<a href="{$fullUrl}"><xsl:value-of select="$fullUrl"/></a>)
+                            <xsl:value-of select="$project_title"/>, herausgegeben von Henrike Rost, Wien 2025 (<a href="{$fullUrl}"><xsl:value-of select="$fullUrl"/></a>)
                         </p>
                     </xsl:otherwise>
                 </xsl:choose>
