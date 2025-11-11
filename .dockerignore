@@ -1,4 +1,5 @@
 # project specific
+secret.*
 *.secret
 secret.*
 .github/

@@ -1,4 +1,5 @@
 # project specific
+secret.*
 *.html
 html/*.xml
 html/beacon.txt
