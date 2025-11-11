@@ -37,13 +37,13 @@
                                  <br/>
                                   <span class="display-4">Tagebuch</span>
                                  <br />
-                                  <span class="display-6">1896–1897</span>
+                                  <span class="display-6">1895/1897</span>
                              </h1>
                             <p class="text-end">Herausgegeben von Henrike Rost. Wien 2025–</p>
                             <p class="lead">Die digitale Edition der Tagbücher des Musikkritikers Max Kalbeck bietet tiefe Einblicke in das kulturelle Netzwerk in Wien um 1900.
                                 </p>
                             <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-                                <a href="toc.html" type="button" class="btn btn-outline-primary btn-lg px-4">Zur Korrespondenz</a>
+                                <a href="toc.html" type="button" class="btn btn-outline-primary btn-lg px-4">Zu den Einträgen</a>
                                 <a href="search.html" type="button" class="btn btn-primary disabled btn-lg px-4 me-md-2" tabindex="-1" aria-disabled="true">Volltextsuche</a>
                             </div>
                           </div>
@@ -54,6 +54,9 @@
                              </figure>
                           </div>
                        </div>
+                        <div class="text-center p-4">
+                            <xsl:call-template name="blockquote"/>
+                        </div>
                     </div>
                  </main>
                 <xsl:call-template name="html_footer"/>
