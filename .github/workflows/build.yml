@@ -40,7 +40,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
       - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v7 
+        uses: astral-sh/setup-uv@v8.2.0 
       - name: Fetch the data
         run: ./shellscripts/fetch_data.sh
       - name: Process data
@@ -50,12 +50,12 @@ jobs:
       - name: Build the search index
         run: uv run pyscripts/make_ts_index.py
       - name: Setup Pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v5
         with:
           # Upload entire repository
           path: './html'
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
