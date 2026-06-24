@@ -100,7 +100,16 @@
                                 </xsl:if>
                             </div>
                         </div>
-                        <xsl:apply-templates select=".//tei:body"></xsl:apply-templates>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h2 class="visually-hidden">Faksimile</h2>
+                                <div id="osdViewer"/>
+                            </div>
+                            <div class="col-md-6">
+                                <h2 class="visually-hidden">Text</h2>
+                                <xsl:apply-templates select=".//tei:body"></xsl:apply-templates>
+                            </div>                            
+                        </div>
                         <p style="text-align:center;">
                             <xsl:for-each select=".//tei:note[not(./tei:p)]">
                                 <div class="footnotes">
@@ -137,9 +146,20 @@
                             <xsl:apply-templates/>
                         </div>
                     </xsl:for-each>
+                    <xsl:if test=".//tei:facsimile/tei:graphic">
+                        <div id="facsContainer">
+                            <xsl:for-each select=".//tei:facsimile/tei:graphic">
+                                <div class="facsId" data-facs-name="{@url}"/>
+                            </xsl:for-each>
+                        </div>
+                    </xsl:if>
+                    
                 </main>
                 <xsl:call-template name="html_footer"/>
-                <script src="vendor/openseadragon-bin-4.1.1/openseadragon.min.js"/>
+                <xsl:if test=".//tei:facsimile/tei:graphic">
+                    <script src="vendor/openseadragon-bin-4.1.1/openseadragon.min.js"/>
+                    <script src="js/facs.js"/>
+                </xsl:if>
             </body>
         </html>
     </xsl:template>
