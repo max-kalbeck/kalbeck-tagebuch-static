@@ -47,6 +47,11 @@ except ObjectNotFound:
 
 current_schema = {
     "name": COLLECTION_NAME,
+    "metadata": {
+        "owners": ["Peter Andorfer", "Fernando Sanz-Lázaro"],
+        "description": "'Max Kalbeck Tagebuch' (https://github.com/max-kalbeck/kalbeck-tagebuch-static)",
+        "service_ids": [26167],
+    },
     "enable_nested_fields": True,
     "fields": [
         {"name": "id", "type": "string"},
