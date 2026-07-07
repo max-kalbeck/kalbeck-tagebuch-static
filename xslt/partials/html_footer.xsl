@@ -24,7 +24,7 @@
                 <div class="col col-lg-4">
                     <div>
                         <a href="https://www.mdw.ac.at/imi/"><img
-                                class="footerlogo" src="images/mdwLogoohne.svg"
+                                class="footerlogo" src="images/mdwLogoohne.png"
                                 alt="Universität für Musik und Darstellende Kunst Wien logo"/></a>
                     </div>
                     <div class="text-center p-4">
