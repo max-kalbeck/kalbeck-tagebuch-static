@@ -50,36 +50,42 @@
                         <table id="myTable">
                             <thead>
                                 <tr>
-                                    <th scope="col" width="20" tabulator-formatter="html" tabulator-headerSort="false" tabulator-download="false">#</th>
-                                    <th scope="col" tabulator-headerFilter="input">Titel</th>
-                                    <th scope="col" tabulator-headerFilter="input">Dateinname</th>
+                                    <!-- CHANGE: adopt from krp-static -->
+                                    <th scope="col" tabulator-headerFilter="input" tabulator-formatter="html" tabulator-download="false" tabulator-minWidth="280">Titel</th>
+                                    <th scope="col" tabulator-visible="false" tabulator-download="true">titel_</th><!-- CHANGE: remove tabulator-headerFilter -->
+                                    <th scope="col" tabulator-headerFilter="input" tabulator-download="true" tabulator-minWidth="180">Dateinname</th><!-- CHANGE: add explicit tabulator-download -->
+                                    <th scope="col" tabulator-field="id" tabulator-visible="false" tabulator-download="false">ID</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <xsl:for-each
                                     select="collection('../data/editions?select=*.xml')//tei:TEI">
-                                    <xsl:sort select="@xml:id"></xsl:sort>
+                                    <xsl:sort select="@xml:id" />
                                     <xsl:variable name="full_path">
                                         <xsl:value-of select="@xml:id"/>
                                     </xsl:variable>
                                     <tr>
-                                        <td>
+                                         <td>
                                             <a>
                                                 <xsl:attribute name="href">
                                                   <xsl:value-of
                                                   select="replace($full_path, '.xml', '.html')"
                                                   />
                                                 </xsl:attribute>
-                                                <i class="bi bi-link-45deg"/>
+                                                <xsl:value-of
+                                                    select=".//tei:titleStmt/tei:title[@level='a']/text()"/>
                                             </a>
                                         </td>
-                                        <td>
-                                            <xsl:value-of
-                                                select=".//tei:titleStmt/tei:title[@level='a']/text()"/>
+                                         <td>
+                                            <xsl:value-of select=".//tei:titleStmt/tei:title[2]/text()"/>
                                         </td>
+                                       
                                         <td>
                                             <xsl:value-of select="tokenize($full_path, '/')[last()]"
                                             />
+                                        </td>
+                                         <td>
+                                            <xsl:value-of select="replace(tokenize($full_path, '/')[last()], '.xml', '')"/>
                                         </td>
                                     </tr>
                                 </xsl:for-each>
@@ -94,7 +100,9 @@
                     </div>
                 </main>
                 <xsl:call-template name="html_footer"/>
-                <xsl:call-template name="tabulator_js"/>
+                 <xsl:call-template name="tabulator_js">
+                    <xsl:with-param name="clickme" select="true()"/>
+                </xsl:call-template>
             </body>
         </html>
     </xsl:template>

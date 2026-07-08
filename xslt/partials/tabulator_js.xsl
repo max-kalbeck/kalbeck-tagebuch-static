@@ -4,6 +4,8 @@
     exclude-result-prefixes="xs"
     version="2.0">
     <xsl:template name="tabulator_js">
+        <!-- CHANGE: add parameter for firing rowClick handler. Ported from krp-static-->
+        <xsl:param name="clickme" select="false()"/>
         <link href="vendor/tabulator-tables/css/tabulator.min.css" rel="stylesheet"></link>
         <link href="vendor/tabulator-tables/css/tabulator_bootstrap5.min.css" rel="stylesheet"></link>
         <script type="text/javascript" src="vendor/tabulator-tables/js/tabulator.min.js"></script>
@@ -19,7 +21,16 @@
             document.getElementById("download-json").addEventListener("click", function(){
             table.download("json", "data.json");
             });
-            
+             <!-- CHANGE: add rowClick handler. Ported from krp-static -->
+            <xsl:if test="$clickme">
+                
+                //trigger navigation on row click
+                table.on("rowClick", function(e, row){
+                var data = row.getData();
+                var url = `${data.id}.html`;
+                window.open(url, "_self");
+                });
+            </xsl:if> 
             //trigger download of data.html file
             document.getElementById("download-html").addEventListener("click", function(){
             table.download("html", "data.html", {style:true});

@@ -3,6 +3,7 @@
 var config = {
     height: 800,
     layout: "fitColumns",
+    responsiveLayout: "collapse",
     tooltips: true,
     dataLoader: true
 };
