@@ -16,4 +16,3 @@ echo "fetch imprint"
 mkdir -p data/extern
 curl -LO  https://pmb.acdh.oeaw.ac.at/media/relations.xml
 mv relations.xml data/extern/
-pyscripts/purge_relations.py -r data/extern/relations.xml -o data/extern/relations.xml  data/editions/*xml
