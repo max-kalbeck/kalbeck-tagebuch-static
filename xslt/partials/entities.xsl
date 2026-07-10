@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tei="http://www.tei-c.org/ns/1.0"
-    version="2.0" exclude-result-prefixes="xsl tei xs">
+    version="3.0" exclude-result-prefixes="xsl tei xs">
+    <xsl:variable name="persons-json" select="json-doc(resolve-uri('../../data/extern/persons.json', static-base-uri()))"/>
+
     <xsl:template match="tei:bibl" name="bibl_detail">
         <dl>
             <xsl:if test="./tei:author">
@@ -111,8 +113,21 @@
     </xsl:template>
 
     <xsl:template match="tei:person" name="person_detail">
+        <xsl:variable name="person-id" select="replace(string(@xml:id), '^pmb', '')"/>
+        <xsl:variable name="person-image" select="string($persons-json?($person-id)?img)"/>
 
         <dl>
+            <xsl:if test="$person-image != ''">
+                <dd>
+                    <img src="{$person-image}" alt="{normalize-space(string-join(./tei:persName[1]//text()))}" class="img-fluid"/>
+                </dd>
+            </xsl:if>
+             <xsl:if test="./tei:birth/tei:date">
+                 <dd>
+                    <xsl:value-of select="./tei:birth/tei:date"/>
+                </dd>
+             </xsl:if>
+
             <xsl:if test="./tei:birth/tei:date">
                 <dt>Geburtsdatum</dt>
                 <dd>
