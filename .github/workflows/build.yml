@@ -48,7 +48,7 @@ jobs:
       - name: Retain only relevant relations 
         run: uv run pyscripts/purge_relations.py -r data/extern/relations.xml -o data/extern/relations.xml  data/editions/*xml
       - name: Get images urls and unique relation elements
-        run: uv run pyscripts/get_person_images.py -o data/persons.json data/extern/relations.xml
+        run: uv run pyscripts/get_person_images.py -o data/extern/persons.json data/extern/relations.xml
       - name: Build the app
         run: ant
       - name: Build the search index
