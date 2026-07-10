@@ -12,3 +12,7 @@ rm -rf ./kalbeck-tagebuch-data-main
 
 echo "fetch imprint"
 ./shellscripts/dl_imprint.sh
+
+mkdir -p data/extern
+curl -LO  https://pmb.acdh.oeaw.ac.at/media/relations.xml
+mv relations.xml data/extern/
