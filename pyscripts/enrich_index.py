@@ -14,9 +14,27 @@ XML_NS = "http://www.w3.org/XML/1998/namespace"
 def normalize_id(value):
     """Normalisiert IDs wie '#123', '#pmb123' oder 'pmb123' auf '123'."""
     normalized = value.strip().lstrip("#")
-    if normalized.startswith("pmb"):
+    if normalized.lower().startswith("pmb"):
         normalized = normalized[3:]
     return normalized
+
+
+def to_pmb_ref(value):
+    """Normalisiert eine Referenz auf das Format '#pmbXXXX'."""
+    normalized = normalize_id(value)
+    return f"#pmb{normalized}" if normalized else ""
+
+
+def normalize_relation_refs(rel):
+    """Gibt eine relation mit normalisierten Referenzattributen zurück."""
+    normalized_rel = deepcopy(rel)
+    for attr_name in ("active", "passive", "mutual"):
+        raw_value = normalized_rel.get(attr_name)
+        if raw_value is None:
+            continue
+        refs = [to_pmb_ref(token) for token in raw_value.split() if token.strip()]
+        normalized_rel.set(attr_name, " ".join(refs))
+    return normalized_rel
 
 
 def entity_lookup_keys(xml_id):
@@ -34,7 +52,8 @@ def parse_relation_ids(rel, attr_name):
 
 def relation_signature(rel):
     """Stabile Signatur, um doppelte relation-Einträge zu vermeiden."""
-    return ET.tostring(rel, encoding="unicode")
+    canonical_rel = normalize_relation_refs(rel)
+    return ET.tostring(canonical_rel, encoding="unicode")
 
 
 def ensure_list_relation(entity):
@@ -61,6 +80,7 @@ def enrich_index(relations_file, index_file, output_file):
     appended = 0
     list_relation_signatures = {}
     for rel in relations_doc.any_xpath("//tei:relation"):
+        rel = normalize_relation_refs(rel)
         target_ids = parse_relation_ids(rel, "active") | parse_relation_ids(rel, "passive")
         if not target_ids:
             continue
