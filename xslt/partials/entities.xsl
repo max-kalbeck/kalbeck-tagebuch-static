@@ -2,7 +2,6 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tei="http://www.tei-c.org/ns/1.0"
     version="3.0" exclude-result-prefixes="xsl tei xs">
-    <xsl:variable name="persons-json" select="json-doc(resolve-uri('../../data/extern/persons.json', static-base-uri()))"/>
 
     <xsl:template match="tei:bibl" name="bibl_detail">
         <dl>
@@ -113,8 +112,13 @@
     </xsl:template>
 
     <xsl:template match="tei:person" name="person_detail">
-        <xsl:variable name="person-id" select="replace(string(@xml:id), '^pmb', '')"/>
-        <xsl:variable name="person-image" select="string($persons-json?($person-id)?img)"/>
+        <xsl:variable name="person-xml-id" select="string(@xml:id)"/>
+        <xsl:variable name="person-index" select="doc(resolve-uri(concat('../../data/indices/list', local-name(), '.xml'), static-base-uri()))"/>
+        <xsl:variable name="person-image" select="string((
+            ./tei:figure/tei:graphic/@url,
+            root(.)//tei:person[@xml:id = $person-xml-id]/tei:figure/tei:graphic/@url,
+            $person-index//tei:person[@xml:id = $person-xml-id]/tei:figure/tei:graphic/@url
+        )[1])"/>
 
         <dl>
             <xsl:if test="$person-image != ''">
