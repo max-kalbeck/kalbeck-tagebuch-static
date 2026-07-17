@@ -54,9 +54,9 @@
                             <table id="myTable">
                                 <thead>
                                     <tr>
-                                        <th scope="col" width="20" tabulator-formatter="html" tabulator-headerSort="false" tabulator-download="false">#</th>
-                                        <th scope="col" tabulator-headerFilter="input">Name</th>
-                                        <th scope="col" tabulator-headerFilter="input">ID</th>
+                                        <th scope="col" width="20" tabulator-formatter="html" tabulator-headerSort="false" tabulator-download="false" tabulator-visible="false">#</th>
+                                        <th scope="col" tabulator-formatter="html" tabulator-headerFilter="input">Name</th>
+                                        <th scope="col" tabulator-field="id" tabulator-headerFilter="input">ID</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -74,7 +74,12 @@
                                                 </a>
                                             </td>
                                             <td>
+                                                  <a>
+                                                  <xsl:attribute name="href">
+                                                  <xsl:value-of select="concat($id, '.html')"/>
+                                                  </xsl:attribute>
                                                 <xsl:value-of select=".//tei:orgName[1]/text()"/>
+                                                 </a>
                                             </td>
                                             <td>
                                                 <xsl:value-of select="$id"/>
@@ -92,7 +97,9 @@
                         </div>
                     </main>
                     <xsl:call-template name="html_footer"/>
-                    <xsl:call-template name="tabulator_js"/>
+                    <xsl:call-template name="tabulator_js">
+                        <xsl:with-param name="clickme" select="true()"/>
+                    </xsl:call-template>
             </body>
         </html>
         <xsl:for-each select=".//tei:org">
