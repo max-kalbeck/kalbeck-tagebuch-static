@@ -15,13 +15,13 @@
     <xsl:import href="partials/zotero.xsl"/>
 
     <xsl:template match="/">
-        <xsl:variable name="doc_title" select="'Personenregister'"/>
+        <xsl:variable name="doc_title" select="'Ereignisregister'"/>
         <!-- It gets  the title wrong upstream
         
         <xsl:variable name="doc_title"
             select="normalize-space(string((.//tei:titleStmt/tei:title[@level='a'], .//tei:titleStmt/tei:title[@type='main'], .//tei:titleStmt/tei:title)[1]))"/>
             -->
-        <xsl:variable name="link" select="'listperson.html'"/>
+        <xsl:variable name="link" select="'listevent.html'"/>
         <html class="h-100" lang="{$default_lang}">
             
             <head>
@@ -57,36 +57,36 @@
                         <table id="myTable">
                             <thead>
                                 <tr>
-                                     <th scope="col" width="20" tabulator-formatter="html" tabulator-headerSort="false" tabulator-download="false" tabulator-visible="false">#</th>
-                                    <th scope="col" tabulator-headerFilter="input" tabulator-formatter="html" tabulator-download="false" tabulator-minWidth="280">Nachname</th>                               
-                                    <th scope="col" tabulator-headerFilter="input">Vorname</th>
+                                    <th scope="col" width="20" tabulator-formatter="html" tabulator-headerSort="false" tabulator-download="false">#</th>
+                                    <th scope="col" tabulator-headerFilter="input" tabulator-formatter="html" tabulator-download="false" tabulator-minWidth="280">Ereignis</th>
+                                    <th scope="col" tabulator-headerFilter="input">Datum</th>
+                                    <th scope="col" tabulator-headerFilter="input">Ort</th>
                                     <th scope="col" tabulator-field="id" tabulator-headerFilter="input">ID</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <xsl:for-each select=".//tei:person[@xml:id]">
-                                    <xsl:variable name="id">
-                                        <xsl:value-of select="data(@xml:id)"/>
-                                    </xsl:variable>
+                                <xsl:for-each select=".//tei:event[@xml:id]">
+                                    <xsl:sort select="@when-iso" order="descending"/>
+                                    <xsl:sort select="normalize-space(string-join(./tei:eventName[1]//text()))"/>
+                                    <xsl:variable name="id" select="data(@xml:id)"/>
+                                    <xsl:variable name="name" select="normalize-space(string-join(./tei:eventName[1]//text()))"/>
+                                    <xsl:variable name="place" select="normalize-space(string-join(./tei:listPlace/tei:place[1]/tei:placeName[1]//text()))"/>
                                     <tr>
                                         <td>
-                                            <a>
-                                              <xsl:attribute name="href">
-                                              <xsl:value-of select="concat($id, '.html')"/>
-                                              </xsl:attribute>
-                                              <i class="bi bi-link-45deg"/>
+                                            <a href="{concat($id, '.html')}">
+                                                <i class="bi bi-link-45deg"/>
                                             </a>
                                         </td>
                                         <td>
-                                            <a>
-                                              <xsl:attribute name="href">
-                                              <xsl:value-of select="concat($id, '.html')"/>
-                                              </xsl:attribute>
-                                            <xsl:value-of select=".//tei:surname/text()"/>
-                                             </a>
+                                            <a href="{concat($id, '.html')}">
+                                                <xsl:value-of select="$name"/>
+                                            </a>
                                         </td>
                                         <td>
-                                            <xsl:value-of select=".//tei:forename/text()"/>
+                                            <xsl:value-of select="@when-iso"/>
+                                        </td>
+                                        <td>
+                                            <xsl:value-of select="$place"/>
                                         </td>
                                         <td>
                                             <xsl:value-of select="$id"/>
@@ -98,7 +98,7 @@
                         <xsl:call-template name="tabulator_dl_buttons"/>
                         <div class="text-center p-4">
                             <xsl:call-template name="blockquote">
-                                <xsl:with-param name="pageId" select="'listperson.html'"/>
+                                <xsl:with-param name="pageId" select="'listevent.html'"/>
                             </xsl:call-template>
                         </div>
                     </div>
@@ -111,9 +111,11 @@
         </html>
 
 
-        <xsl:for-each select=".//tei:person[@xml:id]">
+        <xsl:for-each select=".//tei:event[@xml:id]">
+            <xsl:sort select="@when-iso" order="descending"/>
+            <xsl:sort select="normalize-space(string-join(./tei:eventName[1]//text()))"/>
             <xsl:variable name="filename" select="concat(./@xml:id, '.html')"/>
-            <xsl:variable name="name" select="normalize-space(string-join(./tei:persName[1]//text()))"></xsl:variable>
+            <xsl:variable name="name" select="normalize-space(string-join(./tei:eventName[1]//text()))"></xsl:variable>
             <xsl:result-document href="{$filename}">
                 <html class="h-100" lang="{$default_lang}">
                     <head>
@@ -135,7 +137,7 @@
                                         <a href="index.html"><xsl:value-of select="$project_short_title"/></a>
                                     </li>
                                     <li class="breadcrumb-item">
-                                        <a href="listperson.html"><xsl:value-of select="$doc_title"/></a>
+                                        <a href="listevent.html"><xsl:value-of select="$doc_title"/></a>
                                     </li>
                                 </ol>
                             </nav>
@@ -143,7 +145,7 @@
                                 <h1>
                                     <xsl:value-of select="$name"/>
                                 </h1>
-                                <xsl:call-template name="person_detail"/>
+                                <xsl:call-template name="event_detail"/>
                                 <div class="text-center p-4">
                                     <xsl:call-template name="blockquote">
                                         <xsl:with-param name="pageId" select="$filename"/>
@@ -152,9 +154,6 @@
                             </div>
                         </main>
                         <xsl:call-template name="html_footer"/>
-                           <xsl:call-template name="tabulator_js">
-                    <xsl:with-param name="clickme" select="true()"/>
-                </xsl:call-template>
                     </body>
                 </html>
             </xsl:result-document>

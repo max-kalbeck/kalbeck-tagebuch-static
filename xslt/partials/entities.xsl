@@ -173,6 +173,140 @@
             </xsl:if>
         </dl>
     </xsl:template>
+
+    <xsl:template match="tei:event" name="event_detail">
+        <dl>
+            <xsl:if test="./@when-iso">
+                <dt>Datum</dt>
+                <dd>
+                    <xsl:value-of select="./@when-iso"/>
+                </dd>
+            </xsl:if>
+            <xsl:if test="./tei:eventName">
+                <dt>Bezeichnung</dt>
+                <xsl:for-each select="./tei:eventName">
+                    <dd>
+                        <xsl:value-of select="normalize-space(string-join(.//text()))"/>
+                    </dd>
+                </xsl:for-each>
+            </xsl:if>
+            <xsl:if test="./tei:note[@type = 'listorg']/tei:listOrg/tei:org">
+                <dt>Veranstaltet von</dt>
+                <xsl:for-each select="./tei:note[@type = 'listorg']/tei:listOrg/tei:org">
+                    <dd>
+                        <xsl:choose>
+                            <xsl:when test="./tei:orgName/@key">
+                                <a href="{./tei:orgName/@key}.html">
+                                    <xsl:value-of select="normalize-space(string-join(./tei:orgName//text()))"/>
+                                </a>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:value-of select="normalize-space(string-join(./tei:orgName//text()))"/>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                        <xsl:if test="@role">
+                            <xsl:text> (</xsl:text>
+                            <xsl:value-of select="@role"/>
+                            <xsl:text>)</xsl:text>
+                        </xsl:if>
+                    </dd>
+                </xsl:for-each>
+            </xsl:if>
+            <xsl:if test="./tei:listPlace/tei:place">
+                <dt>Ort</dt>
+                <xsl:for-each select="./tei:listPlace/tei:place">
+                    <dd>
+                        <xsl:choose>
+                            <xsl:when test="./tei:placeName/@key">
+                                <a href="{./tei:placeName/@key}.html">
+                                    <xsl:value-of select="normalize-space(string-join(./tei:placeName//text()))"/>
+                                </a>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:value-of select="normalize-space(string-join(./tei:placeName//text()))"/>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                        <xsl:if test="./tei:placeName/@role">
+                            <xsl:text> (</xsl:text>
+                            <xsl:value-of select="./tei:placeName/@role"/>
+                            <xsl:text>)</xsl:text>
+                        </xsl:if>
+                    </dd>
+                </xsl:for-each>
+            </xsl:if>
+            <xsl:if test="./tei:listPerson/tei:person">
+                <dt>Beteiligte</dt>
+                <xsl:for-each select="./tei:listPerson/tei:person">
+                    <dd>
+                        <xsl:choose>
+                            <xsl:when test="./tei:persName/@key">
+                                <a href="{./tei:persName/@key}.html">
+                                    <xsl:value-of select="normalize-space(string-join(./tei:persName//text()))"/>
+                                </a>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:value-of select="normalize-space(string-join(./tei:persName//text()))"/>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                        <xsl:if test="@role">
+                            <xsl:text> (</xsl:text>
+                            <xsl:value-of select="@role"/>
+                            <xsl:text>)</xsl:text>
+                        </xsl:if>
+                    </dd>
+                </xsl:for-each>
+            </xsl:if>
+            <xsl:if test="./tei:listBibl/tei:bibl[not(@type = 'collections')]">
+                <dt>Werke</dt>
+                <xsl:for-each select="./tei:listBibl/tei:bibl[not(@type = 'collections')]">
+                    <dd>
+                        <xsl:choose>
+                            <xsl:when test="./tei:title/@key">
+                                <a href="{./tei:title/@key}.html">
+                                    <xsl:value-of select="normalize-space(string-join(./tei:title//text()))"/>
+                                </a>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:value-of select="normalize-space(string-join(./tei:title//text()))"/>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                        <xsl:if test="./tei:note[@type = 'relation-type']">
+                            <xsl:text> (</xsl:text>
+                            <xsl:value-of select="./tei:note[@type = 'relation-type'][1]"/>
+                            <xsl:text>)</xsl:text>
+                        </xsl:if>
+                    </dd>
+                </xsl:for-each>
+            </xsl:if>
+            <xsl:if test="./tei:idno">
+                <dt>Identifiers</dt>
+                <xsl:for-each select="./tei:idno">
+                    <dd>
+                        <xsl:choose>
+                            <xsl:when test="starts-with(./text(), 'http')">
+                                <a href="{./text()}">
+                                    <xsl:value-of select="."/>
+                                </a>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:value-of select="."/>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </dd>
+                </xsl:for-each>
+            </xsl:if>
+            <xsl:if test="./tei:noteGrp/tei:note[@type = 'mentions']">
+                <dt>Erwähnt in</dt>
+                <xsl:for-each select="./tei:noteGrp/tei:note[@type = 'mentions']">
+                    <dd>
+                        <a href="{replace(@target, '.xml', '.html')}">
+                            <xsl:value-of select="./text()"/>
+                        </a>
+                    </dd>
+                </xsl:for-each>
+            </xsl:if>
+        </dl>
+    </xsl:template>
     
     <xsl:template match="tei:place" name="place_detail">
         <dl>
