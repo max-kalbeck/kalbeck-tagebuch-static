@@ -46,7 +46,11 @@
                                     <li>
                                         <a class="dropdown-item" href="listbibl.html">Werke</a>
                                     </li>
+                                     <li>
+                                        <a class="dropdown-item" href="listevent.html">Ereignisse</a>
+                                    </li>
                                 </ul>
+                               
                             </li>
                             <li class="nav-item">
                                 <a title="API" class="nav-link" href="api.xml">API</a>
