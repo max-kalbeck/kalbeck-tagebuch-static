@@ -55,15 +55,15 @@
                         <table id="myTable">
                             <thead>
                                 <tr>
-                                    <th scope="col" width="20" tabulator-formatter="html" tabulator-headerSort="false" tabulator-download="false">#</th>
-                                    <th scope="col" tabulator-headerFilter="input">Titel</th>
+                                    <th scope="col" width="20" tabulator-headerSort="false" tabulator-download="false" tabulator-visible="false">#</th>
+                                    <th scope="col" tabulator-headerFilter="input"  tabulator-formatter="html">Titel</th>
                                     <th scope="col" tabulator-headerFilter="input">Autor</th>
                                     <th scope="col" tabulator-headerFilter="input">Datum</th>
-                                    <th scope="col" tabulator-headerFilter="input">ID</th>
+                                    <th scope="col" tabulator-field="id" tabulator-headerFilter="input">ID</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <xsl:for-each select=".//tei:bibl">
+                                <xsl:for-each select=".//tei:bibl[@xml:id]">
                                     <xsl:variable name="id">
                                         <xsl:value-of select="data(@xml:id)"/>
                                     </xsl:variable>
@@ -77,7 +77,12 @@
                                             </a>
                                         </td>
                                         <td>
+                                               <a>
+                                              <xsl:attribute name="href">
+                                              <xsl:value-of select="concat($id, '.html')"/>
+                                              </xsl:attribute>
                                             <xsl:value-of select=".//tei:title[1]/text()"/>
+                                             </a>
                                         </td>
                                         <td>
                                             <xsl:value-of select=".//tei:author[1]//text()"/>
@@ -102,7 +107,9 @@
                     </div>
                 </main>
                 <xsl:call-template name="html_footer"/>
-                <xsl:call-template name="tabulator_js"/>
+                <xsl:call-template name="tabulator_js">
+                    <xsl:with-param name="clickme" select="true()"/>
+                </xsl:call-template>
             </body>
         </html>
         <xsl:for-each select=".//tei:bibl[@xml:id]">
@@ -146,6 +153,9 @@
                             </div>
                         </main>
                         <xsl:call-template name="html_footer"/>
+                         <xsl:call-template name="tabulator_js">
+                    <xsl:with-param name="clickme" select="true()"/>
+                </xsl:call-template>
                     </body>
                 </html>
             </xsl:result-document>
