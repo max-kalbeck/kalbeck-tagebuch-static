@@ -57,7 +57,7 @@
                         <table id="myTable">
                             <thead>
                                 <tr>
-                                    <th scope="col" width="20" tabulator-formatter="html" tabulator-headerSort="false" tabulator-download="false">#</th>
+                                    <th scope="col" width="20" tabulator-formatter="html" tabulator-headerSort="false" tabulator-download="false" tabulator-visible="false">#</th>
                                     <th scope="col" tabulator-headerFilter="input" tabulator-formatter="html" tabulator-download="false" tabulator-minWidth="280">Ereignis</th>
                                     <th scope="col" tabulator-headerFilter="input">Datum</th>
                                     <th scope="col" tabulator-headerFilter="input">Ort</th>
