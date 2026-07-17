@@ -15,9 +15,12 @@
     <xsl:import href="partials/zotero.xsl"/>
 
     <xsl:template match="/">
-        <xsl:variable name="doc_title">
-            <xsl:value-of select=".//tei:titleStmt/tei:title[@level='a']/text()"/>
-        </xsl:variable>
+        <xsl:variable name="doc_title" select="'Personenregister'"/>
+        <!-- It gets  the title wrong upstream
+        
+        <xsl:variable name="doc_title"
+            select="normalize-space(string((.//tei:titleStmt/tei:title[@level='a'], .//tei:titleStmt/tei:title[@type='main'], .//tei:titleStmt/tei:title)[1]))"/>
+            -->
         <xsl:variable name="link" select="'listperson.html'"/>
         <html class="h-100" lang="{$default_lang}">
             

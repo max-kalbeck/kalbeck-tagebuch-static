@@ -12,9 +12,8 @@
     <xsl:import href="partials/zotero.xsl"/>
 
     <xsl:template match="/">
-        <xsl:variable name="doc_title">
-            <xsl:value-of select=".//tei:title[@type='main'][1]/text()"/>
-        </xsl:variable>
+        <xsl:variable name="doc_title"
+            select="normalize-space(string((.//tei:titleStmt/tei:title[@level='a'], .//tei:titleStmt/tei:title[@type='main'], .//tei:titleStmt/tei:title)[1]))"/>
         <xsl:variable name="teiSource">
             <xsl:value-of select="data(tei:TEI/@xml:id)"/>
         </xsl:variable>
