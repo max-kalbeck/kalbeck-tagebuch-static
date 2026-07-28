@@ -22,3 +22,14 @@ div#map {
 #osdViewer {
   height: 800px;
 }
+
+/* EDITIONS */
+.page-head{
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+  font-weight: bold;
+  font-size: 1.5rem;
+  align-content: center;
+  padding-bottom: 1rem;
+}
