@@ -13,5 +13,5 @@
         </xsl:copy>
     </xsl:template>
 
-    <xsl:template match="tei:back//tei:noteGrp"/>
+    <xsl:template match="tei:back//tei:note | tei:back//tei:noteGrp"/>
 </xsl:stylesheet>
