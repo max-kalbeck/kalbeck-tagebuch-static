@@ -1,5 +1,5 @@
-var BASE_URL = 'facs/';
-var FACS_FILE_ENDING = '.jpg';
+var BASE_URL = 'https://id.acdh.oeaw.ac.at/kalbeck-tagebuch/';
+var FACS_FILE_ENDING = '.tif?format=image%2Fwebp&param=full/full/0/default.jpg';
 
 var tileSources = Array.from(
     document.querySelectorAll('#facsContainer .facsId[data-facs-name]'),
