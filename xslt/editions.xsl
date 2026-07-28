@@ -29,6 +29,12 @@
         <xsl:value-of select=".//tei:titleStmt/tei:title[@level='a']/text()"/>
     </xsl:variable>
 
+    <xsl:template match="tei:body//tei:head">
+        <div class="page-head">
+            <xsl:apply-templates/>
+        </div>
+    </xsl:template>
+
 
     <xsl:template match="/">
         <html class="h-100" lang="{$default_lang}">
