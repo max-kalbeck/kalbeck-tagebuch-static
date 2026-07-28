@@ -141,28 +141,22 @@
                 <xsl:when test="@type = 'event'">events</xsl:when>
             </xsl:choose>
         </xsl:variable>
+        <xsl:variable name="entity-refs" select="tokenize(normalize-space(@ref), '\s+')"/>
+        <xsl:variable name="multi-ref-id" select="concat('multi-', generate-id())"/>
 
         <xsl:choose>
-            <xsl:when test="$entity-class != '' and count(tokenize(@ref, ' ')) > 1">
-                <span class="{$entity-class}">
+            <xsl:when test="$entity-class != '' and count($entity-refs) > 1">
+                <span class="{$entity-class} entity" data-bs-toggle="modal" data-bs-target="#{$multi-ref-id}">
                     <xsl:if test="$entity-class = 'orgs' and @xml:id">
                         <xsl:attribute name="id">
                             <xsl:value-of select="@xml:id"/>
                         </xsl:attribute>
                     </xsl:if>
                     <xsl:apply-templates/>
-                    <xsl:for-each select="tokenize(@ref, ' ')">
-                        <sup class="entity" data-bs-toggle="modal" data-bs-target="{.}">
-                            <xsl:value-of select="position()"/>
-                        </sup>
-                        <xsl:if test="position() != last()">
-                            <sup class="entity">/</sup>
-                        </xsl:if>
-                    </xsl:for-each>
                 </span>
             </xsl:when>
             <xsl:when test="$entity-class != ''">
-                <span class="{$entity-class} entity" data-bs-toggle="modal" data-bs-target="{@ref}">
+                <span class="{$entity-class} entity" data-bs-toggle="modal" data-bs-target="{$entity-refs[1]}">
                     <xsl:apply-templates/>
                 </span>
             </xsl:when>
@@ -172,134 +166,136 @@
         </xsl:choose>
     </xsl:template>
 
+    <xsl:template match="tei:rs[@type = ('person', 'place', 'work', 'bibl', 'org', 'institution', 'event')][count(tokenize(normalize-space(@ref), '\s+')) > 1]" mode="multi-ref-modal">
+        <xsl:variable name="context-rs" select="."/>
+        <xsl:variable name="entity-refs" select="tokenize(normalize-space(@ref), '\s+')"/>
+        <xsl:variable name="multi-ref-id" select="concat('multi-', generate-id())"/>
+        <xsl:variable name="label" select="normalize-space(string-join(.//text()))"/>
+
+        <div class="modal fade" id="{$multi-ref-id}" data-bs-keyboard="true" tabindex="-1" aria-label="{$label}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5"><xsl:value-of select="$label"/></h1>
+                    </div>
+                    <div class="modal-body">
+                        <xsl:for-each select="$entity-refs">
+                            <xsl:variable name="entity-ref" select="."/>
+                            <xsl:variable name="entity-node" select="root($context-rs)//tei:*[@xml:id = substring-after($entity-ref, '#')][1]"/>
+                            <xsl:if test="$entity-node">
+                                <xsl:for-each select="$entity-node">
+                                    <xsl:call-template name="render-entity-section"/>
+                                </xsl:for-each>
+                            </xsl:if>
+                            <xsl:if test="$entity-node and position() != last()">
+                                <hr/>
+                            </xsl:if>
+                        </xsl:for-each>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </xsl:template>
+
+    <xsl:template name="render-entity-title">
+        <xsl:choose>
+            <xsl:when test="self::tei:person">
+                <xsl:value-of select="normalize-space(string-join(./tei:persName[1]//text()))"/>
+            </xsl:when>
+            <xsl:when test="self::tei:place">
+                <xsl:value-of select="normalize-space(string-join(./tei:placeName[1]//text()))"/>
+            </xsl:when>
+            <xsl:when test="self::tei:org">
+                <xsl:value-of select="normalize-space(string-join(./tei:orgName[1]//text()))"/>
+            </xsl:when>
+            <xsl:when test="self::tei:bibl">
+                <xsl:value-of select="normalize-space(string-join(./tei:title[1]//text()))"/>
+            </xsl:when>
+            <xsl:when test="self::tei:event">
+                <xsl:value-of select="normalize-space(string((./tei:eventName[1], @n, @xml:id)[1]))"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:value-of select="string(@xml:id)"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+
+    <xsl:template name="render-entity-detail">
+        <xsl:choose>
+            <xsl:when test="self::tei:person">
+                <xsl:call-template name="person_detail"/>
+            </xsl:when>
+            <xsl:when test="self::tei:place">
+                <xsl:call-template name="place_detail"/>
+            </xsl:when>
+            <xsl:when test="self::tei:org">
+                <xsl:call-template name="org_detail"/>
+            </xsl:when>
+            <xsl:when test="self::tei:bibl">
+                <xsl:call-template name="bibl_detail"/>
+            </xsl:when>
+            <xsl:when test="self::tei:event">
+                <xsl:call-template name="event_detail"/>
+            </xsl:when>
+        </xsl:choose>
+    </xsl:template>
+
+    <xsl:template name="render-entity-section">
+        <div class="mb-4">
+            <h2 class="fs-6"><a href="{@xml:id}.html"><xsl:call-template name="render-entity-title"/></a></h2>
+            <xsl:call-template name="render-entity-detail"/>
+        </div>
+    </xsl:template>
+
+    <xsl:template name="render-entity-modal">
+        <xsl:variable name="selfLink">
+            <xsl:value-of select="concat(data(@xml:id), '.html')"/>
+        </xsl:variable>
+        <xsl:variable name="name">
+            <xsl:call-template name="render-entity-title"/>
+        </xsl:variable>
+
+        <div class="modal fade" id="{@xml:id}" data-bs-keyboard="true" tabindex="-1" aria-label="{normalize-space($name)}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5"><a href="{$selfLink}"><xsl:value-of select="normalize-space($name)"/></a></h1>
+                    </div>
+                    <div class="modal-body">
+                        <xsl:call-template name="render-entity-detail"/>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </xsl:template>
+
     <xsl:template match="tei:listPerson">
         <xsl:apply-templates/>
     </xsl:template>
 
-    <xsl:template match="tei:person">
-        <xsl:variable name="selfLink">
-            <xsl:value-of select="concat(data(@xml:id), '.html')"/>
-        </xsl:variable>
-        <xsl:variable name="name" select="normalize-space(string-join(./tei:persName[1]//text()))"></xsl:variable>
-        <div class="modal fade" id="{@xml:id}" data-bs-keyboard="true" tabindex="-1" aria-label="{$name}" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5"><a href="{$selfLink}"><xsl:value-of select="$name"/></a></h1>
-                    </div>
-                    <div class="modal-body">
-                        <xsl:call-template name="person_detail"/>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <xsl:template match="tei:person | tei:place | tei:org | tei:bibl | tei:event[@xml:id]">
+        <xsl:call-template name="render-entity-modal"/>
     </xsl:template>
 
     <xsl:template match="tei:listPlace">
         <xsl:apply-templates/>
-    </xsl:template>
-
-    <xsl:template match="tei:place">
-        <xsl:variable name="selfLink">
-            <xsl:value-of select="concat(data(@xml:id), '.html')"/>
-        </xsl:variable>
-        <xsl:variable name="name" select="normalize-space(string-join(./tei:placeName[1]//text()))"></xsl:variable>
-        <div class="modal fade" id="{@xml:id}" data-bs-keyboard="true" tabindex="-1" aria-label="{$name}" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5"><a href="{$selfLink}"><xsl:value-of select="$name"/></a></h1>
-                    </div>
-                    <div class="modal-body">
-                        <xsl:call-template name="place_detail"/>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
-                    </div>
-                </div>
-            </div>
-        </div>
     </xsl:template>
     
     <xsl:template match="tei:listOrg">
         <xsl:apply-templates/>
     </xsl:template>
 
-    <xsl:template match="tei:org">
-        <xsl:variable name="selfLink">
-            <xsl:value-of select="concat(data(@xml:id), '.html')"/>
-        </xsl:variable>
-        <xsl:variable name="name" select="normalize-space(string-join(./tei:orgName[1]//text()))"></xsl:variable>
-        <div class="modal fade" id="{@xml:id}" data-bs-keyboard="true" tabindex="-1" aria-label="{$name}" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5"><a href="{$selfLink}"><xsl:value-of select="$name"/></a></h1>
-                    </div>
-                    <div class="modal-body">
-                        <xsl:call-template name="org_detail"/>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </xsl:template>
-
-    
     <xsl:template match="tei:listBibl">
         <xsl:apply-templates/>
-    </xsl:template>
-    
-    <xsl:template match="tei:bibl">
-        <xsl:variable name="selfLink">
-            <xsl:value-of select="concat(data(@xml:id), '.html')"/>
-        </xsl:variable>
-        <xsl:variable name="name" select="normalize-space(string-join(./tei:title[1]//text()))"></xsl:variable>
-        <div class="modal fade" id="{@xml:id}" data-bs-keyboard="true" tabindex="-1" aria-label="{$name}" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5"><a href="{$selfLink}"><xsl:value-of select="$name"/></a></h1>
-                    </div>
-                    <div class="modal-body">
-                        <xsl:call-template name="bibl_detail"/>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
-                    </div>
-                </div>
-            </div>
-        </div>
     </xsl:template>
 
     <xsl:template match="tei:listEvent">
         <xsl:apply-templates select="tei:event[@xml:id]"/>
-    </xsl:template>
-
-    <xsl:template match="tei:event[@xml:id]">
-        <xsl:variable name="selfLink">
-            <xsl:value-of select="concat(data(@xml:id), '.html')"/>
-        </xsl:variable>
-        <xsl:variable name="name" select="normalize-space(string((./tei:eventName[1], @n, @xml:id)[1]))"></xsl:variable>
-        <div class="modal fade" id="{@xml:id}" data-bs-keyboard="true" tabindex="-1" aria-label="{$name}" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5"><a href="{$selfLink}"><xsl:value-of select="$name"/></a></h1>
-                    </div>
-                    <div class="modal-body">
-                        <xsl:call-template name="event_detail"/>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
-                    </div>
-                </div>
-            </div>
-        </div>
     </xsl:template>
 </xsl:stylesheet>
