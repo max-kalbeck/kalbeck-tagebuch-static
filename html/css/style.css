@@ -33,3 +33,7 @@ div#map {
   align-content: center;
   padding-bottom: 1rem;
 }
+
+.underline {
+   text-decoration: underline solid;
+}
