@@ -19,7 +19,7 @@
         <abbr title="unclear"><xsl:apply-templates/></abbr>
     </xsl:template>
     <xsl:template match="tei:del">
-        <del><xsl:apply-templates/></del>
+            <strike><xsl:apply-templates/></strike>
     </xsl:template>
     <xsl:template match="tei:cit">
         <cite><xsl:apply-templates/></cite>
