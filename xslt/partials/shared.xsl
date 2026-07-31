@@ -93,6 +93,11 @@
                         <xsl:text>bold</xsl:text>
                     </xsl:attribute>
                 </xsl:when>
+                  <xsl:when test="@rend = 'underline'">
+                    <xsl:attribute name="class">
+                        <xsl:text>underline</xsl:text>
+                    </xsl:attribute>
+                </xsl:when>
             </xsl:choose>
             <xsl:apply-templates/>
         </span>
