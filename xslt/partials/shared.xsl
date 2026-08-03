@@ -11,6 +11,20 @@
     <xsl:template match="tei:div">
         <div><xsl:apply-templates/></div>
     </xsl:template>
+    <xsl:template match="tei:div[matches(@type, '^level[0-9]+$')]">
+        <div class="{@type}">
+            <xsl:apply-templates/>
+        </div>
+    </xsl:template>
+    <xsl:template match="tei:head[parent::tei:div[matches(@type, '^level[0-9]+$')]]">
+        <xsl:variable name="level" select="replace(parent::tei:div/@type, '^level', '')"/>
+        <xsl:element name="{concat('h', $level)}">
+            <xsl:if test="@xml:id">
+                <xsl:attribute name="id" select="@xml:id"/>
+            </xsl:if>
+            <xsl:apply-templates/>
+        </xsl:element>
+    </xsl:template>
     <xsl:template match="tei:pb">
         <span class="anchor-pb"></span>
         <span class="pb" source="{@facs}"><xsl:value-of select="./@n"/></span>
@@ -25,13 +39,16 @@
         <cite><xsl:apply-templates/></cite>
     </xsl:template>
     <xsl:template match="tei:quote">
-        <xsl:apply-templates/>
+        <blockquote><xsl:apply-templates/></blockquote>
     </xsl:template>
     <xsl:template match="tei:date">
         <span class="date"><xsl:apply-templates/></span>
     </xsl:template>
     <xsl:template match="tei:lb">
         <br/>
+    </xsl:template>
+     <xsl:template match="tei:code">
+        <code><xsl:apply-templates/></code>
     </xsl:template>
 
     <xsl:template match="tei:note">
@@ -73,22 +90,17 @@
     <xsl:template match="tei:hi">
         <span>
             <xsl:choose>
-                <xsl:when test="@rendition = '#em'">
+                <xsl:when test="@rendition = 'italics'">
                     <xsl:attribute name="class">
                         <xsl:text>italic</xsl:text>
                     </xsl:attribute>
                 </xsl:when>
-                <xsl:when test="@rendition = '#italic'">
-                    <xsl:attribute name="class">
-                        <xsl:text>italic</xsl:text>
-                    </xsl:attribute>
-                </xsl:when>
-                <xsl:when test="@rendition = '#smallcaps'">
+                <xsl:when test="@rendition = 'smallcaps'">
                     <xsl:attribute name="class">
                         <xsl:text>smallcaps</xsl:text>
                     </xsl:attribute>
                 </xsl:when>
-                <xsl:when test="@rendition = '#bold'">
+                <xsl:when test="@rendition = 'bold'">
                     <xsl:attribute name="class">
                         <xsl:text>bold</xsl:text>
                     </xsl:attribute>
