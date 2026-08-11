@@ -16,6 +16,6 @@
         <meta name="citation_publisher" content="Universität für Musik und Darstellende Kunst Wien"/>
         <meta name="citation_book_title" content="{$project_title}"/>
         <meta name="citation_public_url" content="{$fullUrl}"/>
-        <meta name="citation_date" content="2025"/>
+        <meta name="citation_date" content="2026"/>
     </xsl:template>
 </xsl:stylesheet>
