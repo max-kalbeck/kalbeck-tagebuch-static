@@ -47,6 +47,8 @@ jobs:
         run: ./shellscripts/process.sh
       - name: Enrich indices with relations
         run: shellscripts/getrelations.sh
+      - name: Generate calendar data
+        run: uv run pyscripts/make_calendar_data.py
       - name: Build the app
         run: ant
       - name: Build the search index
