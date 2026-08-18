@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import glob
 import os
 
@@ -64,16 +65,21 @@ PMB_URIS = [
 for x in INDICES:
     print(f"processing {x['file_name']}")
     save_path = os.path.join(INDICES_DIR, x["file_name"])
-    doc = TeiReader(x["url"])
-    for ent in doc.any_xpath(f"{x['entity_xpath']}"):
-        uris = ent.xpath("./tei:idno/text()", namespaces=NSMAP)
-        for pmb_uri in PMB_URIS:
-            if pmb_uri["uri"] in uris:
-                ent.attrib["{http://www.w3.org/XML/1998/namespace}id"] = pmb_uri[  # noqa
-                    "pmb_id"
-                ]
-                break
-        else:
-            ent.getparent().remove(ent)
+    print(x["url"])
+    try:
+        doc = TeiReader(x["url"])
+        for ent in doc.any_xpath(f"{x['entity_xpath']}"):
+            uris = ent.xpath("./tei:idno/text()", namespaces=NSMAP)
+            for pmb_uri in PMB_URIS:
+                if pmb_uri["uri"] in uris:
+                    ent.attrib["{http://www.w3.org/XML/1998/namespace}id"] = pmb_uri[  # noqa
+                        "pmb_id"
+                    ]
+                    break
+            else:
+                ent.getparent().remove(ent)
 
-    doc.tree_to_file(save_path)
+        doc.tree_to_file(save_path)
+    except Exception:
+        print(f"Problem reading {x["url"]}")
+
