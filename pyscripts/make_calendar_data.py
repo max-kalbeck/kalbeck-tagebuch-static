@@ -12,7 +12,7 @@ for x in tqdm(files, total=len(files)):
     head, tail = os.path.split(x)
     doc = TeiReader(x)
     item['name'] = doc.any_xpath('//tei:title[@level="a"]/text()')[0]
-    item['startDate'] = doc.any_xpath('//tei:title[@type="iso-date"]/@when-iso')
+    item['startDate'] = doc.any_xpath('//tei:title[@type="iso-date"]/@when-iso')[0]
     item['id'] = tail.replace('.xml', '.html')
     data.append(item)
 
