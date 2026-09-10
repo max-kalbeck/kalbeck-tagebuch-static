@@ -47,6 +47,22 @@ function partitionTextByPB() {
     var pbElements = Array.from(document.querySelectorAll('.pb'));
     if (!pbElements.length) return [];
 
+    // compute document order for pb markers and footnotes BEFORE we move nodes
+    var pbOrder = new Map();
+    var footnoteOrder = new Map();
+    var order = 0;
+    var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_ELEMENT, null, false);
+    while (walker.nextNode()) {
+        order++;
+        var el = walker.currentNode;
+        if (el.classList && el.classList.contains('pb')) {
+            pbOrder.set(el, order);
+        }
+        if (el.classList && el.classList.contains('footnotes')) {
+            footnoteOrder.set(el, order);
+        }
+    }
+
     var container = pbElements[0].parentNode;
     var childNodes = Array.from(container.childNodes);
     var segIndex = 0;
@@ -68,7 +84,27 @@ function partitionTextByPB() {
         }
     });
 
-    return Array.from(container.querySelectorAll('.facs-text-segment'));
+    var segments = Array.from(container.querySelectorAll('.facs-text-segment'));
+
+    // Attach any .footnotes elements to the appropriate segment based on
+    // how many pb markers precede them in the original document order.
+    var footnotes = Array.from(document.querySelectorAll('.footnotes'));
+    footnotes.forEach(function(fn) {
+        var fnOrder = footnoteOrder.get(fn);
+        if (!fnOrder) return;
+        var preceding = 0;
+        pbOrder.forEach(function(pbIdx, pbEl) {
+            if (pbIdx < fnOrder) preceding++;
+        });
+        var targetIndex = preceding || 1; // if none preceding, attach to first
+        var targetSeg = segments.find(function(s) { return parseInt(s.getAttribute('data-facs-index'), 10) === targetIndex; });
+        if (!targetSeg) targetSeg = segments[segments.length - 1];
+        if (targetSeg && fn.parentNode !== targetSeg) {
+            targetSeg.appendChild(fn);
+        }
+    });
+
+    return segments;
 }
 
 function updateVisibleText(segments) {
