@@ -16,6 +16,14 @@
             <xsl:apply-templates/>
         </div>
     </xsl:template>
+
+    <xsl:template match="tei:div[matches(@type, '^level[0-9]+$')]">
+        <div class="{@type}">
+            <xsl:apply-templates/>
+        </div>
+    </xsl:template>
+
+
     <xsl:template match="tei:head[parent::tei:div[matches(@type, '^level[0-9]+$')]]">
         <xsl:variable name="level" select="replace(parent::tei:div/@type, '^level', '')"/>
         <xsl:element name="{concat('h', $level)}">
@@ -27,7 +35,7 @@
     </xsl:template>
     <xsl:template match="tei:pb">
         <span class="anchor-pb"></span>
-        <span class="pb" source="{@facs}"><xsl:value-of select="./@n"/></span>
+        <span class="pb" source="{if(@corresp) then @corresp else @facs}"><xsl:value-of select="./@n"/></span>
     </xsl:template>
 
     <xsl:template match="tei:unclear">
