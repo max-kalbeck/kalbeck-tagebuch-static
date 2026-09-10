@@ -144,4 +144,4 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     // fallback: update once immediately if viewer already opened
     setTimeout(function() { updateVisibleText(segments); }, 250);
-});%                                                          
+});                                                     
