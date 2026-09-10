@@ -51,7 +51,7 @@
                     </nav>
                     <div class="container">                        
                         <h1><xsl:value-of select="$doc_title"/></h1>    
-                        <xsl:apply-templates select=".//tei:body" />
+                        <xsl:apply-templates select="/tei:TEI/tei:text/tei:body" />
                         <div class="text-center p-4">
                             <xsl:call-template name="blockquote">
                                 <xsl:with-param name="pageId" select="$link"/>

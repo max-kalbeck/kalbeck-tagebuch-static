@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet 
+    xmlns="http://www.w3.org/1999/xhtml"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:tei="http://www.tei-c.org/ns/1.0"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     version="2.0" exclude-result-prefixes="xsl tei xs">
     <xsl:output encoding="UTF-8" media-type="text/html" method="html" indent="yes" version="5.0" omit-xml-declaration="yes"/>
 
+  
     <xsl:strip-space elements="*"/>
     
     <xsl:import href="partials/shared.xsl"/>
@@ -14,6 +16,7 @@
     <xsl:import href="partials/html_footer.xsl"/>
     <xsl:import href="partials/blockquote.xsl"/>
     <xsl:import href="partials/zotero.xsl"/>
+
 
     <xsl:variable name="prev">
         <xsl:value-of select="replace(tokenize(data(tei:TEI/@prev), '/')[last()], '.xml', '.html')"/>
@@ -44,6 +47,8 @@
                 <xsl:call-template name="html_head">
                     <xsl:with-param name="html_title" select="$doc_title"></xsl:with-param>
                 </xsl:call-template>
+                <link rel="stylesheet" href="css/edition.css" type="text/css" />
+
                 <xsl:call-template name="zoterMetaTags">
                     <xsl:with-param name="pageId" select="$link"></xsl:with-param>
                     <xsl:with-param name="zoteroTitle" select="$doc_title"></xsl:with-param>
@@ -115,7 +120,7 @@
                             </div>
                             <div class="col-md-6">
                                 <h2 class="visually-hidden">Text</h2>
-                                <xsl:apply-templates select=".//tei:body"></xsl:apply-templates>
+                                <xsl:apply-templates select="/tei:TEI/tei:text/tei:body"/>
                             </div>                            
                         </div>
                         <p style="text-align:center;">

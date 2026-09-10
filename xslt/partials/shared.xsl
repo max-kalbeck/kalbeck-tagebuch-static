@@ -31,7 +31,7 @@
     </xsl:template>
 
     <xsl:template match="tei:unclear">
-        <abbr title="unclear"  class="editorial-note" data-bs-toggle="modal" data-bs-target="#unclear-modal"><xsl:apply-templates/></abbr>
+        <abbr title="unleserlich"  class="editorial-note" data-bs-toggle="modal" data-bs-target="#unclear-modal"><xsl:apply-templates/></abbr>
     </xsl:template>
 
 
@@ -114,6 +114,12 @@
                     </xsl:attribute>
                 </xsl:when>
             </xsl:choose>
+            <xsl:apply-templates/>
+        </span>
+    </xsl:template>
+
+    <xsl:template match="tei:floatingText">
+        <span class="float-text">
             <xsl:apply-templates/>
         </span>
     </xsl:template>
