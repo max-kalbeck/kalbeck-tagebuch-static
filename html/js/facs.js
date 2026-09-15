@@ -86,35 +86,18 @@ function partitionTextByPB() {
 
     var segments = Array.from(container.querySelectorAll('.facs-text-segment'));
 
-    // Attach each footnote to the segment that contains its note call.
+    // Attach any .footnotes elements to the appropriate segment based on
+    // how many pb markers precede them in the original document order.
     var footnotes = Array.from(document.querySelectorAll('.footnotes'));
     footnotes.forEach(function(fn) {
-        var targetSeg = null;
-        var noteCall = fn.querySelector('a[href^="#fna_"]');
-
-        if (noteCall) {
-            var targetId = noteCall.getAttribute('href').slice(1);
-            var noteCallAnchor = document.querySelector('a[name="' + targetId + '"]');
-            while (noteCallAnchor && !targetSeg) {
-                if (noteCallAnchor.classList && noteCallAnchor.classList.contains('facs-text-segment')) {
-                    targetSeg = noteCallAnchor;
-                } else {
-                    noteCallAnchor = noteCallAnchor.parentNode;
-                }
-            }
-        }
-
-        if (!targetSeg) {
-            var fnOrder = footnoteOrder.get(fn);
-            if (!fnOrder) return;
-            var preceding = 0;
-            pbOrder.forEach(function(pbIdx) {
-                if (pbIdx < fnOrder) preceding++;
-            });
-            var targetIndex = preceding || 1; // if none preceding, attach to first
-            targetSeg = segments.find(function(s) { return parseInt(s.getAttribute('data-facs-index'), 10) === targetIndex; });
-        }
-
+        var fnOrder = footnoteOrder.get(fn);
+        if (!fnOrder) return;
+        var preceding = 0;
+        pbOrder.forEach(function(pbIdx, pbEl) {
+            if (pbIdx < fnOrder) preceding++;
+        });
+        var targetIndex = preceding || 1; // if none preceding, attach to first
+        var targetSeg = segments.find(function(s) { return parseInt(s.getAttribute('data-facs-index'), 10) === targetIndex; });
         if (!targetSeg) targetSeg = segments[segments.length - 1];
         if (targetSeg && fn.parentNode !== targetSeg) {
             targetSeg.appendChild(fn);
