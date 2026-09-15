@@ -24,22 +24,15 @@ var viewer = OpenSeadragon({
 });
 
 function alignImageToTop() {
-    viewer.viewport.fitHorizontally(true);
-
-    var bounds = viewer.viewport.getBounds(true);
-    var contentBounds = viewer.world.getHomeBounds();
-
-    viewer.viewport.panTo(
-        new OpenSeadragon.Point(
-            bounds.x + (bounds.width / 2),
-            contentBounds.y + (bounds.height / 2)
-        ),
-        true
-    );
-    viewer.viewport.applyConstraints();
+    viewer.viewport.goHome(true);
 }
 
-viewer.addHandler('open', alignImageToTop);
+var facsSegments = [];
+
+viewer.addHandler('open', function() {
+    alignImageToTop();
+    updateVisibleText(facsSegments);
+});
 // Partition the editorial text into per-facsimile segments using the
 // generated <span class="pb"> markers and show only the segment for
 // the currently visible image in the OpenSeadragon viewer.
@@ -132,16 +125,12 @@ function updateVisibleText(segments) {
 
 // wire up partitioning and viewer events after DOM ready
 document.addEventListener('DOMContentLoaded', function() {
-    var segments = partitionTextByPB();
-    // initial hide/show after viewer opens
-    viewer.addHandler('open', function() {
-        // align image then update text
-        alignImageToTop();
-        updateVisibleText(segments);
-    });
+    facsSegments = partitionTextByPB();
     viewer.addHandler('page', function() {
-        updateVisibleText(segments);
+        updateVisibleText(facsSegments);
     });
-    // fallback: update once immediately if viewer already opened
-    setTimeout(function() { updateVisibleText(segments); }, 250);
+    if (viewer.isOpen && viewer.isOpen()) {
+        alignImageToTop();
+        updateVisibleText(facsSegments);
+    }
 });                                                     
