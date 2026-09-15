@@ -7,9 +7,8 @@ html/beacon.txt
 data/imprint.xml
 
 data/indices/*.xml
-data/editions
-data/meta
-data/work
+data/editions/*.xml
+data/meta/*.xml
 
 
 # Byte-compiled / optimized / DLL files
