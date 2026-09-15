@@ -198,6 +198,9 @@
                 <xsl:apply-templates/>
             </xsl:otherwise>
         </xsl:choose>
+        <xsl:if test="following-sibling::node()[1][self::tei:rs]">
+            <xsl:text> </xsl:text>
+        </xsl:if>
     </xsl:template>
 
     <xsl:template match="tei:rs[@type = ('person', 'place', 'work', 'bibl', 'org', 'institution', 'event')][count(tokenize(normalize-space(@ref), '\s+')) > 1]" mode="multi-ref-modal">
