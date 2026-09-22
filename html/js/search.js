@@ -86,6 +86,7 @@ search.addWidgets([
 
         return html` <div>
           <div class="fs-3">
+
             <a href="${hitUrl}" class="custom-link">${hit.title}</a>
             ${hit.page_label
               ? html`<span class="badge bg-secondary ms-2">S. ${hit.page_label}</span>`
