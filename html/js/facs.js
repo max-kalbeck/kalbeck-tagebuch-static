@@ -34,6 +34,74 @@ function goToPageFromLocation() {
     viewer.goToPage(targetPageIndex);
 }
 
+function parseMarkFromLocation() {
+    var hashValue = window.location.hash.replace(/^#/, '');
+    var hashParts = hashValue ? hashValue.split('&') : [];
+
+    for (var i = 0; i < hashParts.length; i++) {
+        var match = hashParts[i].match(/^mark=(.*)$/i);
+        if (!match) continue;
+        try {
+            return decodeURIComponent(match[1].replace(/\+/g, ' ')).trim();
+        } catch (e) {
+            return match[1].trim();
+        }
+    }
+
+    return null;
+}
+
+function escapeRegExp(value) {
+    return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+// Wrap every occurrence of the mark terms in the given container's text in
+// <mark class="search-highlight">, leaving markup/entities untouched.
+function highlightMarkedText(container, markValue) {
+    if (!container || !markValue) return;
+
+    var terms = markValue.split(/\s+/).map(function (t) { return t.trim(); }).filter(Boolean);
+    if (!terms.length) return;
+
+    var pattern = new RegExp('(' + terms.map(escapeRegExp).join('|') + ')', 'gi');
+
+    var walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, {
+        acceptNode: function (node) {
+            var parentTag = node.parentNode && node.parentNode.nodeName;
+            if (parentTag === 'SCRIPT' || parentTag === 'STYLE' || parentTag === 'MARK') return NodeFilter.FILTER_REJECT;
+            return NodeFilter.FILTER_ACCEPT;
+        }
+    }, false);
+
+    var textNodes = [];
+    while (walker.nextNode()) textNodes.push(walker.currentNode);
+
+    textNodes.forEach(function (node) {
+        var text = node.nodeValue;
+        pattern.lastIndex = 0;
+        if (!pattern.test(text)) return;
+        pattern.lastIndex = 0;
+
+        var frag = document.createDocumentFragment();
+        var lastIndex = 0;
+        var match;
+        while ((match = pattern.exec(text)) !== null) {
+            if (match.index > lastIndex) {
+                frag.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
+            }
+            var markEl = document.createElement('mark');
+            markEl.className = 'search-highlight';
+            markEl.textContent = match[0];
+            frag.appendChild(markEl);
+            lastIndex = match.index + match[0].length;
+        }
+        if (lastIndex < text.length) {
+            frag.appendChild(document.createTextNode(text.slice(lastIndex)));
+        }
+        node.parentNode.replaceChild(frag, node);
+    });
+}
+
 var tileSources = Array.from(
     document.querySelectorAll('#facsContainer .facsId[data-facs-name]'),
     function (element) {
@@ -183,6 +251,10 @@ function updateVisibleText(segments) {
 // wire up partitioning and viewer events after DOM ready
 document.addEventListener('DOMContentLoaded', function() {
     facsSegments = partitionTextByPB();
+    var markValue = parseMarkFromLocation();
+    if (markValue && facsSegments.length) {
+        highlightMarkedText(facsSegments[0].parentNode, markValue);
+    }
     viewer.addHandler('page', function() {
         updateVisibleText(facsSegments);
     });
