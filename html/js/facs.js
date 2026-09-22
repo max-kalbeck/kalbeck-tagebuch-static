@@ -1,5 +1,53 @@
 var BASE_URL = 'https://id.acdh.oeaw.ac.at/kalbeck-tagebuch/';
 var FACS_FILE_ENDING = '.tif?format=image%2Fwebp&param=full/full/0/default.jpg';
+var initialPageIndex = null;
+var suppressUrlSync = false;
+
+function parsePageIndexFromLocation() {
+    var searchParams = new URLSearchParams(window.location.search);
+    var candidates = [
+        searchParams.get('page'),
+        searchParams.get('p'),
+        searchParams.get('facs'),
+        window.location.hash.replace(/^#/, '')
+    ];
+
+    for (var i = 0; i < candidates.length; i++) {
+        var value = candidates[i];
+        if (!value) continue;
+
+        var match = value.match(/^(?:p|page|facs)-?(\d+)$/i);
+        var pageNumber = match ? parseInt(match[1], 10) : parseInt(value, 10);
+
+        if (!Number.isNaN(pageNumber) && pageNumber > 0) {
+            return pageNumber - 1;
+        }
+    }
+
+    return null;
+}
+
+function syncUrlToPage(pageIndex) {
+    if (suppressUrlSync) return;
+
+    var nextHash = '#p-' + (pageIndex + 1);
+    var nextUrl = window.location.pathname + window.location.search + nextHash;
+    if (window.location.hash !== nextHash) {
+        window.history.replaceState(null, '', nextUrl);
+    }
+}
+
+function goToPageFromLocation() {
+    if (initialPageIndex === null || typeof viewer.goToPage !== 'function') return;
+
+    var lastPageIndex = tileSources.length - 1;
+    if (lastPageIndex < 0) return;
+
+    var targetPageIndex = Math.min(initialPageIndex, lastPageIndex);
+    suppressUrlSync = true;
+    viewer.goToPage(targetPageIndex);
+    suppressUrlSync = false;
+}
 
 var tileSources = Array.from(
     document.querySelectorAll('#facsContainer .facsId[data-facs-name]'),
@@ -28,9 +76,11 @@ function alignImageToTop() {
 }
 
 var facsSegments = [];
+initialPageIndex = parsePageIndexFromLocation();
 
 viewer.addHandler('open', function() {
     alignImageToTop();
+    goToPageFromLocation();
     updateVisibleText(facsSegments);
 });
 // Partition the editorial text into per-facsimile segments using the
@@ -144,10 +194,23 @@ function updateVisibleText(segments) {
 document.addEventListener('DOMContentLoaded', function() {
     facsSegments = partitionTextByPB();
     viewer.addHandler('page', function() {
+        syncUrlToPage(viewer.currentPage());
         updateVisibleText(facsSegments);
+    });
+    window.addEventListener('hashchange', function() {
+        var pageIndex = parsePageIndexFromLocation();
+        if (pageIndex === null || typeof viewer.goToPage !== 'function') return;
+
+        var lastPageIndex = tileSources.length - 1;
+        if (lastPageIndex < 0) return;
+
+        suppressUrlSync = true;
+        viewer.goToPage(Math.min(pageIndex, lastPageIndex));
+        suppressUrlSync = false;
     });
     if (viewer.isOpen && viewer.isOpen()) {
         alignImageToTop();
+        goToPageFromLocation();
         updateVisibleText(facsSegments);
     }
 });                                                     
