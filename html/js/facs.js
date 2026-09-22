@@ -1,19 +1,13 @@
 var BASE_URL = 'https://id.acdh.oeaw.ac.at/kalbeck-tagebuch/';
 var FACS_FILE_ENDING = '.tif?format=image%2Fwebp&param=full/full/0/default.jpg';
 var initialPageIndex = null;
-var suppressUrlSync = false;
 
 function parsePageIndexFromLocation() {
-    var searchParams = new URLSearchParams(window.location.search);
-    var candidates = [
-        searchParams.get('page'),
-        searchParams.get('p'),
-        searchParams.get('facs'),
-        window.location.hash.replace(/^#/, '')
-    ];
+    var hashValue = window.location.hash.replace(/^#/, '');
+    var hashParts = hashValue ? hashValue.split('&') : [];
 
-    for (var i = 0; i < candidates.length; i++) {
-        var value = candidates[i];
+    for (var i = 0; i < hashParts.length; i++) {
+        var value = hashParts[i];
         if (!value) continue;
 
         var match = value.match(/^(?:p|page|facs)-?(\d+)$/i);
@@ -27,16 +21,6 @@ function parsePageIndexFromLocation() {
     return null;
 }
 
-function syncUrlToPage(pageIndex) {
-    if (suppressUrlSync) return;
-
-    var nextHash = '#p-' + (pageIndex + 1);
-    var nextUrl = window.location.pathname + window.location.search + nextHash;
-    if (window.location.hash !== nextHash) {
-        window.history.replaceState(null, '', nextUrl);
-    }
-}
-
 function goToPageFromLocation() {
     if (initialPageIndex === null || typeof viewer.goToPage !== 'function') return;
 
@@ -44,9 +28,10 @@ function goToPageFromLocation() {
     if (lastPageIndex < 0) return;
 
     var targetPageIndex = Math.min(initialPageIndex, lastPageIndex);
-    suppressUrlSync = true;
+    // sequenceMode re-fires 'open' on every goToPage call; only navigate once
+    // or we get an open -> goToPage -> open infinite loop.
+    if (typeof viewer.currentPage === 'function' && viewer.currentPage() === targetPageIndex) return;
     viewer.goToPage(targetPageIndex);
-    suppressUrlSync = false;
 }
 
 var tileSources = Array.from(
@@ -67,6 +52,7 @@ var viewer = OpenSeadragon({
     },
     sequenceMode: true,
     showReferenceStrip: true,
+    preload: false,
     tileSources: tileSources,
     prefixUrl: "vendor/openseadragon-bin-4.1.1/images/",
 });
@@ -76,11 +62,15 @@ function alignImageToTop() {
 }
 
 var facsSegments = [];
+var initialPageApplied = false;
 initialPageIndex = parsePageIndexFromLocation();
 
 viewer.addHandler('open', function() {
     alignImageToTop();
-    goToPageFromLocation();
+    if (!initialPageApplied) {
+        initialPageApplied = true;
+        goToPageFromLocation();
+    }
     updateVisibleText(facsSegments);
 });
 // Partition the editorial text into per-facsimile segments using the
@@ -194,23 +184,14 @@ function updateVisibleText(segments) {
 document.addEventListener('DOMContentLoaded', function() {
     facsSegments = partitionTextByPB();
     viewer.addHandler('page', function() {
-        syncUrlToPage(viewer.currentPage());
         updateVisibleText(facsSegments);
-    });
-    window.addEventListener('hashchange', function() {
-        var pageIndex = parsePageIndexFromLocation();
-        if (pageIndex === null || typeof viewer.goToPage !== 'function') return;
-
-        var lastPageIndex = tileSources.length - 1;
-        if (lastPageIndex < 0) return;
-
-        suppressUrlSync = true;
-        viewer.goToPage(Math.min(pageIndex, lastPageIndex));
-        suppressUrlSync = false;
     });
     if (viewer.isOpen && viewer.isOpen()) {
         alignImageToTop();
-        goToPageFromLocation();
+        if (!initialPageApplied) {
+            initialPageApplied = true;
+            goToPageFromLocation();
+        }
         updateVisibleText(facsSegments);
     }
 });                                                     
