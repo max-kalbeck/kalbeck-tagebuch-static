@@ -16,7 +16,7 @@ const typesenseInstantsearchAdapter = new TypesenseInstantSearchAdapter({
   },
   additionalSearchParameters: {
     query_by: "full_text",
-    sort_by: "rec_id:asc",
+    sort_by: "rec_id:asc,paragraph_index:asc",
   },
 });
 
@@ -63,7 +63,10 @@ search.addWidgets([
       item(hit, { html, components }) {
         return html` <div>
           <div class="fs-3">
-            <a href="${hit.rec_id}.html" class="custom-link">${hit.title}</a>
+            <a href="${hit.url}" class="custom-link">${hit.title}</a>
+            ${hit.page_label
+              ? html`<span class="badge bg-secondary ms-2">S. ${hit.page_label}</span>`
+              : ""}
           </div>
           <p>
             ${hit._snippetResult.full_text.matchedWords.length > 0

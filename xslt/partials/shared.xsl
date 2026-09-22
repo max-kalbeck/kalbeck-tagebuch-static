@@ -34,7 +34,7 @@
         </xsl:element>
     </xsl:template>
     <xsl:template match="tei:pb">
-        <span class="anchor-pb"></span>
+        <span class="anchor-pb" id="{concat('pb-', count(preceding::tei:pb) + 1)}"></span>
         <span class="pb" source="{if(@corresp) then @corresp else @facs}"><xsl:value-of select="./@n"/></span>
     </xsl:template>
 
@@ -142,7 +142,7 @@
         <xsl:apply-templates/><br/>
     </xsl:template>
     <xsl:template match="tei:p">
-       <p><xsl:apply-templates/></p>
+         <p id="{concat('p-', count(preceding::tei:p) + 1)}"><xsl:apply-templates/></p>
     </xsl:template>
     
     <xsl:template match="tei:table">
