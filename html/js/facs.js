@@ -2,7 +2,6 @@ var BASE_URL = 'https://id.acdh.oeaw.ac.at/kalbeck-tagebuch/';
 var FACS_FILE_ENDING = '.tif?format=image%2Fwebp&param=full/full/0/default.jpg';
 var initialPageIndex = null;
 
-
 function parsePageIndexFromLocation() {
     var hashValue = window.location.hash.replace(/^#/, '');
     var hashParts = hashValue ? hashValue.split('&') : [];
