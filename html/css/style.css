@@ -27,6 +27,11 @@ div#map {
   height: 800px;
 }
 
+.search-highlight {
+  background-color: #ffe066;
+  padding: 0 1px;
+}
+
 /* EDITIONS */
 .page-head{
   width: fit-content;

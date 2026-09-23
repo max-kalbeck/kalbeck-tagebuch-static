@@ -41,6 +41,26 @@ const search = instantsearch({
   },
 });
 
+function getCurrentSearchQuery() {
+  return (search.helper && search.helper.state && search.helper.state.query) || "";
+}
+
+function appendMarkToUrl(url, query) {
+  if (!query) {
+    return url;
+  }
+
+  const markValue = encodeURIComponent(query);
+  const hashIndex = url.indexOf("#");
+  if (hashIndex === -1) {
+    return `${url}#mark=${markValue}`;
+  }
+
+  const baseUrl = url.slice(0, hashIndex + 1);
+  const hashValue = url.slice(hashIndex + 1);
+  return `${baseUrl}${hashValue}&mark=${markValue}`;
+}
+
 search.addWidgets([
   instantsearch.widgets.searchBox({
     container: "#searchbox",
@@ -61,9 +81,12 @@ search.addWidgets([
     templates: {
       empty: "Keine Resultate für <q>{{ query }}</q>",
       item(hit, { html, components }) {
+        const query = getCurrentSearchQuery();
+        const hitUrl = appendMarkToUrl(hit.url, query);
+
         return html` <div>
           <div class="fs-3">
-            <a href="${hit.url}" class="custom-link">${hit.title}</a>
+            <a href="${hitUrl}" class="custom-link">${hit.title}</a>
             ${hit.page_label
               ? html`<span class="badge bg-secondary ms-2">S. ${hit.page_label}</span>`
               : ""}
