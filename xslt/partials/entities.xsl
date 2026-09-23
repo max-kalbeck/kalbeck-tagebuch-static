@@ -123,7 +123,7 @@
         <dl>
             <xsl:if test="$person-image != ''">
                 <dd>
-                    <img src="{$person-image}" alt="{normalize-space(string-join(./tei:persName[1]//text()))}" class="img-fluid"/>
+                      <img src="{$person-image}" alt="{normalize-space(string-join(./tei:persName[1]//text(), ' '))}" class="img-fluid"/>
                 </dd>
             </xsl:if>
              <xsl:if test="./tei:birth/tei:date">

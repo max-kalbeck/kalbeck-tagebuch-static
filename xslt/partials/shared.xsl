@@ -240,7 +240,7 @@
     <xsl:template name="render-entity-title">
         <xsl:choose>
             <xsl:when test="self::tei:person">
-                <xsl:value-of select="normalize-space(string-join(./tei:persName[1]//text()))"/>
+                <xsl:value-of select="normalize-space(string-join(./tei:persName[1]//text(), ' '))"/>
             </xsl:when>
             <xsl:when test="self::tei:place">
                 <xsl:value-of select="normalize-space(string-join(./tei:placeName[1]//text()))"/>
