@@ -1,49 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tei="http://www.tei-c.org/ns/1.0"
-    version="3.0" exclude-result-prefixes="xsl tei xs">
+    xmlns:local="urn:entities"
+    version="3.0" exclude-result-prefixes="xsl tei xs local">
 
-    <!-- shows the idno URL as href; the @subtype (e.g. gnd, wikidata, schnitzler-bahr, ...) names the source register
+    <!-- computes the 'authority:ID' display label for an idno; @subtype names the source register
          so mirrored pmb links from different sister projects aren't all shown under the same 'pmb:' label -->
+    <xsl:function name="local:idno-label" as="xs:string">
+        <xsl:param name="idno" as="element(tei:idno)"/>
+        <xsl:variable name="value" select="string($idno)"/>
+        <xsl:variable name="subtype" select="string($idno/@subtype)"/>
+        <xsl:choose>
+            <xsl:when test="not(starts-with($value, 'http'))">
+                <xsl:sequence select="$value"/>
+            </xsl:when>
+            <xsl:when test="matches($value, 'gnd/[0-9Xx-]+')">
+                <xsl:sequence select="concat('gnd:', replace($value, '^.*gnd/([^/]+)$', '$1'))"/>
+            </xsl:when>
+            <xsl:when test="matches($value, '10\.\d{4,9}/')">
+                <xsl:sequence select="concat('doi:', replace($value, '^.*?(10\.\d{4,9}/.*)$', '$1'))"/>
+            </xsl:when>
+            <xsl:when test="matches($value, 'wikidata\.org/(entity|wiki)/Q\d+')">
+                <xsl:sequence select="concat('wikidata:', replace($value, '^.*/(Q\d+).*$', '$1'))"/>
+            </xsl:when>
+            <xsl:when test="matches($value, 'geonames\.org/\d+')">
+                <xsl:sequence select="concat('geonames:', replace($value, '^.*geonames\.org/(\d+).*$', '$1'))"/>
+            </xsl:when>
+            <xsl:when test="$subtype = 'pmb' and matches($value, 'pmb\D*?(\d+)(\.html)?/?$')">
+                <xsl:sequence select="concat('pmb:', replace($value, '^.*pmb\D*?(\d+)(\.html)?/?$', '$1'))"/>
+            </xsl:when>
+            <xsl:when test="$subtype != '' and matches($value, 'pmb\d+')">
+                <xsl:sequence select="concat($subtype, ':', replace($value, '^.*?pmb(\d+).*$', '$1'))"/>
+            </xsl:when>
+            <xsl:when test="$subtype != ''">
+                <xsl:sequence select="$subtype"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:sequence select="$value"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:function>
+
     <xsl:template name="render-idno-list">
         <xsl:if test="./tei:idno">
             <dt>Identifiers</dt>
             <xsl:for-each select="./tei:idno">
-                <xsl:variable name="idno-subtype" select="string(@subtype)"/>
+                <xsl:sort select="local:idno-label(.)"/>
+                <xsl:variable name="label" select="local:idno-label(.)"/>
                 <dd>
                     <xsl:choose>
                         <xsl:when test="starts-with(./text(), 'http')">
                             <a href="{./text()}">
-                                <xsl:choose>
-                                    <xsl:when test="matches(., 'gnd/[0-9Xx-]+')">
-                                        <xsl:value-of select="concat('gnd:', replace(., '^.*gnd/([^/]+)$', '$1'))"/>
-                                    </xsl:when>
-                                    <xsl:when test="matches(., '10\.\d{4,9}/')">
-                                        <xsl:value-of select="concat('doi:', replace(., '^.*?(10\.\d{4,9}/.*)$', '$1'))"/>
-                                    </xsl:when>
-                                    <xsl:when test="matches(., 'wikidata\.org/(entity|wiki)/Q\d+')">
-                                        <xsl:value-of select="concat('wikidata:', replace(., '^.*/(Q\d+).*$', '$1'))"/>
-                                    </xsl:when>
-                                    <xsl:when test="matches(., 'geonames\.org/\d+')">
-                                        <xsl:value-of select="concat('geonames:', replace(., '^.*geonames\.org/(\d+).*$', '$1'))"/>
-                                    </xsl:when>
-                                    <xsl:when test="$idno-subtype = 'pmb' and matches(., 'pmb\D*?(\d+)(\.html)?/?$')">
-                                        <xsl:value-of select="concat('pmb:', replace(., '^.*pmb\D*?(\d+)(\.html)?/?$', '$1'))"/>
-                                    </xsl:when>
-                                    <xsl:when test="$idno-subtype != '' and matches(., 'pmb\d+')">
-                                        <xsl:value-of select="concat($idno-subtype, ':', replace(., '^.*?pmb(\d+).*$', '$1'))"/>
-                                    </xsl:when>
-                                    <xsl:when test="$idno-subtype != ''">
-                                        <xsl:value-of select="$idno-subtype"/>
-                                    </xsl:when>
-                                    <xsl:otherwise>
-                                        <xsl:value-of select="."/>
-                                    </xsl:otherwise>
-                                </xsl:choose>
+                                <xsl:value-of select="$label"/>
                             </a>
                         </xsl:when>
                         <xsl:otherwise>
-                            <xsl:value-of select="."/>
+                            <xsl:value-of select="$label"/>
                         </xsl:otherwise>
                     </xsl:choose>
                 </dd>
