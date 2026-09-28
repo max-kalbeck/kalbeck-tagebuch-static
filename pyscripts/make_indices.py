@@ -57,10 +57,9 @@ for x in files:
             ref = check_for_hash(y)
             ids.add(ref.replace("pmb", ""))
 
-PMB_URIS = [
-    {"uri": f"https://pmb.acdh.oeaw.ac.at/entity/{x}/", "pmb_id": f"pmb{x}"}
-    for x in ids
-]
+PMB_URI_TO_ID = {
+    f"https://pmb.acdh.oeaw.ac.at/entity/{x}/": f"pmb{x}" for x in ids
+}
 
 for x in INDICES:
     print(f"processing {x['file_name']}")
@@ -68,16 +67,18 @@ for x in INDICES:
     print(x["url"])
     try:
         doc = TeiReader(x["url"])
+        seen_ids = set()
         for ent in doc.any_xpath(f"{x['entity_xpath']}"):
             uris = ent.xpath("./tei:idno/text()", namespaces=NSMAP)
-            for pmb_uri in PMB_URIS:
-                if pmb_uri["uri"] in uris:
-                    ent.attrib["{http://www.w3.org/XML/1998/namespace}id"] = pmb_uri[  # noqa
-                        "pmb_id"
-                    ]
-                    break
-            else:
+            pmb_id = next(
+                (PMB_URI_TO_ID[uri] for uri in uris if uri in PMB_URI_TO_ID), None
+            )
+            # drop entities with no matching pmb id, and any repeat of an id already kept
+            if pmb_id is None or pmb_id in seen_ids:
                 ent.getparent().remove(ent)
+                continue
+            ent.attrib["{http://www.w3.org/XML/1998/namespace}id"] = pmb_id
+            seen_ids.add(pmb_id)
 
         doc.tree_to_file(save_path)
     except Exception:
