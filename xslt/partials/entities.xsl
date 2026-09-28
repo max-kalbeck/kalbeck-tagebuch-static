@@ -3,11 +3,13 @@
     xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tei="http://www.tei-c.org/ns/1.0"
     version="3.0" exclude-result-prefixes="xsl tei xs">
 
-    <!-- shows the idno URL as href but displays a short 'authority:ID' label for known identifier authorities -->
+    <!-- shows the idno URL as href; the @subtype (e.g. gnd, wikidata, schnitzler-bahr, ...) names the source register
+         so mirrored pmb links from different sister projects aren't all shown under the same 'pmb:' label -->
     <xsl:template name="render-idno-list">
         <xsl:if test="./tei:idno">
             <dt>Identifiers</dt>
             <xsl:for-each select="./tei:idno">
+                <xsl:variable name="idno-subtype" select="string(@subtype)"/>
                 <dd>
                     <xsl:choose>
                         <xsl:when test="starts-with(./text(), 'http')">
@@ -25,8 +27,14 @@
                                     <xsl:when test="matches(., 'geonames\.org/\d+')">
                                         <xsl:value-of select="concat('geonames:', replace(., '^.*geonames\.org/(\d+).*$', '$1'))"/>
                                     </xsl:when>
-                                    <xsl:when test="matches(., 'pmb\D*?(\d+)(\.html)?/?$')">
+                                    <xsl:when test="$idno-subtype = 'pmb' and matches(., 'pmb\D*?(\d+)(\.html)?/?$')">
                                         <xsl:value-of select="concat('pmb:', replace(., '^.*pmb\D*?(\d+)(\.html)?/?$', '$1'))"/>
+                                    </xsl:when>
+                                    <xsl:when test="$idno-subtype != '' and matches(., 'pmb\d+')">
+                                        <xsl:value-of select="concat($idno-subtype, ':', replace(., '^.*?pmb(\d+).*$', '$1'))"/>
+                                    </xsl:when>
+                                    <xsl:when test="$idno-subtype != ''">
+                                        <xsl:value-of select="$idno-subtype"/>
                                     </xsl:when>
                                     <xsl:otherwise>
                                         <xsl:value-of select="."/>
