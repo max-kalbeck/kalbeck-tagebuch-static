@@ -3,6 +3,46 @@
     xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tei="http://www.tei-c.org/ns/1.0"
     version="3.0" exclude-result-prefixes="xsl tei xs">
 
+    <!-- shows the idno URL as href but displays a short 'authority:ID' label for known identifier authorities -->
+    <xsl:template name="render-idno-list">
+        <xsl:if test="./tei:idno">
+            <dt>Identifiers</dt>
+            <xsl:for-each select="./tei:idno">
+                <dd>
+                    <xsl:choose>
+                        <xsl:when test="starts-with(./text(), 'http')">
+                            <a href="{./text()}">
+                                <xsl:choose>
+                                    <xsl:when test="matches(., 'gnd/[0-9Xx-]+')">
+                                        <xsl:value-of select="concat('gnd:', replace(., '^.*gnd/([^/]+)$', '$1'))"/>
+                                    </xsl:when>
+                                    <xsl:when test="matches(., '10\.\d{4,9}/')">
+                                        <xsl:value-of select="concat('doi:', replace(., '^.*?(10\.\d{4,9}/.*)$', '$1'))"/>
+                                    </xsl:when>
+                                    <xsl:when test="matches(., 'wikidata\.org/(entity|wiki)/Q\d+')">
+                                        <xsl:value-of select="concat('wikidata:', replace(., '^.*/(Q\d+).*$', '$1'))"/>
+                                    </xsl:when>
+                                    <xsl:when test="matches(., 'geonames\.org/\d+')">
+                                        <xsl:value-of select="concat('geonames:', replace(., '^.*geonames\.org/(\d+).*$', '$1'))"/>
+                                    </xsl:when>
+                                    <xsl:when test="matches(., 'pmb\D*?(\d+)(\.html)?/?$')">
+                                        <xsl:value-of select="concat('pmb:', replace(., '^.*pmb\D*?(\d+)(\.html)?/?$', '$1'))"/>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <xsl:value-of select="."/>
+                                    </xsl:otherwise>
+                                </xsl:choose>
+                            </a>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:value-of select="."/>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </dd>
+            </xsl:for-each>
+        </xsl:if>
+    </xsl:template>
+
     <xsl:template match="tei:bibl" name="bibl_detail">
         <dl>
             <xsl:if test="./tei:author">
@@ -29,23 +69,7 @@
                     <xsl:value-of select="./tei:date"/>
                 </dd>
             </xsl:if>
-            <xsl:if test="./tei:idno">
-                <dt>Identifiers</dt>
-                <xsl:for-each select="./tei:idno">
-                    <dd>
-                        <xsl:choose>
-                            <xsl:when test="starts-with(./text(), 'http')">
-                                <a href="{./text()}">
-                                    <xsl:value-of select="."/>
-                                </a>
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <xsl:value-of select="."/>
-                            </xsl:otherwise>
-                        </xsl:choose>
-                    </dd>
-                </xsl:for-each>
-            </xsl:if>
+            <xsl:call-template name="render-idno-list"/>
             <xsl:if test="./tei:noteGrp/tei:note[@type = 'mentions']">
                 <dt>Erwähnt in</dt>
                 <xsl:for-each select="./tei:noteGrp/tei:note[@type = 'mentions']">
@@ -75,29 +99,13 @@
                     <xsl:value-of select="./tei:desc"/>
                 </dd>
             </xsl:if>
-            <xsl:if test="./tei:idno">
-                <dt>Identifiers</dt>
-                <xsl:for-each select="./tei:idno">
-                    <dd>
-                        <xsl:choose>
-                            <xsl:when test="starts-with(./text(), 'http')">
-                                <a href="{./text()}">
-                                    <xsl:value-of select="."/>
-                                </a>
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <xsl:value-of select="."/>
-                            </xsl:otherwise>
-                        </xsl:choose>
-                    </dd>
-                </xsl:for-each>
-            </xsl:if>
             <xsl:if test="./tei:note">
                 <dt>Notiz</dt>
                 <dd>
                     <xsl:value-of select="./tei:note"/>
                 </dd>
             </xsl:if>
+            <xsl:call-template name="render-idno-list"/>
             <xsl:if test="./tei:noteGrp/tei:note[@type = 'mentions']">
                 <dt>Erwähnt in</dt>
                 <xsl:for-each select="./tei:noteGrp/tei:note[@type = 'mentions']">
@@ -144,23 +152,7 @@
                     <xsl:value-of select="./tei:death/tei:date"/>
                 </dd>
             </xsl:if>
-            <xsl:if test="./tei:idno">
-                <dt>Identifiers</dt>
-                <xsl:for-each select="./tei:idno">
-                    <dd>
-                        <xsl:choose>
-                            <xsl:when test="starts-with(./text(), 'http')">
-                                <a href="{./text()}">
-                                    <xsl:value-of select="."/>
-                                </a>
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <xsl:value-of select="."/>
-                            </xsl:otherwise>
-                        </xsl:choose>
-                    </dd>
-                </xsl:for-each>
-            </xsl:if>
+            <xsl:call-template name="render-idno-list"/>
             <xsl:if test="./tei:noteGrp/tei:note[@type = 'mentions']">
                 <dt>Erwähnt in</dt>
                 <dd>
@@ -278,23 +270,7 @@
                     </dd>
                 </xsl:for-each>
             </xsl:if>
-            <xsl:if test="./tei:idno">
-                <dt>Identifiers</dt>
-                <xsl:for-each select="./tei:idno">
-                    <dd>
-                        <xsl:choose>
-                            <xsl:when test="starts-with(./text(), 'http')">
-                                <a href="{./text()}">
-                                    <xsl:value-of select="."/>
-                                </a>
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <xsl:value-of select="."/>
-                            </xsl:otherwise>
-                        </xsl:choose>
-                    </dd>
-                </xsl:for-each>
-            </xsl:if>
+            <xsl:call-template name="render-idno-list"/>
             <xsl:if test="./tei:noteGrp/tei:note[@type = 'mentions']">
                 <dt>Erwähnt in</dt>
                 <xsl:for-each select="./tei:noteGrp/tei:note[@type = 'mentions']">
@@ -344,23 +320,7 @@
                         select="./tei:desc[@type = 'entity_type']"/>
                 </dd>
             </xsl:if>
-            <xsl:if test="./tei:idno">
-                <dt>Identifiers</dt>
-                <xsl:for-each select="./tei:idno">
-                    <dd>
-                        <xsl:choose>
-                            <xsl:when test="starts-with(./text(), 'http')">
-                                <a href="{./text()}">
-                                    <xsl:value-of select="."/>
-                                </a>
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <xsl:value-of select="."/>
-                            </xsl:otherwise>
-                        </xsl:choose>
-                    </dd>
-                </xsl:for-each>
-            </xsl:if>
+            <xsl:call-template name="render-idno-list"/>
             <xsl:if test=".//tei:location">
                 <dt>Breitengrad</dt>
                 <dd>
