@@ -159,7 +159,8 @@
                             <xsl:apply-templates/>
                         </div>
                     </xsl:for-each>
-                    <xsl:apply-templates select=".//tei:body//tei:rs[@type = ('person', 'place', 'work', 'bibl', 'org', 'institution', 'event')][count(tokenize(normalize-space(@ref), '\s+')) > 1]" mode="multi-ref-modal"/>
+                    <xsl:apply-templates select=".//tei:body//tei:rs[@type = ('person', 'place', 'work', 'bibl', 'org', 'institution', 'event')][count(tokenize(normalize-space(@ref), '\s+')) > 1][not(ancestor::tei:rs)]" mode="multi-ref-modal"/>
+                    <xsl:apply-templates select=".//tei:body//tei:rs[descendant::tei:rs][not(ancestor::tei:rs)]" mode="nested-ref-modal"/>
                     <xsl:if test=".//tei:facsimile/tei:graphic">
                         <div id="facsContainer">
                             <xsl:for-each select=".//tei:facsimile/tei:graphic">
