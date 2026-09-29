@@ -15,18 +15,20 @@
                     </button>
                     <div class="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                            <li class="nav-item dropdown">
+                            <!-- <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Projekt</a>
                                 <ul class="dropdown-menu">
                                     <li>
                                         <a class="dropdown-item" href="about.html">Über das Projekt</a>
                                     </li>
-                                    <li>
+                                     <li>
                                         <a class="dropdown-item" href="imprint.html">Impressum</a>
-                                    </li>
+                                    </li> 
                                 </ul>
+                            </li> -->
+                              <li class="nav-item">
+                                <a title="Über das Projekt" class="nav-link" href="about.html">Über das Projekt</a>
                             </li>
-
                             <li class="nav-item">
                                 <a class="nav-link" href="toc.html">Editionseinheiten</a>
                             </li>
@@ -54,8 +56,16 @@
                                 </ul>
                                
                             </li>
-                            <li class="nav-item">
-                                <a title="API" class="nav-link" href="api.xml">API</a>
+                            <li class="nav-item dropdown disabled">
+                                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Technisches</a>
+                                <ul class="dropdown-menu">
+                                     <li class="dropdown-item">
+                                        <a title="Kodierungsrichtlinien" class="nav-link" href="encoding.html">Kodierungsrichtlinien</a>
+                                    </li>
+                                    <li class="dropdown-item">
+                                        <a title="API" class="nav-link" href="api.xml">API</a>
+                                    </li>
+                                </ul>
                             </li>
                         </ul>
                         <form class="d-flex" role="search" method="GET" action="search.html">
