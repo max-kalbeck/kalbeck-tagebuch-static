@@ -89,7 +89,7 @@
                                     </xsl:otherwise>
                                 </xsl:choose>
                             </blockquote>
-                             <h2 class="modal-title fs-5">BibTeX</h2>
+                             <div class="meta-caption">BibTeX</div>
                             <blockquote class="blockquote text-left">
                                 <xsl:choose>
                                     <xsl:when test="$currentTitle and $isKalbeckAuthor">
