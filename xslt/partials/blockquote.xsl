@@ -89,37 +89,39 @@
                                     </xsl:otherwise>
                                 </xsl:choose>
                             </blockquote>
-                             <div class="meta-caption">BibTeX</div>
+                             <div class="meta-caption">BibLaTeX</div>
                             <blockquote class="blockquote text-left">
                                 <xsl:choose>
                                     <xsl:when test="$currentTitle and $isKalbeckAuthor">
-                                        <pre  style="text-align:left!important;"><code>@incollection{<xsl:value-of select="$bibKey"/>,
+                                        <pre  style="text-align:left!important;"><code>@online{<xsl:value-of select="$bibKey"/>,
 	author      = {Kalbeck, Max},
 	title       = {<xsl:value-of select="$currentTitle"/>},
-	date        = {<xsl:value-of select="format-date(current-date(), '[Y0001]')"/>},
+	date        = {2026},
+	urldate     = {<xsl:value-of select="format-date(current-date(), '[Y0001]')"/>},
 	address     = {Wien},
 	editor      = {Rost, Henrike},
-	booktitle   = {<xsl:value-of select="$project_title"/>},
+	series      = {<xsl:value-of select="$project_title"/>},
 	url         = {<xsl:value-of select="$fullUrl"/>}
 }</code></pre>
                                     </xsl:when>
                                     <xsl:when test="$currentTitle">
-                                        <pre  style="text-align:left!important;"><code>@incollection{<xsl:value-of select="$bibKey"/>,
+                                        <pre  style="text-align:left!important;"><code>@online{<xsl:value-of select="$bibKey"/>,
 	title       = {<xsl:value-of select="$currentTitle"/>},
-	date        = {<xsl:value-of select="format-date(current-date(), '[Y0001]')"/>},
+	date        = {2026},
+	urldate     = {<xsl:value-of select="format-date(current-date(), '[Y0001]')"/>},
 	address     = {Wien},
 	editor      = {Rost, Henrike},
-	booktitle   = {<xsl:value-of select="$project_title"/>},
+	series      = {<xsl:value-of select="$project_title"/>},
 	url         = {<xsl:value-of select="$fullUrl"/>}
 }</code></pre>
                                     </xsl:when>
                                     <xsl:otherwise>
-                                        <pre style="text-align:left!important;"><code>@collection{rost_2026,
+                                        <pre style="text-align:left!important;"><code>@online{rost_2026,
 	title       = {<xsl:value-of select="$project_title"/>},
-	date        = {<xsl:value-of select="format-date(current-date(), '[Y0001]')"/>},
+	date        = {2026},
+	urldate     = {<xsl:value-of select="format-date(current-date(), '[Y0001]')"/>},
 	url         = {<xsl:value-of select="$fullUrl"/>},
 	editor      = {Rost, Henrike},
-	langid      = {German},
 	address     = {Wien}
 }</code></pre>
                                     </xsl:otherwise>
