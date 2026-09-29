@@ -36,8 +36,8 @@
             </div>
         </div>
         <div class="text-center">
-            <a href="{$github_url}">
-                <i aria-hidden="true" class="bi bi-github fs-5"></i>
+            © 2026 ÖAW | <a href="imprint.html">Impressum</a> | <a href="{$github_url}">
+                <i aria-hidden="true" class="bi bi-github fs-6"></i>
                 <span class="visually-hidden">GitHub repo</span>
             </a>
         </div>
