@@ -150,6 +150,7 @@
                                 <xsl:call-template name="bibl_detail"/>
                                 <div class="text-center p-4">
                                 <xsl:call-template name="blockquote">
+                                    <xsl:with-param name="currentTitle" select="$name"/>
                                     <xsl:with-param name="pageId" select="$filename"/>
                                 </xsl:call-template>
                             </div>
