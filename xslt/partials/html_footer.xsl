@@ -28,7 +28,8 @@
                                 alt="Universität für Musik und Darstellende Kunst Wien logo"/></a>
                     </div>
                     <div class="text-center p-4">
-                        Institut für Musikwissenschaft und Interpretationsforschung (IMI); Universität für Musik und Darstellende Kunst Wien
+                        Institut für Musikwissenschaft und Interpretationsforschung (IMI)
+                        <br/>Universität für Musik und Darstellende Kunst Wien
                         <br/><a href="mailto:rost@mdw.ac.at">rost@mdw.ac.at</a>
                     </div>
                 </div>
