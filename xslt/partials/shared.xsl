@@ -81,7 +81,7 @@
         </xsl:element>
     </xsl:template>
 
-    <xsl:template match="tei:list[@type='unordered']">
+    <xsl:template match="tei:list[not(@type)][ancestor::tei:body] | tei:list[@type='unordered']">
         <xsl:choose>
             <xsl:when test="ancestor::tei:body">
                 <ul class="yes-index">
