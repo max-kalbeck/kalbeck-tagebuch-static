@@ -77,7 +77,7 @@
 
     <xsl:template name="render-idno-list">
         <xsl:if test="./tei:idno">
-            <dt>Identifiers</dt>
+            <dt>Normdaten</dt>
             <xsl:for-each select="./tei:idno">
                 <xsl:sort select="local:idno-label(.)"/>
                 <xsl:variable name="label" select="local:idno-label(.)"/>
@@ -190,9 +190,9 @@
             </xsl:if>
 
             <xsl:variable name="birth-date" select="local:format-date(string(./tei:birth/tei:date))"/>
-            <xsl:variable name="birth-place" select="string(./tei:birth/tei:place)"/>
+            <xsl:variable name="birth-place" select="string((./tei:birth/tei:settlement/tei:placeName[@type = 'pref'])[1])"/>
             <xsl:variable name="death-date" select="local:format-date(string(./tei:death/tei:date))"/>
-            <xsl:variable name="death-place" select="string(./tei:death/tei:place)"/>
+            <xsl:variable name="death-place" select="string((./tei:death/tei:settlement/tei:placeName[@type = 'pref'])[1])"/>
 
             <xsl:variable name="birth">
                 <xsl:choose>
