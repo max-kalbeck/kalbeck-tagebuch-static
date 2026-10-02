@@ -55,7 +55,7 @@
             <xsl:map-entry key="'hanslick-online'" select="'Hanslick Online'"/>
             <xsl:map-entry key="'legalkraus'" select="'Karl Kraus: Rechtsakten der Kanzlei Oskar Samek'"/>
             <xsl:map-entry key="'oebl'" select="'Österreichisches Bibliographisches Lexikon'"/>
-            <xsl:map-entry key="'oeml'" select="'Österreichisches Musikexikon'"/>
+            <xsl:map-entry key="'oeml'" select="'Österreichisches Musiklexikon'"/>
             <xsl:map-entry key="'schnitzler-bahr'" select="'Hermann Bahr – Arthur Schnitzler: Briefwechsel, Aufzeichnungen, Dokumente'"/>
             <xsl:map-entry key="'schnitzler-briefe'" select="'Arthur Schnitzler: Briefwechsel mit Autorinnen und Autoren'"/>
             <xsl:map-entry key="'schnitzler-interviews'" select="'Arthur Schnitzler: Interviews, Meinungen, Proteste'"/>
@@ -344,13 +344,13 @@
             <xsl:call-template name="render-idno-list"/>
             <xsl:if test="./tei:noteGrp/tei:note[@type = 'mentions']">
                 <dt>Erwähnt in</dt>
-                <dd>
-                    <xsl:for-each select="./tei:noteGrp/tei:note[@type = 'mentions']">
+                <xsl:for-each select="./tei:noteGrp/tei:note[@type = 'mentions']">
+                    <dd>
                         <a href="{replace(@target, '.xml', '.html')}">
                             <xsl:value-of select="./text()"/>
                         </a>
-                    </xsl:for-each>
-                </dd>
+                    </dd>
+                </xsl:for-each>
             </xsl:if>
         </xsl:variable>
 

@@ -78,6 +78,16 @@ for x in INDICES:
                 ent.getparent().remove(ent)
                 continue
             ent.attrib["{http://www.w3.org/XML/1998/namespace}id"] = pmb_id
+
+            # drop idno duplicates within this entity, e.g. the same DOI recorded
+            # with differing letter case
+            seen_idno_values = set()
+            for idno in ent.xpath("./tei:idno", namespaces=NSMAP):
+                value = (idno.text or "").strip().lower()
+                if value in seen_idno_values:
+                    idno.getparent().remove(idno)
+                else:
+                    seen_idno_values.add(value)
             seen_ids.add(pmb_id)
 
         doc.tree_to_file(save_path)
