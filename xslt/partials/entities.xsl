@@ -189,9 +189,9 @@
                 </dd>
             </xsl:if>
 
-            <xsl:variable name="birth-date" select="string(./tei:birth/tei:date)"/>
+            <xsl:variable name="birth-date" select="local:format-date(string(./tei:birth/tei:date))"/>
             <xsl:variable name="birth-place" select="string(./tei:birth/tei:place)"/>
-            <xsl:variable name="death-date" select="string(./tei:death/tei:date)"/>
+            <xsl:variable name="death-date" select="local:format-date(string(./tei:death/tei:date))"/>
             <xsl:variable name="death-place" select="string(./tei:death/tei:place)"/>
 
             <xsl:variable name="birth">
