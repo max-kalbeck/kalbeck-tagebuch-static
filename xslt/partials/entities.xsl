@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tei="http://www.tei-c.org/ns/1.0"
+    xmlns:map="http://www.w3.org/2005/xpath-functions/map"
     xmlns:local="urn:entities"
-    version="3.0" exclude-result-prefixes="xsl tei xs local">
+    version="3.0" exclude-result-prefixes="xsl tei xs map local">
 
     <!-- computes the 'authority:ID' display label for an idno; @subtype names the source register
          so mirrored pmb links from different sister projects aren't all shown under the same 'pmb:' label -->
@@ -14,10 +15,10 @@
             <xsl:when test="not(starts-with($value, 'http'))">
                 <xsl:sequence select="$value"/>
             </xsl:when>
-            <xsl:when test="matches($value, 'gnd/[0-9Xx-]+')">
+            <xsl:when test="matches($value, 'd-nb.info/gnd/')">
                 <xsl:sequence select="concat('gnd:', replace($value, '^.*gnd/([^/]+)$', '$1'))"/>
             </xsl:when>
-            <xsl:when test="matches($value, '10\.\d{4,9}/')">
+            <xsl:when test="matches($value, 'doi.org/')">
                 <xsl:sequence select="concat('doi:', replace($value, '^.*?(10\.\d{4,9}/.*)$', '$1'))"/>
             </xsl:when>
             <xsl:when test="matches($value, 'wikidata\.org/(entity|wiki)/Q\d+')">
@@ -26,11 +27,11 @@
             <xsl:when test="matches($value, 'geonames\.org/\d+')">
                 <xsl:sequence select="concat('geonames:', replace($value, '^.*geonames\.org/(\d+).*$', '$1'))"/>
             </xsl:when>
-            <xsl:when test="$subtype = 'pmb' and matches($value, 'pmb\D*?(\d+)(\.html)?/?$')">
-                <xsl:sequence select="concat('pmb:', replace($value, '^.*pmb\D*?(\d+)(\.html)?/?$', '$1'))"/>
+            <xsl:when test="$subtype = 'pmb' and matches($value, 'pmb.acdh.oeaw.ac.at')">
+                <xsl:sequence select="concat('pmb:', replace($value, '^.*/(\d+)(?:\.html)?/?$', '$1'))"/>
             </xsl:when>
-            <xsl:when test="$subtype != '' and matches($value, 'pmb\d+')">
-                <xsl:sequence select="concat($subtype, ':', replace($value, '^.*?pmb(\d+).*$', '$1'))"/>
+            <xsl:when test="$subtype != '' and map:contains($shorthands, $subtype)">
+                <xsl:sequence select="$shorthands($subtype)"/>
             </xsl:when>
             <xsl:when test="$subtype != ''">
                 <xsl:sequence select="$subtype"/>
@@ -40,6 +41,36 @@
             </xsl:otherwise>
         </xsl:choose>
     </xsl:function>
+
+    <xsl:variable name="shorthands" as="map(xs:string, xs:string)">
+        <xsl:map>
+            <xsl:map-entry key="'ansorge'" select="'Conrad Ansorge'"/>
+            <xsl:map-entry key="'auden-musulin-papers'" select="'Auden Musilin Papers'"/>
+            <xsl:map-entry key="'bahr-textverzeichnis'" select="'Hermann Bahr: Textverzeichnis'"/>
+            <xsl:map-entry key="'bahr-tsn'" select="'Hermann Bahr: Tagebücher, Skizzenbücher, Notizhefte'"/>
+            <xsl:map-entry key="'brahms-online'" select="'Brahms-online'"/>
+            <xsl:map-entry key="'brenner'" select="'Der Brenner'"/>
+            <xsl:map-entry key="'dla-marbach'" select="'Deutsches Literaturarchiv: Marbach'"/>
+            <xsl:map-entry key="'fackel'" select="'Die Fackel'"/>
+            <xsl:map-entry key="'hanslick-online'" select="'Hanslick Online'"/>
+            <xsl:map-entry key="'legalkraus'" select="'Karl Kraus: Rechtsakten der Kanzlei Oskar Samek'"/>
+            <xsl:map-entry key="'oebl'" select="'Österreichisches Bibliographisches Lexikon'"/>
+            <xsl:map-entry key="'oeml'" select="'Österreichisches Musikexikon'"/>
+            <xsl:map-entry key="'schnitzler-bahr'" select="'Hermann Bahr – Arthur Schnitzler: Briefwechsel, Aufzeichnungen, Dokumente'"/>
+            <xsl:map-entry key="'schnitzler-briefe'" select="'Arthur Schnitzler: Briefwechsel mit Autorinnen und Autoren'"/>
+            <xsl:map-entry key="'schnitzler-interviews'" select="'Arthur Schnitzler: Interviews, Meinungen, Proteste'"/>
+            <xsl:map-entry key="'schnitzler-kultur'" select="'Arthur Schnitzler: Kulturveranstaltungen'"/>
+            <xsl:map-entry key="'schnitzler-tagebuch'" select="'Arthur Schnitzler: Tagebuch'"/>
+            <xsl:map-entry key="'schoenberg-ue'" select="'The Correspondence between Arnold Schönberg and his Publishers Universal-Edition and Verlag Dreililien'"/>
+            <xsl:map-entry key="'schubert-digital'" select="'Schubert-digital'"/>
+            <xsl:map-entry key="'semantickraus'" select="'SemanticKraus'"/>
+            <xsl:map-entry key="'wedekind-korrespondenz'" select="'Frank Wedekinds Korrespondenz digital'"/>
+            <xsl:map-entry key="'wienerschnitzler'" select="'Wiener Schnitzler'"/>
+            <xsl:map-entry key="'wiengeschichtewiki'" select="'Wien Geschichte Wiki'"/>
+            <xsl:map-entry key="'wikipedia'" select="'Wikipedia'"/>
+            <xsl:map-entry key="'zweig-digital'" select="'Stefan Zweig Digital'"/>
+        </xsl:map>
+    </xsl:variable>
 
     <xsl:variable name="month-names" as="map(xs:string, xs:string)">
         <xsl:map>
@@ -75,13 +106,63 @@
         </xsl:choose>
     </xsl:function>
 
+    <!-- subtypes of authority/norm-data registries; everything else linked via @subtype
+         is a sister project reference and gets listed under "Projekte" instead -->
+    <xsl:variable name="authority-subtypes" select="('pmb', 'gnd', 'wikidata', 'geonames')"/>
+     <xsl:variable name="wiki-subtypes" select="('wiengeschichtewiki', 'wikipedia')"/>
+
     <xsl:template name="render-idno-list">
-        <xsl:if test="./tei:idno">
+        <xsl:variable name="authorities" select="./tei:idno[@subtype = $authority-subtypes]"/>
+        <xsl:variable name="wikis" select="./tei:idno[@subtype = $wiki-subtypes]"/>
+        <xsl:variable name="projects" select="./tei:idno[not(@subtype = $authority-subtypes) and not(@subtype = $wiki-subtypes)]"/>
+
+        <xsl:if test="$authorities">
             <dt>Normdaten</dt>
-            <xsl:for-each select="./tei:idno">
+            <xsl:for-each select="$authorities">
                 <xsl:sort select="local:idno-label(.)"/>
                 <xsl:variable name="label" select="local:idno-label(.)"/>
-                <dd>
+                <dd type="authority-entry">
+                    <xsl:choose>
+                        <xsl:when test="starts-with(./text(), 'http')">
+                            <a href="{./text()}">
+                                <xsl:value-of select="$label"/>
+                            </a>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:value-of select="$label"/>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </dd>
+            </xsl:for-each>
+        </xsl:if>
+
+        <xsl:if test="$projects">
+            <dt>Projekte</dt>
+            <xsl:for-each select="$projects">
+                <xsl:sort select="local:idno-label(.)"/>
+                <xsl:variable name="label" select="local:idno-label(.)"/>
+                <dd class="project-entry">
+                    <xsl:choose>
+                        <xsl:when test="starts-with(./text(), 'http')">
+                            <a href="{./text()}">
+                                <xsl:value-of select="$label"/>
+                            </a>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:value-of select="$label"/>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </dd>
+            </xsl:for-each>
+        </xsl:if>
+    
+
+     <xsl:if test="$wikis">
+            <dt>Wikis</dt>
+            <xsl:for-each select="$wikis">
+                <xsl:sort select="local:idno-label(.)"/>
+                <xsl:variable name="label" select="local:idno-label(.)"/>
+                <dd class="wiki-entry">
                     <xsl:choose>
                         <xsl:when test="starts-with(./text(), 'http')">
                             <a href="{./text()}">
