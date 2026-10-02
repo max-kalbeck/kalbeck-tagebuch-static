@@ -143,7 +143,9 @@
                                 <h1>
                                     <xsl:value-of select="$name"/>
                                 </h1>
-                                <xsl:call-template name="person_detail"/>
+                                <xsl:call-template name="person_detail">
+                                    <xsl:with-param name="layout" select="'page'"/>
+                                </xsl:call-template>
                                 <div class="text-center p-4">
                                     <xsl:call-template name="blockquote">
                                         <xsl:with-param name="currentTitle" select="$name"/>
