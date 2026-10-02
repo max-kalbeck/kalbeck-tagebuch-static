@@ -41,6 +41,40 @@
         </xsl:choose>
     </xsl:function>
 
+    <xsl:variable name="month-names" as="map(xs:string, xs:string)">
+        <xsl:map>
+            <xsl:map-entry key="'01'" select="'Jänner'"/>
+            <xsl:map-entry key="'02'" select="'Februar'"/>
+            <xsl:map-entry key="'03'" select="'März'"/>
+            <xsl:map-entry key="'04'" select="'April'"/>
+            <xsl:map-entry key="'05'" select="'Mai'"/>
+            <xsl:map-entry key="'06'" select="'Juni'"/>
+            <xsl:map-entry key="'07'" select="'Juli'"/>
+            <xsl:map-entry key="'08'" select="'August'"/>
+            <xsl:map-entry key="'09'" select="'September'"/>
+            <xsl:map-entry key="'10'" select="'Oktober'"/>
+            <xsl:map-entry key="'11'" select="'November'"/>
+            <xsl:map-entry key="'12'" select="'Dezember'"/>
+        </xsl:map>
+    </xsl:variable>
+
+    <!-- turns an ISO "yyyy-mm-dd" date into "d. Monatsname yyyy"; anything else (years only,
+         "vor 1935", "Juni 1942", etc.) is passed through unchanged -->
+    <xsl:function name="local:format-date" as="xs:string">
+        <xsl:param name="date" as="xs:string"/>
+        <xsl:choose>
+            <xsl:when test="matches($date, '^\d{4}-\d{2}-\d{2}$')">
+                <xsl:variable name="year" select="substring($date, 1, 4)"/>
+                <xsl:variable name="month" select="substring($date, 6, 2)"/>
+                <xsl:variable name="day" select="substring($date, 9, 2)"/>
+                <xsl:sequence select="concat(xs:integer($day), '. ', $month-names($month), ' ', $year)"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:sequence select="$date"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:function>
+
     <xsl:template name="render-idno-list">
         <xsl:if test="./tei:idno">
             <dt>Identifiers</dt>
@@ -154,22 +188,50 @@
                       <img src="{$person-image}" alt="{normalize-space(string-join(./tei:persName[1]//text(), ' '))}" class="img-fluid"/>
                 </dd>
             </xsl:if>
-             <xsl:if test="./tei:birth/tei:date">
-                 <dd>
-                    <xsl:value-of select="./tei:birth/tei:date"/>
-                </dd>
-             </xsl:if>
 
-            <xsl:if test="./tei:birth/tei:date">
-                <dt>Geburtsdatum</dt>
+            <xsl:variable name="birth-date" select="string(./tei:birth/tei:date)"/>
+            <xsl:variable name="birth-place" select="string(./tei:birth/tei:place)"/>
+            <xsl:variable name="death-date" select="string(./tei:death/tei:date)"/>
+            <xsl:variable name="death-place" select="string(./tei:death/tei:place)"/>
+
+            <xsl:variable name="birth">
+                <xsl:choose>
+                    <xsl:when test="$birth-date != '' and $birth-place != ''">
+                        <xsl:value-of select="concat($birth-date, ', ', $birth-place)"/>
+                    </xsl:when>
+                    <xsl:when test="$birth-date != ''">
+                        <xsl:value-of select="$birth-date"/>
+                    </xsl:when>
+                    <xsl:when test="$birth-place != ''">
+                        <xsl:value-of select="$birth-place"/>
+                    </xsl:when>
+                </xsl:choose>
+            </xsl:variable>
+
+            <xsl:variable name="death">
+                <xsl:choose>
+                    <xsl:when test="$death-date != '' and $death-place != ''">
+                        <xsl:value-of select="concat($death-date, ', ', $death-place)"/>
+                    </xsl:when>
+                    <xsl:when test="$death-date != ''">
+                        <xsl:value-of select="$death-date"/>
+                    </xsl:when>
+                    <xsl:when test="$death-place != ''">
+                        <xsl:value-of select="$death-place"/>
+                    </xsl:when>
+                </xsl:choose>
+            </xsl:variable>
+
+            <xsl:if test="$birth != ''">
+                <dt>Geboren</dt>
                 <dd>
-                    <xsl:value-of select="./tei:birth/tei:date"/>
+                    <xsl:value-of select="$birth"/>
                 </dd>
             </xsl:if>
-            <xsl:if test="./tei:death/tei:date">
-                <dt>Sterbedatum</dt>
+            <xsl:if test="$death != ''">
+                <dt>Gestorben</dt>
                 <dd>
-                    <xsl:value-of select="./tei:death/tei:date"/>
+                    <xsl:value-of select="$death"/>
                 </dd>
             </xsl:if>
             <xsl:call-template name="render-idno-list"/>
