@@ -56,3 +56,7 @@ div#map {
 dd {
 	padding: 0 1em 0 1em;
 }
+
+.portrait {
+  max-width: 260px;
+}

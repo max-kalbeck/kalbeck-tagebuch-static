@@ -72,6 +72,18 @@
         </xsl:map>
     </xsl:variable>
 
+    <!-- friendly attribution names for hosts that serve person portraits; unmapped hosts
+         fall back to showing the raw hostname -->
+    <xsl:variable name="image-sources" as="map(xs:string, xs:string)">
+        <xsl:map>
+            <xsl:map-entry key="'upload.wikimedia.org'" select="'Wikipedia'"/>
+            <xsl:map-entry key="'commons.wikimedia.org'" select="'Wikipedia'"/>
+            <xsl:map-entry key="'digital.onb.ac.at'" select="'Österreichische Nationalbibliothek'"/>
+            <xsl:map-entry key="'iiif.onb.ac.at'" select="'Österreichische Nationalbibliothek'"/>
+            <xsl:map-entry key="'images.metmuseum.org'" select="'The Metropolitan Museum of Art'"/>
+        </xsl:map>
+    </xsl:variable>
+
     <xsl:variable name="month-names" as="map(xs:string, xs:string)">
         <xsl:map>
             <xsl:map-entry key="'01'" select="'Jänner'"/>
@@ -255,21 +267,35 @@
     </xsl:template>
 
     <xsl:template match="tei:person" name="person_detail">
+        <!-- "modal" (default): single column with the portrait centred above the info list,
+             used for entity-mention popups within an edition page.
+             "page": two columns with the portrait on the right, used on the person's own page. -->
+        <xsl:param name="layout" select="'modal'"/>
         <xsl:variable name="person-xml-id" select="string(@xml:id)"/>
         <xsl:variable name="person-index" select="doc(resolve-uri(concat('../../data/indices/list', local-name(), '.xml'), static-base-uri()))"/>
+        <xsl:variable name="person-name" select="normalize-space(string-join(./tei:persName[1]//text(), ' '))"/>
         <xsl:variable name="person-image" select="string((
             ./tei:figure/tei:graphic/@url,
             root(.)//tei:person[@xml:id = $person-xml-id]/tei:figure/tei:graphic/@url,
             $person-index//tei:person[@xml:id = $person-xml-id]/tei:figure/tei:graphic/@url
         )[1])"/>
+        <xsl:variable name="person-wikipedia-link" select="string((
+            ./tei:idno[@subtype = 'wikipedia'],
+            root(.)//tei:person[@xml:id = $person-xml-id]/tei:idno[@subtype = 'wikipedia'],
+            $person-index//tei:person[@xml:id = $person-xml-id]/tei:idno[@subtype = 'wikipedia']
+        )[1])"/>
+        <xsl:variable name="image-host" select="replace($person-image, '^https?://([^/]+)/.*$', '$1')"/>
+        <xsl:variable name="image-source-name" select="if (map:contains($image-sources, $image-host)) then $image-sources($image-host) else $image-host"/>
+        <xsl:variable name="image-link" select="if ($person-wikipedia-link != '' and matches($image-host, 'wikimedia')) then $person-wikipedia-link else $person-image"/>
 
-        <dl>
-            <xsl:if test="$person-image != ''">
-                <dd>
-                      <img src="{$person-image}" alt="{normalize-space(string-join(./tei:persName[1]//text(), ' '))}" class="img-fluid"/>
-                </dd>
-            </xsl:if>
+        <xsl:variable name="portrait">
+            <figure class="figure portrait">
+                <img src="{$person-image}" alt="{$person-name}" class="img-fluid"/>
+                <figcaption class="figure-caption">Portraitbild von <xsl:value-of select="$person-name"/>. Bild von <a href="{$image-link}"><xsl:value-of select="$image-source-name"/></a> übernommen.</figcaption>
+            </figure>
+        </xsl:variable>
 
+        <xsl:variable name="info">
             <xsl:variable name="birth-date" select="local:format-date(string(./tei:birth/tei:date))"/>
             <xsl:variable name="birth-place" select="string((./tei:birth/tei:settlement/tei:placeName[@type = 'pref'])[1])"/>
             <xsl:variable name="death-date" select="local:format-date(string(./tei:death/tei:date))"/>
@@ -326,7 +352,34 @@
                     </xsl:for-each>
                 </dd>
             </xsl:if>
-        </dl>
+        </xsl:variable>
+
+        <xsl:choose>
+            <xsl:when test="$layout = 'page'">
+                <div class="row">
+                    <div class="{if ($person-image != '') then 'col-md-8' else 'col-12'}">
+                        <dl>
+                            <xsl:sequence select="$info"/>
+                        </dl>
+                    </div>
+                    <xsl:if test="$person-image != ''">
+                        <div class="col-md-4">
+                            <xsl:sequence select="$portrait"/>
+                        </div>
+                    </xsl:if>
+                </div>
+            </xsl:when>
+            <xsl:otherwise>
+                <dl>
+                    <xsl:if test="$person-image != ''">
+                        <div class="text-center mb-3">
+                            <xsl:sequence select="$portrait"/>
+                        </div>
+                    </xsl:if>
+                    <xsl:sequence select="$info"/>
+                </dl>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:template>
 
     <xsl:template match="tei:event" name="event_detail">
