@@ -18,9 +18,9 @@
             <xsl:when test="matches($value, 'd-nb.info/gnd/')">
                 <xsl:sequence select="concat('gnd:', replace($value, '^.*gnd/([^/]+)$', '$1'))"/>
             </xsl:when>
-            <xsl:when test="matches($value, 'doi.org/')">
+            <!-- <xsl:when test="matches($value, 'doi.org/')">
                 <xsl:sequence select="concat('doi:', replace($value, '^.*?(10\.\d{4,9}/.*)$', '$1'))"/>
-            </xsl:when>
+            </xsl:when> -->
             <xsl:when test="matches($value, 'wikidata\.org/(entity|wiki)/Q\d+')">
                 <xsl:sequence select="concat('wikidata:', replace($value, '^.*/(Q\d+).*$', '$1'))"/>
             </xsl:when>
