@@ -60,3 +60,7 @@ dd {
 .portrait {
   max-width: 260px;
 }
+
+.portrait img {
+  border-radius: 0.5rem;
+}
