@@ -9,6 +9,10 @@
 
   
     <xsl:strip-space elements="*"/>
+    <!-- Mixed-content prose elements where a whitespace-only text node is a
+         meaningful word separator between inline elements (e.g. <rs>/<note>/<lb>),
+         not insignificant indentation, and must not be stripped. -->
+    <xsl:preserve-space elements="tei:p tei:subst"/>
     
     <xsl:import href="partials/shared.xsl"/>
     <xsl:import href="partials/html_navbar.xsl"/>
