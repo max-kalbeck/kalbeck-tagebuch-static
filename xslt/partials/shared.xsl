@@ -17,15 +17,10 @@
         </div>
     </xsl:template>
 
-    <xsl:template match="tei:div[matches(@type, '^level[0-9]+$')]">
-        <div class="{@type}">
-            <xsl:apply-templates/>
-        </div>
-    </xsl:template>
-
-
-    <xsl:template match="tei:head[parent::tei:div[matches(@type, '^level[0-9]+$')]]">
-        <xsl:variable name="level" select="replace(parent::tei:div/@type, '^level', '')"/>
+    <xsl:template match="tei:head[parent::tei:div[@type='section' or matches(@type, '^level[0-9]+$')]]">
+        <xsl:variable name="level"
+            select="if (parent::tei:div/@type = 'section') then '2'
+                else replace(parent::tei:div/@type, '^level', '')"/>
         <xsl:element name="{concat('h', $level)}">
             <xsl:if test="@xml:id">
                 <xsl:attribute name="id" select="@xml:id"/>
