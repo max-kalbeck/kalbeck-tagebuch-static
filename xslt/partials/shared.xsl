@@ -35,7 +35,7 @@
     </xsl:template>
     <xsl:template match="tei:pb">
         <span class="anchor-pb" id="{concat('pb-', count(preceding::tei:pb) + 1)}"></span>
-        <span class="pb" source="{if(@corresp) then @corresp else @facs}"><xsl:value-of select="./@n"/></span>
+        <span class="{normalize-space(concat('pb ', @type))}" source="{if(@corresp) then @corresp else @facs}"><xsl:value-of select="./@n"/></span>
     </xsl:template>
 
     <xsl:template match="tei:unclear">

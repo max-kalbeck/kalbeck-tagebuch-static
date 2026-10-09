@@ -22,12 +22,17 @@ function parsePageIndexFromLocation() {
 }
 
 function goToPageFromLocation() {
-    if (initialPageIndex === null || typeof viewer.goToPage !== 'function') return;
+    if (typeof viewer.goToPage !== 'function') return;
 
     var lastPageIndex = tileSources.length - 1;
     if (lastPageIndex < 0) return;
 
-    var targetPageIndex = Math.min(initialPageIndex, lastPageIndex);
+    // Prefer an explicit page requested via the URL hash; otherwise fall
+    // back to the first page that is neither frontmatter nor backmatter
+    // (i.e. the first <pb> without a @type attribute).
+    var requestedPageIndex = initialPageIndex !== null ? initialPageIndex : defaultPageIndex;
+
+    var targetPageIndex = Math.min(requestedPageIndex, lastPageIndex);
     // sequenceMode re-fires 'open' on every goToPage call; only navigate once
     // or we get an open -> goToPage -> open infinite loop.
     if (typeof viewer.currentPage === 'function' && viewer.currentPage() === targetPageIndex) return;
@@ -102,15 +107,24 @@ function highlightMarkedText(container, markValue) {
     });
 }
 
-var tileSources = Array.from(
-    document.querySelectorAll('#facsContainer .facsId[data-facs-name]'),
-    function (element) {
-        return {
-            type: 'image',
-            url: `${BASE_URL}${element.dataset.facsName}${FACS_FILE_ENDING}`
-        };
-    }
-);
+var facsElements = Array.from(document.querySelectorAll('#facsContainer .facsId[data-facs-name]'));
+
+var tileSources = facsElements.map(function (element) {
+    return {
+        type: 'image',
+        url: `${BASE_URL}${element.dataset.facsName}${FACS_FILE_ENDING}`
+    };
+});
+
+// Default page to open on: the first facsimile without a @data-facs-type
+// (i.e. neither frontmatter nor backmatter), falling back to the first
+// page if every page is tagged with a type.
+var defaultPageIndex = (function () {
+    var index = facsElements.findIndex(function (element) {
+        return !element.dataset.facsType;
+    });
+    return index < 0 ? 0 : index;
+})();
 
 var viewer = OpenSeadragon({
     id: "osdViewer",

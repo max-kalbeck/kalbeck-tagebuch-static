@@ -168,7 +168,12 @@
                     <xsl:if test=".//tei:facsimile/tei:graphic">
                         <div id="facsContainer">
                             <xsl:for-each select=".//tei:facsimile/tei:graphic">
-                                <div class="facsId" data-facs-name="{@url}"/>
+                                <xsl:variable name="facsType" select="//tei:pb[@corresp = concat('#', current()/@xml:id)]/@type"/>
+                                <div class="facsId" data-facs-name="{@url}">
+                                    <xsl:if test="$facsType">
+                                        <xsl:attribute name="data-facs-type" select="$facsType"/>
+                                    </xsl:if>
+                                </div>
                             </xsl:for-each>
                         </div>
                     </xsl:if>
