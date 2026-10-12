@@ -39,6 +39,9 @@
                                  <br />
                                   <span class="display-6">1895/1897</span>
                              </h1>
+                            <div class="logo">
+                                <img src="images/labeck-logo_green.png" alt="Labeck Logo" class="img-fluid"/>
+                            </div>
                             <p class="text-end">Herausgegeben von Henrike Rost. Wien 2026–</p>
                             <p class="lead">Die digitale Edition der Tagbücher des Musikkritikers Max Kalbeck bietet tiefe Einblicke in das kulturelle Netzwerk in Wien um 1900.
                                 </p>
