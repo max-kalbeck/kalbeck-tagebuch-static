@@ -1,7 +1,76 @@
 :root {
-  --kb-fg-color: #0d6efd;
+  --kb-bg-color: #ffffff ;
+  --kb-border-color: #34412d; /*#0d6efd; */
+  --kb-color: #58724b; /* #68825b; */
+  --kb-color-dark: #48623b;
+
 }
 
+.navbar {
+	--bs-navbar-color: white; 
+	--bs-navbar-brand-color: white ;
+	--bs-navbar-brand-hover-color: white ;
+	--bs-navbar-active-color: white ;
+        --bs-navbar-hover-color: grey ;
+}
+.bg-body-tertiary {
+  --bs-bg-opacity: 1;
+  background-color: var(--kb-color) !important;
+}
+
+
+.navbar-nav{
+  --bs-nav-link-hover-color: white;
+  --bs-nav-link-active-color: white;
+  --bs-nav-link-disabled-color: var(--bs-navbar-disabled-color);  
+}
+
+
+.btn-outline-primary, .btn-outline-secondary {
+  --bs-btn-color: var(--kb-color) !important;
+  --bs-btn-border-color: var(--kb-color) !important;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: var(--kb-color) !important;
+  --bs-btn-hover-border-color: var(--kb-border-color) !important;
+  --bs-btn-focus-shadow-rgb: 13,110,253;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: var(--kb-color) !important;
+  --bs-btn-active-border-color: var(--kb-color) !important;
+  --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  --bs-btn-disabled-color: var(--kb-color) !important;
+  --bs-btn-disabled-bg: transparent;
+  --bs-btn-disabled-border-color: var(--kb-color) !important;
+  --bs-gradient: none;
+}
+
+.btn-primary, .btn-secondary {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: var(--kb-color);
+  --bs-btn-border-color: var(--kb-color-dark);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: var(--kb-color-dark); /* #0b5ed7; */
+  --bs-btn-hover-border-color: var(--kb-color-light-border) ; /*#0a58ca; */
+  --bs-btn-focus-shadow-rgb: 49,132,253;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: var(--kb-color-light-border) ;
+  --bs-btn-active-border-color: var(--kb-color-light-border-2)  ;/* #0a53be; */
+  --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  --bs-btn-disabled-color: #fff;
+  --bs-btn-disabled-bg: var(--kb-color);
+  --bs-btn-disabled-border-color: var(--kb-color);
+}
+
+
+.dropdown-item .nav-link {
+color: black;
+}
+a {
+color: var(--kb-color);
+}
+
+h1, h2 {
+	color: var(--kb-color);
+}
 /* needed for interactive map in listplace.xsl */
 div#map {
   height: 50vh;
@@ -9,8 +78,9 @@ div#map {
 
 /* Match bootstrap navlink focus outline color. */
 :focus-visible {
-  outline: 0;
+  outline: 2;
   box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  font-weight: 600;
 }
 
 .entity {
@@ -49,7 +119,7 @@ div#map {
 
 
 .btn.btn-light.rounded-0.yearbtn.focus {
-  background-color: var(--kb-fg-color);
+  background-color: var(--kb-border-color);
   color: white;
 }
 
