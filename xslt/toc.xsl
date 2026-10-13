@@ -11,8 +11,7 @@
     <xsl:import href="partials/html_navbar.xsl"/>
     <xsl:import href="partials/html_head.xsl"/>
     <xsl:import href="partials/html_footer.xsl"/>
-    <xsl:import href="partials/tabulator_dl_buttons.xsl"/>
-    <xsl:import href="partials/tabulator_js.xsl"/>
+    <xsl:import href="partials/datatables_import.xsl"/>
     <xsl:import href="partials/blockquote.xsl"/>
     <xsl:import href="partials/zotero.xsl"/>
 
@@ -28,6 +27,7 @@
                     <xsl:with-param name="pageId" select="$link"></xsl:with-param>
                     <xsl:with-param name="zoteroTitle" select="$doc_title"></xsl:with-param>
                 </xsl:call-template>
+                <xsl:call-template name="datatables_import" />
             </head>
             
             <body class="d-flex flex-column h-100">
@@ -51,10 +51,10 @@
                             <thead>
                                 <tr>
                                     <!-- CHANGE: adopt from krp-static -->
-                                    <th scope="col" tabulator-headerFilter="input" tabulator-formatter="html" tabulator-download="false" tabulator-minWidth="280">Titel</th>
-                                    <th scope="col" tabulator-visible="false" tabulator-download="true">titel_</th><!-- CHANGE: remove tabulator-headerFilter -->
-                                    <th scope="col" tabulator-headerFilter="input" tabulator-download="true" tabulator-minWidth="180">Dateinname</th><!-- CHANGE: add explicit tabulator-download -->
-                                    <th scope="col" tabulator-field="id" tabulator-visible="false" tabulator-download="false">ID</th>
+                                    <th scope="col" data-dt-searchlist="true">Titel</th>
+                                    <th scope="col" data-dt-visible="false">titel_</th>
+                                    <th scope="col" data-dt-searchlist="true">Dateiname</th>
+                                    <th scope="col" data-dt-visible="false">ID</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -91,7 +91,7 @@
                                 </xsl:for-each>
                             </tbody>
                         </table>
-                        <xsl:call-template name="tabulator_dl_buttons"/>
+                        <div id="custom-info-box" class="small text-muted mt-2" />
                         <div class="text-center p-4">
                             <xsl:call-template name="blockquote">
                                 <xsl:with-param name="pageId" select="'toc.html'"/>
@@ -100,9 +100,8 @@
                     </div>
                 </main>
                 <xsl:call-template name="html_footer"/>
-                 <xsl:call-template name="tabulator_js">
-                    <xsl:with-param name="clickme" select="true()"/>
-                </xsl:call-template>
+                <xsl:call-template name="datatables_import" />
+                <script src="js/datatables_custom/datatables_custom.js"/>
             </body>
         </html>
     </xsl:template>
