@@ -60,10 +60,14 @@
   --bs-btn-disabled-border-color: var(--kb-color);
 }
 
+.dropdown-menu {
+  --bs-dropdown-link-active-bg: var(--kb-color) !important;
+}
 
 .dropdown-item .nav-link {
 color: black;
 }
+
 a {
 color: var(--kb-color);
 }
