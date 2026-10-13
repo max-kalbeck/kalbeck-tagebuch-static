@@ -48,7 +48,7 @@ function initCalendar() {
     endDate: new Date(r.startDate),
     name: r.name,
     linkId: r.id,
-    color: '#0d6efd'
+    color: '#58724b'
   })).filter(
     r => r.startDate.getFullYear() === startYear
   );
@@ -99,7 +99,7 @@ function updateyear(year) {
     endDate: new Date(r.startDate),
     name: r.name,
     linkId: r.id,
-    color: '#0d6efd'
+    color: '#58724b'
   })).filter(
     r => r.startDate.getFullYear() === parseInt(year)
   );

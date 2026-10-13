@@ -51,8 +51,8 @@
                             </div>
                           </div>
                           <div class="col-10 col-sm-8 col-lg-6">
-                             <figure class="figure">
-                                 <img src="images/title-image.jpg" class="d-block mx-lg-auto img-fluid" alt="Porträt von Max Kalbeck" width="400" height="600" loading="lazy"/>
+                             <figure class="figure index-portrait">
+                                 <img src="images/title-image-oval.jpg" class="d-block mx-lg-auto img-fluid" alt="Porträt von Max Kalbeck" width="400" height="600" loading="lazy"/>
                                  <figcaption class="pt-3 figure-caption">Max Kalbeck, unknown photographer, Public domain, via <a href="https://commons.wikimedia.org/wiki/File:Max_Kalbeck.jpg">Wikimedia Commons</a></figcaption>
                              </figure>
                           </div>
