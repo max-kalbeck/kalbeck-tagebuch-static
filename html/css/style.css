@@ -3,6 +3,7 @@
   --kb-border-color: #34412d; /*#0d6efd; */
   --kb-color: #58724b; /* #68825b; */
   --kb-color-dark: #48623b;
+  --kb-color-halo: #dbf5ce;
 
 }
 
@@ -141,4 +142,23 @@ dd {
 
 .blockquote {
   font-size: 0.9rem
+}
+
+.pagination {
+  --bs-pagination-color:  var(--kb-border-color);
+  --bs-pagination-bg: var(--bs-body-bg);
+  --bs-pagination-border-width: var(--bs-border-width);
+  --bs-pagination-border-color: var(--bs-border-color);
+  --bs-pagination-hover-color: var(--bs-link-hover-color);
+  --bs-pagination-hover-bg: var(--bs-tertiary-bg);
+  --bs-pagination-hover-border-color: var(--bs-border-color);
+  --bs-pagination-focus-color: var(--bs-link-hover-color);
+  --bs-pagination-focus-bg: var(--bs-secondary-bg);
+  --bs-pagination-focus-box-shadow: 0 0 0 0.25rem var(--kb-color-halo);
+  --bs-pagination-active-color: #fff;
+  --bs-pagination-active-bg: var(--kb-color);
+  --bs-pagination-active-border-color: var(--kb-color);
+  --bs-pagination-disabled-color: var(--bs-secondary-color);
+  --bs-pagination-disabled-bg: var(--bs-secondary-bg);
+  --bs-pagination-disabled-border-color: var(--kb-border-color);
 }
