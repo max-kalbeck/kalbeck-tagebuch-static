@@ -8,8 +8,7 @@
     <xsl:import href="partials/html_navbar.xsl"/>
     <xsl:import href="partials/html_head.xsl"/>
     <xsl:import href="partials/html_footer.xsl"/>
-    <!-- <xsl:import href="partials/tabulator_dl_buttons.xsl"/> -->
-    <xsl:import href="./partials/datatables_import.xsl"/>
+    <xsl:import href="partials/datatables_import.xsl"/>
     <xsl:import href="partials/entities.xsl"/>
     <xsl:import href="partials/blockquote.xsl"/>
     <xsl:import href="partials/zotero.xsl"/>
@@ -59,7 +58,7 @@
                         <table id="myTable" class="table table-striped">
                             <thead>
                                 <tr>
-                                    <!-- <th scope="col" width="20" data-dt-visible="false">#</th> -->
+                                    <!-- <th scope="col" data-dt-visible="false">#</th> -->
                                     <th scope="col" data-dt-searchlist="true">Titel</th>
                                     <th scope="col" data-dt-searchlist="true">Autor</th>
                                     <th scope="col" data-dt-searchlist="true">Datum</th>
@@ -101,8 +100,7 @@
                                 </xsl:for-each>
                             </tbody>
                         </table>
-                        <div id="custom-info-box" class="small text-muted mt-2"></div>
-                        <!-- <xsl:call-template name="tabulator_dl_buttons"/> -->
+                        <div id="custom-info-box" class="small text-muted mt-2" />
 
                         <div class="text-center p-4">
                             <xsl:call-template name="blockquote">
@@ -112,9 +110,6 @@
                     </div>
                 </main>
                 <xsl:call-template name="html_footer"/>
-                 <xsl:call-template name="datatables_import" />
-                 <!--   <xsl:with-param name="clickme" select="true()"/>
-                </xsl:call-template> -->
                 <script src="js/datatables_custom/datatables_custom.js"/>
             </body>
         </html>
@@ -160,10 +155,6 @@
                             </div>
                         </main>
                         <xsl:call-template name="html_footer"/>
-                        <xsl:call-template name="datatables_import" />
-                        <!--     <xsl:with-param name="clickme" select="true()"/>
-                        </xsl:call-template> -->
-                         <script src="js/datatables_custom/datatables_custom.js"/>
                     </body>
                 </html>
             </xsl:result-document>
