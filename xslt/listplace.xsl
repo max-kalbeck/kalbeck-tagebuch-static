@@ -9,8 +9,7 @@
     <xsl:import href="partials/html_navbar.xsl"/>
     <xsl:import href="partials/html_head.xsl"/>
     <xsl:import href="partials/html_footer.xsl"/>
-    <xsl:import href="partials/tabulator_dl_buttons.xsl"/>
-    <xsl:import href="partials/tabulator_js.xsl"/>
+    <xsl:import href="partials/datatables_import.xsl"/>
     <xsl:import href="partials/entities.xsl"/>
     <xsl:import href="partials/blockquote.xsl"/>
     <xsl:import href="partials/zotero.xsl"/>
@@ -32,7 +31,7 @@
                     <xsl:with-param name="pageId" select="$link"></xsl:with-param>
                     <xsl:with-param name="zoteroTitle" select="$doc_title"></xsl:with-param>
                 </xsl:call-template>
-                <link href="vendor/tabulator-tables/css/tabulator_bootstrap5.min.css" rel="stylesheet"/>
+                <xsl:call-template name="datatables_import" />
                 <link rel="stylesheet" href="vendor/leaflet/leaflet.css"/>
                 <script src="vendor/leaflet/leaflet.js"/>
                 <link rel="stylesheet"
@@ -60,14 +59,14 @@
                     <div class="container">
                         <h1><xsl:value-of select="$doc_title"/></h1>
                         <div id="map"/>
-                        <table id="placesTable">
+                        <table id="placesTable" class="table table-striped">
                             <thead>
                                 <tr>
                                     <th scope="col">Ortsname</th>
                                     <th scope="col">Erwähnungen</th>
-                                    <th scope="col">lat</th>
-                                    <th scope="col">lng</th>
-                                    <th scope="col">linkToEntity</th>
+                                    <th scope="col" data-dt-visible="false">lat</th>
+                                    <th scope="col" data-dt-visible="false">lng</th>
+                                    <th scope="col" data-dt-visible="false">linkToEntity</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -77,7 +76,12 @@
                                     </xsl:variable>
                                     <tr>
                                         <td>
-                                            <xsl:value-of select="./tei:placeName[1]/text()"/>
+                                            <a>
+                                                <xsl:attribute name="href">
+                                                    <xsl:value-of select="concat($id, '.html')"/>
+                                                </xsl:attribute>
+                                                <xsl:value-of select="./tei:placeName[1]/text()"/>
+                                            </a>
                                         </td>
                                         <td>
                                             <xsl:value-of select="count(.//tei:note[@type='mentions'])"/>
@@ -103,6 +107,7 @@
                                 </xsl:for-each>
                             </tbody>
                         </table>
+                        <div id="custom-info-box" class="small text-muted mt-2" />
                         <div class="text-center p-4">
                             <xsl:call-template name="blockquote">
                                 <xsl:with-param name="pageId" select="'listplace.html'"/>
@@ -111,7 +116,8 @@
                     </div>
                 </main>
                 <xsl:call-template name="html_footer"/>
-                <script type="text/javascript" src="vendor/tabulator-tables/js/tabulator.min.js"/>
+               <xsl:call-template name="datatables_import" />
+                <script src="js/datatables_custom/datatables_custom.js"/>
                 <script src="js/map_table_cfg.js"/>
                 <script src="js/make_map_and_table.js"/>
                 
@@ -164,7 +170,6 @@
                                 </div>
                             </div>
                         </main>
-                        <xsl:call-template name="html_footer"/>
                         <xsl:if test="./tei:location/tei:geo">
                             <link rel="stylesheet" href="vendor/leaflet/leaflet.css"/>
                             <script src="vendor/leaflet/leaflet.js"></script>

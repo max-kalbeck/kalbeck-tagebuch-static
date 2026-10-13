@@ -1,41 +1,3 @@
-function fetch_tabulatordata_and_build_table(
-  map_cfg,
-  map,
-  table_cfg,
-  markers
-) {
-  console.log("loading table");
-  if (map_cfg.json_url.length !== 0) {
-    fetch(map_cfg.json_url)
-      .then(function (response) {
-        // json string
-        return response.json();
-      })
-      .then(function (tabulator_data) {
-        // the table will draw all markers on to the empty map
-        table_cfg.tabulator_cfg.data = tabulator_data;
-        let table = build_map_table(table_cfg);
-        populateMapFromTable(
-          table,
-          map,
-          map_cfg.on_row_click_zoom,
-          markers
-        );
-      })
-      .catch(function (err) {
-        console.log(err);
-      });
-  } else {
-    let table = build_map_table(table_cfg);
-    populateMapFromTable(
-      table,
-      map,
-      map_cfg.on_row_click_zoom,
-      markers
-    );
-  }
-}
-
 function zoom_to_point_from_row_data(
   row_data,
   map,
@@ -44,6 +6,11 @@ function zoom_to_point_from_row_data(
 ) {
   let coordinate_key = get_coordinate_key_from_row_data(row_data);
   let marker = existing_markers_by_coordinates[coordinate_key];
+
+  if (!marker) {
+    return;
+  }
+
   marker.openPopup();
   map.flyTo([row_data.lat, row_data.lng], zoom);
 }
@@ -52,12 +19,13 @@ function get_coordinate_key_from_row_data(row_data) {
   return row_data.lat + row_data.lng;
 }
 
-function init_map_from_rows(rows, markers) {
+/*rows_data is a list of DataTables row-data objects (see table_cfg in
+map_table_cfg.js), keyed by the lowercased column headers*/
+function init_map_from_rows(rows_data, markers) {
   console.log("populating map with icons");
   let existing_icons_by_coordinates = {};
   markers.clearLayers()
-  rows.forEach((row) => {
-    let row_data = row.getData();
+  rows_data.forEach((row_data) => {
     let coordinate_key = get_coordinate_key_from_row_data(row_data);
     var marker = L.marker(new L.LatLng(row_data.lat, row_data.lng), { title: get_tooltip_label(row_data) });
     marker.bindPopup(get_popup_label_string_html(row_data));
@@ -77,49 +45,46 @@ function toggle_marker_visibility(marker) {
   }
 }
 
-function populateMapFromTable(
-  table,
-  map,
-  on_row_click_zoom,
-  markers
-) {
-  table.on("tableBuilt", function () {
-    console.log("built table");
-    let all_rows = this.getRows();
-    var existing_markers_by_coordinates = init_map_from_rows(
-      all_rows,
-      markers
-    );
-    table.on("dataFiltered", function (filters, rows) {
-      init_map_from_rows(rows, markers)
-      map.fitBounds(markers.getBounds());
+/*builds the DataTable from table_cfg.table_div_html_id and keeps the map
+markers in sync with it: markers are (re)built from every row that matches
+the current search/filter (not just the current page), and clicking a row
+(outside of its link) flies the map to that row's marker*/
+function populateMapFromTable(map, on_row_click_zoom, markers, table_cfg) {
+  let existing_markers_by_coordinates = {};
 
-    });
-    //eventlistener for click on row
-    table.on("rowClick", function (event, row) {
-      let row_data = row.getData();
+  function refreshMarkers(api) {
+    const rows_data = api.rows({ search: 'applied' }).data().toArray();
+    existing_markers_by_coordinates = init_map_from_rows(rows_data, markers);
+  }
+
+  initDataTable(table_cfg.table_div_html_id, {
+    onInit: function (api) {
+      console.log("built table");
+      refreshMarkers(api);
+      try {
+        map.fitBounds(markers.getBounds());
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    onDraw: function (api) {
+      refreshMarkers(api);
+      map.fitBounds(markers.getBounds());
+    },
+    onRowClick: function (event, tr, api) {
+      if (event.target.closest('a')) {
+        return;
+      }
+
+      let row_data = api.row(tr).data();
       zoom_to_point_from_row_data(
         row_data,
         map,
         on_row_click_zoom,
         existing_markers_by_coordinates
       );
-    });
-    try {
-      map.fitBounds(markers.getBounds());
-  } catch (err) {
-      console.log(err);
-  }
+    }
   });
-}
-
-function build_map_table(table_cfg) {
-  let table = new Tabulator(
-    table_cfg.table_div_html_id,
-    table_cfg.tabulator_cfg
-  );
-  console.log("made table");
-  return table;
 }
 
 /////////////////////
@@ -162,5 +127,5 @@ function build_map_and_table(map_cfg, table_cfg, wms_cfg = null, tms_cfg = null)
   L.control.layers(null, overlay_control).addTo(map);
   markers.addTo(map);
 
-  fetch_tabulatordata_and_build_table(map_cfg, map, table_cfg, markers);
+  populateMapFromTable(map, map_cfg.on_row_click_zoom, markers, table_cfg);
 }
