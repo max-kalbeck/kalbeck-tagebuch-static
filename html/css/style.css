@@ -139,4 +139,6 @@ dd {
   border-radius: 0.5rem;
 }
 
-
+.blockquote {
+  font-size: 0.9rem
+}

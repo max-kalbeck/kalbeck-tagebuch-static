@@ -14,6 +14,7 @@
         <xsl:variable name="year" select="format-date(current-date(), '[Y0001]')"/>
         <xsl:variable name="monthNameDE" select="('Jänner', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember')[month-from-date(current-date())]"/>
         <xsl:variable name="accessDate" select="concat(day-from-date(current-date()), '. ', $monthNameDE, ' ', $year)"/>
+        <xsl:variable name="accessDateISO" select="format-date(current-date(), '[Y0001]-[M01]-[D01]')"/>
         <xsl:variable name="entryAuthor" select="root(.)//tei:titleStmt/tei:author[1]"/>
         <xsl:variable name="isKalbeckAuthor" select="boolean($entryAuthor[normalize-space(.) = 'Kalbeck, Max' or @ref = '#pmb11857'])"/>
 
@@ -94,35 +95,35 @@
                                 <xsl:choose>
                                     <xsl:when test="$currentTitle and $isKalbeckAuthor">
                                         <pre  style="text-align:left!important;"><code>@online{<xsl:value-of select="$bibKey"/>,
-	author      = {Kalbeck, Max},
-	title       = {<xsl:value-of select="$currentTitle"/>},
-	date        = {2026},
-	urldate     = {<xsl:value-of select="format-date(current-date(), '[Y0001]')"/>},
-	address     = {Wien},
-	editor      = {Rost, Henrike},
-	series      = {<xsl:value-of select="$project_title"/>},
-	url         = {<xsl:value-of select="$fullUrl"/>}
+    author  = {Kalbeck, Max},
+    title   = {<xsl:value-of select="$currentTitle"/>},
+    date    = {2026},
+    urldate = {<xsl:value-of select="$accessDateISO"/>},
+    address = {Wien},
+    editor  = {Rost, Henrike},
+    series  = {<xsl:value-of select="$project_title"/>},
+    url     = {<xsl:value-of select="$fullUrl"/>}
 }</code></pre>
                                     </xsl:when>
                                     <xsl:when test="$currentTitle">
                                         <pre  style="text-align:left!important;"><code>@online{<xsl:value-of select="$bibKey"/>,
-	title       = {<xsl:value-of select="$currentTitle"/>},
-	date        = {2026},
-	urldate     = {<xsl:value-of select="format-date(current-date(), '[Y0001]')"/>},
-	address     = {Wien},
-	editor      = {Rost, Henrike},
-	series      = {<xsl:value-of select="$project_title"/>},
-	url         = {<xsl:value-of select="$fullUrl"/>}
+    title   = {<xsl:value-of select="$currentTitle"/>},
+    date    = {2026},
+    urldate = {<xsl:value-of select="$accessDateISO"/>},
+    address = {Wien},
+    editor  = {Rost, Henrike},
+    series  = {<xsl:value-of select="$project_title"/>},
+    url     = {<xsl:value-of select="$fullUrl"/>}
 }</code></pre>
                                     </xsl:when>
                                     <xsl:otherwise>
                                         <pre style="text-align:left!important;"><code>@online{rost_2026,
-	title       = {<xsl:value-of select="$project_title"/>},
-	date        = {2026},
-	urldate     = {<xsl:value-of select="format-date(current-date(), '[Y0001]')"/>},
-	url         = {<xsl:value-of select="$fullUrl"/>},
-	editor      = {Rost, Henrike},
-	address     = {Wien}
+    title   = {<xsl:value-of select="$project_title"/>},
+    date    = {2026},
+    urldate = {<xsl:value-of select="$accessDateISO"/>},
+    url     = {<xsl:value-of select="$fullUrl"/>},
+    editor  = {Rost, Henrike},
+    address = {Wien}
 }</code></pre>
                                     </xsl:otherwise>
                                 </xsl:choose>
