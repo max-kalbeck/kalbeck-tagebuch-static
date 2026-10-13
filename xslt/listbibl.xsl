@@ -101,6 +101,7 @@
                                 </xsl:for-each>
                             </tbody>
                         </table>
+                        <div id="custom-info-box" class="small text-muted mt-2"></div>
                         <!-- <xsl:call-template name="tabulator_dl_buttons"/> -->
 
                         <div class="text-center p-4">
