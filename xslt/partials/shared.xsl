@@ -16,9 +16,8 @@
             <xsl:apply-templates/>
         </div>
     </xsl:template>
-
-    <xsl:template match="tei:div[matches(@type, '^level[0-9]+$')]">
-        <div class="{@type}">
+    <xsl:template match="tei:div[@type='section']">
+        <div class="section">
             <xsl:apply-templates/>
         </div>
     </xsl:template>
@@ -32,6 +31,14 @@
             </xsl:if>
             <xsl:apply-templates/>
         </xsl:element>
+    </xsl:template>
+    <xsl:template match="tei:head[parent::tei:div[@type='section']]">
+        <h2>
+            <xsl:if test="@xml:id">
+                <xsl:attribute name="id" select="@xml:id"/>
+            </xsl:if>
+            <xsl:apply-templates/>
+        </h2>
     </xsl:template>
     <xsl:template match="tei:pb">
         <span class="anchor-pb" id="{concat('pb-', count(preceding::tei:pb) + 1)}"></span>
