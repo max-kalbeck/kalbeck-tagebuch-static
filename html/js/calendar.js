@@ -1,6 +1,13 @@
 let calendar;
 let calendarData = [];
 
+const WRITTEN_COLOR = '#58724b';
+const EMPTY_COLOR = '#adb5bd';
+
+function getEntryColor(item) {
+  return item.isEmpty ? EMPTY_COLOR : WRITTEN_COLOR;
+}
+
 fetch('calendarData.json')
   .then(response => {
     if (!response.ok) {
@@ -48,7 +55,7 @@ function initCalendar() {
     endDate: new Date(r.startDate),
     name: r.name,
     linkId: r.id,
-    color: '#58724b'
+    color: getEntryColor(r)
   })).filter(
     r => r.startDate.getFullYear() === startYear
   );
@@ -99,7 +106,7 @@ function updateyear(year) {
     endDate: new Date(r.startDate),
     name: r.name,
     linkId: r.id,
-    color: '#58724b'
+    color: getEntryColor(r)
   })).filter(
     r => r.startDate.getFullYear() === parseInt(year)
   );
