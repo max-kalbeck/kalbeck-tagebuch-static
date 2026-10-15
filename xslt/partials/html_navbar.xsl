@@ -8,24 +8,13 @@
             <nav aria-label="Primary" class="navbar navbar-expand-lg bg-body-tertiary">
                 <div class="container-fluid">
                     <a class="navbar-brand" href="index.html">
-                        <xsl:value-of select="$project_short_title"/>
+                        <img src="images/logo_networking_practices_1900_white.svg" alt="{$project_short_title}"/>
                     </a>
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
                     <div class="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                            <!-- <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Projekt</a>
-                                <ul class="dropdown-menu">
-                                    <li>
-                                        <a class="dropdown-item" href="about.html">Über das Projekt</a>
-                                    </li>
-                                     <li>
-                                        <a class="dropdown-item" href="imprint.html">Impressum</a>
-                                    </li> 
-                                </ul>
-                            </li> -->
                               <li class="nav-item">
                                 <a title="Über das Projekt" class="nav-link" href="about.html">Über das Projekt</a>
                             </li>
@@ -60,10 +49,10 @@
                                  <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Technisches</a>
                                 <ul class="dropdown-menu">
                                      <li class="dropdown-item">
-                                        <a title="Kodierungsrichtlinien" class="nav-link" href="encoding.html">Kodierungsrichtlinien</a>
+                                        <a title="Kodierungsrichtlinien" class="dropdown-item" href="encoding.html">Kodierungsrichtlinien</a>
                                     </li>
                                     <li class="dropdown-item">
-                                        <a title="API" class="nav-link" href="api.xml">API</a>
+                                        <a title="API" class="dropdown-item" href="api.xml">API</a>
                                     </li>
                                 </ul>
                             </li>
