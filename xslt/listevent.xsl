@@ -54,7 +54,7 @@
                             <xsl:value-of select="$doc_title"/>
                         </h1>
 
-                        <table id="myTable">
+                        <table id="myTable" data-dt-order-column="Ereignis" data-dt-order-dir="asc">
                             <thead>
                                 <tr>
                                     <th scope="col" data-dt-visible="false">#</th>
