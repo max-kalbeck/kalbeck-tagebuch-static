@@ -47,7 +47,7 @@
                     </nav>
                     <div class="container">
                         <h1><xsl:value-of select="$doc_title"/></h1>
-                        <table id="myTable">
+                        <table data-dt-order-column="Dateiname" data-dt-order-dir="asc" id="myTable">
                             <thead>
                                 <tr>
                                     <!-- CHANGE: adopt from krp-static -->
