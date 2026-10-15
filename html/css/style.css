@@ -12,8 +12,9 @@
 	--bs-navbar-brand-color: white ;
 	--bs-navbar-brand-hover-color: white ;
 	--bs-navbar-active-color: white ;
-        --bs-navbar-hover-color: grey ;
+  --bs-navbar-hover-color: grey ;
 }
+
 .bg-body-tertiary {
   --bs-bg-opacity: 1;
   background-color: var(--kb-color) !important;
@@ -24,6 +25,7 @@
   --bs-nav-link-hover-color: white;
   --bs-nav-link-active-color: white;
   --bs-nav-link-disabled-color: var(--bs-navbar-disabled-color);  
+  color: var(--bs-btn-color);
 }
 
 
@@ -59,14 +61,28 @@
   --bs-btn-disabled-color: #fff;
   --bs-btn-disabled-bg: var(--kb-color);
   --bs-btn-disabled-border-color: var(--kb-color);
+  
 }
+
+.navbar-brand img {
+    height: 40px;
+    width: auto;
+}
+
 
 .dropdown-menu {
   --bs-dropdown-link-active-bg: var(--kb-color) !important;
 }
 
+
+.nav-link{
+  --bs-nav-link-font-size: 1.1rem;
+  --bs-nav-link-font-weight: 600;
+  --bs-nav-link-line-height: 1.5;
+}
 .dropdown-item .nav-link {
 color: black;
+
 }
 
 a {

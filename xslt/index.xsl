@@ -17,7 +17,7 @@
 
     <xsl:template match="/">
         <xsl:variable name="doc_title">
-            <xsl:value-of select='"Kalbeck Tagebuch"'/>
+            <xsl:value-of select='"Kalbeck Tagebücher"'/>
         </xsl:variable>
         <xsl:call-template name="zoterMetaTags"></xsl:call-template>
         <html class="h-100" lang="{$default_lang}">
@@ -35,15 +35,15 @@
                               <h1 class="lh-base">
                                   <span class="display-6">Max Kalbeck</span>
                                  <br/>
-                                  <span class="display-4">Tagebuch</span>
+                                  <span class="display-4">Tagebücher</span>
                                  <br />
                                   <span class="display-6">1895/1897</span>
                              </h1>
                             <div class="logo">
-                                <img src="images/labeck-logo_green.png" alt="Labeck Logo" class="img-fluid"/>
+                                <img src="images/logo_networking_practices_1900_green_cropped.svg" alt="Kalbeck Logo" class="img-fluid"/>
                             </div>
                             <p class="text-end">Herausgegeben von Henrike Rost. Wien 2026–</p>
-                            <p class="lead">Die digitale Edition der Tagbücher des Musikkritikers Max Kalbeck bietet tiefe Einblicke in das kulturelle Netzwerk in Wien um 1900.
+                            <p class="lead">Die digitale Edition von Max Kalbecks Tagebücher  erschließt kulturelle Netzwerke in Wien um 1900.
                                 </p>
                             <div class="d-grid gap-2 d-md-flex justify-content-md-start">
                                 <a href="toc.html" type="button" class="btn btn-outline-primary btn-lg px-4">Zu den Einträgen</a>
