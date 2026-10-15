@@ -291,7 +291,7 @@
         <xsl:variable name="portrait">
             <figure class="figure portrait">
                 <img src="{$person-image}" alt="{$person-name}" class="img-fluid"/>
-                <figcaption class="figure-caption">Portraitbild von <xsl:value-of select="$person-name"/>. Bild von <a href="{$image-link}"><xsl:value-of select="$image-source-name"/></a> übernommen.</figcaption>
+                <figcaption class="figure-caption"><xsl:value-of select="$person-name"/>. Bild von <a href="{$image-link}"><xsl:value-of select="$image-source-name"/></a> übernommen.</figcaption>
             </figure>
         </xsl:variable>
 
