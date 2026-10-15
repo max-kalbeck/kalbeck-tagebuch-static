@@ -1,4 +1,6 @@
-// Unique cell values of a column with their row counts, as searchList options
+
+
+
 function countOptions(tableId, index) {
     const counts = new Map();
 
@@ -50,6 +52,10 @@ function labelSearchLogicSelects(tableId) {
 // callers (e.g. make_map_and_table.js) hook extra behaviour onto the table
 // without duplicating the setup below.
 function initDataTable(tableId, opts = {}) {
+    // Unique cell values of a column with their row counts, as searchList options
+    const orderColumn = document.querySelector(`#${tableId}`) .dataset.dtOrderColumn;
+    const orderDir = document.querySelector(`#${tableId}`) .dataset.dtOrderDir || 'asc';
+    const orderIndex = orderColumn ? [...document.querySelectorAll(`#${tableId} thead th`)] .findIndex(th => th.textContent.trim() === orderColumn) : -1;
     const columns = [];
     const noVisTargets = [0];
 
@@ -125,6 +131,10 @@ function initDataTable(tableId, opts = {}) {
         },
         language: {
             url: 'js/datatables_custom/de-DE.json',
+        },
+        order: orderIndex >= 0 ? [[orderIndex, orderDir]] : [],
+            ordering: {
+            indicators: false
         },
         initComplete: function () {
             const api = this.api();
