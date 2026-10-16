@@ -243,6 +243,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h1 class="modal-title fs-5"><xsl:value-of select="$label"/></h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"/>
                     </div>
                     <div class="modal-body">
                         <xsl:for-each select="$entity-refs">
@@ -257,9 +258,6 @@
                                 <hr/>
                             </xsl:if>
                         </xsl:for-each>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
                     </div>
                 </div>
             </div>
@@ -283,6 +281,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h1 class="modal-title fs-5"><xsl:value-of select="$label"/></h1>
+                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"/>
                     </div>
                     <div class="modal-body">
                         <xsl:for-each select="$entity-nodes">
@@ -291,9 +290,6 @@
                                 <hr/>
                             </xsl:if>
                         </xsl:for-each>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
                     </div>
                 </div>
             </div>
@@ -363,12 +359,10 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h1 class="modal-title fs-5"><a href="{$selfLink}"><xsl:value-of select="normalize-space($name)"/></a></h1>
+                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"/>
                     </div>
                     <div class="modal-body">
                         <xsl:call-template name="render-entity-detail"/>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
                     </div>
                 </div>
             </div>
