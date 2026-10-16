@@ -151,8 +151,8 @@
         </xsl:if>
 
         <xsl:if test="$projects">
-            <dt>Projekte</dt>
             <details type="collapsible">
+                <summary>Projekte</summary>
             <xsl:for-each select="$projects">
                 <xsl:sort select="local:idno-label(.)"/>
                 <xsl:variable name="label" select="local:idno-label(.)"/>
@@ -174,8 +174,8 @@
     
 
      <xsl:if test="$wikis">
-            <dt>Wikis</dt>
             <details type="collapsible">
+                <summary>Wikis</summary>
             <xsl:for-each select="$wikis">
                 <xsl:sort select="local:idno-label(.)"/>
                 <xsl:variable name="label" select="local:idno-label(.)"/>
@@ -199,8 +199,8 @@
     <xsl:template match="tei:bibl" name="bibl_detail">
         <dl>
             <xsl:if test="./tei:author">
-                <dt>Autor*innen</dt>
                 <details type="collapsible">
+                    <summary>Autor*innen</summary>
                 <xsl:for-each select="./tei:author">
                     <dd>
                         <xsl:choose>
@@ -226,8 +226,8 @@
             </xsl:if>
             <xsl:call-template name="render-idno-list"/>
             <xsl:if test="./tei:noteGrp/tei:note[@type = 'mentions']">
-                <dt>Erwähnt in</dt>
                 <details type="collapsible">
+                    <summary>Erwähnt in</summary>
                 <xsl:for-each select="./tei:noteGrp/tei:note[@type = 'mentions']">
                     <dd>
                         <a href="{replace(@target, '.xml', '.html')}">
@@ -243,8 +243,8 @@
     <xsl:template match="tei:org" name="org_detail">
         <dl>
             <xsl:if test="./tei:orgName">
-                <dt>Name</dt>
                 <details type="collapsible">
+                    <summary>Name</summary>
                 <xsl:for-each select="./tei:orgName">
                     <dd>
                         <xsl:value-of select="."/>
@@ -266,8 +266,8 @@
             </xsl:if>
             <xsl:call-template name="render-idno-list"/>
             <xsl:if test="./tei:noteGrp/tei:note[@type = 'mentions']">
-                <dt>Erwähnt in</dt>
                 <details type="collapsible">
+                    <summary>Erwähnt in</summary>
                 <xsl:for-each select="./tei:noteGrp/tei:note[@type = 'mentions']">
                     <dd>
                         <a href="{replace(@target, '.xml', '.html')}">
@@ -357,8 +357,8 @@
             </xsl:if>
             <xsl:call-template name="render-idno-list"/>
             <xsl:if test="./tei:noteGrp/tei:note[@type = 'mentions']">
-                <dt>Erwähnt in</dt>
                 <details type="collapsible">
+                    <summary>Erwähnt in</summary>
                 <xsl:for-each select="./tei:noteGrp/tei:note[@type = 'mentions']">
                     <dd>
                         <a href="{replace(@target, '.xml', '.html')}">
@@ -406,9 +406,9 @@
                     <xsl:value-of select="./@when-iso"/>
                 </dd>
             </xsl:if>
-            <xsl:if test="./tei:eventName">
-                <dt>Bezeichnung</dt>
+            <xsl:if test="./tei:eventName">            
                 <details type="collapsible">
+                    <summary>Bezeichnung</summary>
                 <xsl:for-each select="./tei:eventName">
                     <dd>
                         <xsl:value-of select="normalize-space(string-join(.//text()))"/>
@@ -416,9 +416,9 @@
                 </xsl:for-each>
                 </details>
             </xsl:if>
-            <xsl:if test="./tei:note[@type = 'listorg']/tei:listOrg/tei:org">
-                <dt>Veranstaltet von</dt>
+            <xsl:if test="./tei:note[@type = 'listorg']/tei:listOrg/tei:org">                
                 <details type="collapsible">
+                    <summary>Veranstaltet von</summary>
                 <xsl:for-each select="./tei:note[@type = 'listorg']/tei:listOrg/tei:org">
                     <dd>
                         <xsl:choose>
@@ -441,8 +441,8 @@
                 </details>
             </xsl:if>
             <xsl:if test="./tei:listPlace/tei:place">
-                <dt>Ort</dt>
                 <details type="collapsible">
+                    <summary>Ort</summary>
                 <xsl:for-each select="./tei:listPlace/tei:place">
                     <dd>
                         <xsl:choose>
@@ -465,8 +465,8 @@
                 </details>
             </xsl:if>
             <xsl:if test="./tei:listPerson/tei:person">
-                <dt>Beteiligte</dt>
                 <details type="collapsible">
+                    <summary>Beteiligte</summary>
                 <xsl:for-each select="./tei:listPerson/tei:person">
                     <dd>
                         <xsl:choose>
@@ -489,8 +489,8 @@
                 </details>
             </xsl:if>
             <xsl:if test="./tei:listBibl/tei:bibl[not(@type = 'collections')]">
-                <dt>Werke</dt>
                 <details type="collapsible">
+                    <summary>Werke</summary>
                 <xsl:for-each select="./tei:listBibl/tei:bibl[not(@type = 'collections')]">
                     <dd>
                         <xsl:choose>
@@ -514,8 +514,8 @@
             </xsl:if>
             <xsl:call-template name="render-idno-list"/>
             <xsl:if test="./tei:noteGrp/tei:note[@type = 'mentions']">
-                <dt>Erwähnt in</dt>
                 <details type="collapsible">
+                    <summary>Erwähnt in</summary>
                 <xsl:for-each select="./tei:noteGrp/tei:note[@type = 'mentions']">
                     <dd>
                         <a href="{replace(@target, '.xml', '.html')}">
@@ -542,8 +542,8 @@
                 </xsl:choose>
             </dd>
             <xsl:if test="./tei:location[@type = 'located_in_place']">
-                <dt>Teil von</dt>
                 <details type="collapsible">
+                    <summary>Teil von</summary>
                 <xsl:for-each select="./tei:location[@type = 'located_in_place']">
                     <dd>
                         <a href="{./tei:placeName/@key}.html">
@@ -581,8 +581,8 @@
                 </dd>
             </xsl:if>
             <xsl:if test="./tei:noteGrp/tei:note[@type = 'mentions']">
-                <dt>Erwähnt in</dt>
                 <details type="collapsible">
+                    <summary>Erwähnt in</summary>
                 <xsl:for-each select="./tei:noteGrp/tei:note[@type = 'mentions']">
                     <dd>
                         <a href="{replace(@target, '.xml', '.html')}">
