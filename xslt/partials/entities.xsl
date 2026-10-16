@@ -121,103 +121,133 @@
     <!-- subtypes of authority/norm-data registries; everything else linked via @subtype
          is a sister project reference and gets listed under "Projekte" instead -->
     <xsl:variable name="authority-subtypes" select="('pmb', 'gnd', 'wikidata', 'geonames')"/>
-     <xsl:variable name="wiki-subtypes" select="('wiengeschichtewiki', 'wikipedia')"/>
+    <xsl:variable name="wiki-subtypes" select="('wiengeschichtewiki', 'wikipedia')"/>
+
+    <!-- ===================================================================
+         Generic helper: renders a list of <dd> items
+           - 0 items : nothing
+           - 1 item  : plain <dt>Label</dt><dd>…</dd>
+           - 2+ items: collapsible <details> with <summary>Label</summary> and a nested <dl>
+         $items is the already-built sequence of <dd> elements,
+         $count the number of source nodes they were built from.
+         =================================================================== -->
+    <xsl:template name="collapsible-list">
+        <xsl:param name="summary" as="xs:string"/>
+        <xsl:param name="count" as="xs:integer"/>
+        <xsl:param name="items" as="node()*"/>
+        <xsl:choose>
+            <xsl:when test="$count gt 3">
+                <details type="collapsible">
+                    <summary>
+                        <xsl:value-of select="$summary"/>
+                    </summary>
+                    <dl>
+                        <xsl:sequence select="$items"/>
+                    </dl>
+                </details>
+            </xsl:when>
+            <xsl:when test="$count ge 1">
+                <dt>
+                    <xsl:value-of select="$summary"/>
+                </dt>
+                <dl>
+                    <xsl:sequence select="$items"/>
+                </dl>
+            </xsl:when>
+        </xsl:choose>
+    </xsl:template>
+
+    <!-- renders one group of idnos (authorities / projects / wikis) as a <dd class="…"> per entry -->
+    <xsl:template name="render-idno-group">
+        <xsl:param name="summary" as="xs:string"/>
+        <xsl:param name="idnos" as="element(tei:idno)*"/>
+        <xsl:param name="class" as="xs:string"/>
+        <xsl:call-template name="collapsible-list">
+            <xsl:with-param name="summary" select="$summary"/>
+            <xsl:with-param name="count" select="count($idnos)"/>
+            <xsl:with-param name="items" as="node()*">
+                <xsl:for-each select="$idnos">
+                    <xsl:sort select="local:idno-label(.)"/>
+                    <xsl:variable name="label" select="local:idno-label(.)"/>
+                    <dd class="{$class}">
+                        <xsl:choose>
+                            <xsl:when test="starts-with(./text(), 'http')">
+                                <a href="{./text()}">
+                                    <xsl:value-of select="$label"/>
+                                </a>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:value-of select="$label"/>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </dd>
+                </xsl:for-each>
+            </xsl:with-param>
+        </xsl:call-template>
+    </xsl:template>
 
     <xsl:template name="render-idno-list">
         <xsl:variable name="authorities" select="./tei:idno[@subtype = $authority-subtypes]"/>
         <xsl:variable name="wikis" select="./tei:idno[@subtype = $wiki-subtypes]"/>
         <xsl:variable name="projects" select="./tei:idno[not(@subtype = $authority-subtypes) and not(@subtype = $wiki-subtypes)]"/>
 
-        <xsl:if test="$authorities">
-                <details type="collapsible">
-                    <summary>Normdaten</summary>
-            <xsl:for-each select="$authorities">
-                <xsl:sort select="local:idno-label(.)"/>
-                <xsl:variable name="label" select="local:idno-label(.)"/>
-                <dd type="authority-entry">
-                    <xsl:choose>
-                        <xsl:when test="starts-with(./text(), 'http')">
-                            <a href="{./text()}">
-                                <xsl:value-of select="$label"/>
-                            </a>
-                        </xsl:when>
-                        <xsl:otherwise>
-                            <xsl:value-of select="$label"/>
-                        </xsl:otherwise>
-                    </xsl:choose>
-                </dd>
-            </xsl:for-each>
-        </details>
-        </xsl:if>
+        <xsl:call-template name="render-idno-group">
+            <xsl:with-param name="summary" select="'Normdaten'"/>
+            <xsl:with-param name="idnos" select="$authorities"/>
+            <xsl:with-param name="class" select="'authority-entry'"/>
+        </xsl:call-template>
+        <xsl:call-template name="render-idno-group">
+            <xsl:with-param name="summary" select="'Projekte'"/>
+            <xsl:with-param name="idnos" select="$projects"/>
+            <xsl:with-param name="class" select="'project-entry'"/>
+        </xsl:call-template>
+        <xsl:call-template name="render-idno-group">
+            <xsl:with-param name="summary" select="'Wikis'"/>
+            <xsl:with-param name="idnos" select="$wikis"/>
+            <xsl:with-param name="class" select="'wiki-entry'"/>
+        </xsl:call-template>
+    </xsl:template>
 
-        <xsl:if test="$projects">
-            <details type="collapsible">
-                <summary>Projekte</summary>
-            <xsl:for-each select="$projects">
-                <xsl:sort select="local:idno-label(.)"/>
-                <xsl:variable name="label" select="local:idno-label(.)"/>
-                <dd class="project-entry">
-                    <xsl:choose>
-                        <xsl:when test="starts-with(./text(), 'http')">
-                            <a href="{./text()}">
-                                <xsl:value-of select="$label"/>
-                            </a>
-                        </xsl:when>
-                        <xsl:otherwise>
-                            <xsl:value-of select="$label"/>
-                        </xsl:otherwise>
-                    </xsl:choose>
-                </dd>
-            </xsl:for-each>
-        </details>
-        </xsl:if>
-    
-
-     <xsl:if test="$wikis">
-            <details type="collapsible">
-                <summary>Wikis</summary>
-            <xsl:for-each select="$wikis">
-                <xsl:sort select="local:idno-label(.)"/>
-                <xsl:variable name="label" select="local:idno-label(.)"/>
-                <dd class="wiki-entry">
-                    <xsl:choose>
-                        <xsl:when test="starts-with(./text(), 'http')">
-                            <a href="{./text()}">
-                                <xsl:value-of select="$label"/>
-                            </a>
-                        </xsl:when>
-                        <xsl:otherwise>
-                            <xsl:value-of select="$label"/>
-                        </xsl:otherwise>
-                    </xsl:choose>
-                </dd>
-            </xsl:for-each>
-            </details>
-        </xsl:if>
+    <!-- "Erwähnt in" list, shared by all entity types -->
+    <xsl:template name="render-mentions">
+        <xsl:variable name="mentions" select="./tei:noteGrp/tei:note[@type = 'mentions']"/>
+        <xsl:call-template name="collapsible-list">
+            <xsl:with-param name="summary" select="'Erwähnt in'"/>
+            <xsl:with-param name="count" select="count($mentions)"/>
+            <xsl:with-param name="items" as="node()*">
+                <xsl:for-each select="$mentions">
+                    <dd>
+                        <a href="{replace(@target, '.xml', '.html')}">
+                            <xsl:value-of select="./text()"/>
+                        </a>
+                    </dd>
+                </xsl:for-each>
+            </xsl:with-param>
+        </xsl:call-template>
     </xsl:template>
 
     <xsl:template match="tei:bibl" name="bibl_detail">
         <dl>
-            <xsl:if test="./tei:author">
-                <details type="collapsible">
-                    <summary>Autor*innen</summary>
-                <xsl:for-each select="./tei:author">
-                    <dd>
-                        <xsl:choose>
-                            <xsl:when test="@key">
-                                <a href="{@key}.html">
+            <xsl:call-template name="collapsible-list">
+                <xsl:with-param name="summary" select="'Autor*innen'"/>
+                <xsl:with-param name="count" select="count(./tei:author)"/>
+                <xsl:with-param name="items" as="node()*">
+                    <xsl:for-each select="./tei:author">
+                        <dd>
+                            <xsl:choose>
+                                <xsl:when test="@key">
+                                    <a href="{@key}.html">
+                                        <xsl:value-of select="string-join(.//text())"/>
+                                    </a>
+                                </xsl:when>
+                                <xsl:otherwise>
                                     <xsl:value-of select="string-join(.//text())"/>
-                                </a>
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <xsl:value-of select="string-join(.//text())"/>
-                            </xsl:otherwise>
-                        </xsl:choose>
-
-                    </dd>
-                </xsl:for-each>
-                </details>
-            </xsl:if>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                        </dd>
+                    </xsl:for-each>
+                </xsl:with-param>
+            </xsl:call-template>
             <xsl:if test="./tei:date">
                 <dt>Datum</dt>
                 <dd>
@@ -225,33 +255,23 @@
                 </dd>
             </xsl:if>
             <xsl:call-template name="render-idno-list"/>
-            <xsl:if test="./tei:noteGrp/tei:note[@type = 'mentions']">
-                <details type="collapsible">
-                    <summary>Erwähnt in</summary>
-                <xsl:for-each select="./tei:noteGrp/tei:note[@type = 'mentions']">
-                    <dd>
-                        <a href="{replace(@target, '.xml', '.html')}">
-                            <xsl:value-of select="./text()"/>
-                        </a>
-                    </dd>
-                </xsl:for-each>
-                </details>
-            </xsl:if>
+            <xsl:call-template name="render-mentions"/>
         </dl>
     </xsl:template>
 
     <xsl:template match="tei:org" name="org_detail">
         <dl>
-            <xsl:if test="./tei:orgName">
-                <details type="collapsible">
-                    <summary>Name</summary>
-                <xsl:for-each select="./tei:orgName">
-                    <dd>
-                        <xsl:value-of select="."/>
-                    </dd>
-                </xsl:for-each>
-                </details>
-            </xsl:if>
+            <xsl:call-template name="collapsible-list">
+                <xsl:with-param name="summary" select="'Name'"/>
+                <xsl:with-param name="count" select="count(./tei:orgName)"/>
+                <xsl:with-param name="items" as="node()*">
+                    <xsl:for-each select="./tei:orgName">
+                        <dd>
+                            <xsl:value-of select="."/>
+                        </dd>
+                    </xsl:for-each>
+                </xsl:with-param>
+            </xsl:call-template>
             <xsl:if test="./tei:desc">
                 <dt>Beschreibung</dt>
                 <dd>
@@ -265,18 +285,7 @@
                 </dd>
             </xsl:if>
             <xsl:call-template name="render-idno-list"/>
-            <xsl:if test="./tei:noteGrp/tei:note[@type = 'mentions']">
-                <details type="collapsible">
-                    <summary>Erwähnt in</summary>
-                <xsl:for-each select="./tei:noteGrp/tei:note[@type = 'mentions']">
-                    <dd>
-                        <a href="{replace(@target, '.xml', '.html')}">
-                            <xsl:value-of select="./text()"/>
-                        </a>
-                    </dd>
-                </xsl:for-each>
-                </details>
-            </xsl:if>
+            <xsl:call-template name="render-mentions"/>
         </dl>
     </xsl:template>
 
@@ -356,18 +365,7 @@
                 </dd>
             </xsl:if>
             <xsl:call-template name="render-idno-list"/>
-            <xsl:if test="./tei:noteGrp/tei:note[@type = 'mentions']">
-                <details type="collapsible">
-                    <summary>Erwähnt in</summary>
-                <xsl:for-each select="./tei:noteGrp/tei:note[@type = 'mentions']">
-                    <dd>
-                        <a href="{replace(@target, '.xml', '.html')}">
-                            <xsl:value-of select="./text()"/>
-                        </a>
-                    </dd>
-                </xsl:for-each>
-                </details>
-            </xsl:if>
+            <xsl:call-template name="render-mentions"/>
         </xsl:variable>
 
         <xsl:choose>
@@ -406,128 +404,128 @@
                     <xsl:value-of select="./@when-iso"/>
                 </dd>
             </xsl:if>
-            <xsl:if test="./tei:eventName">            
-                <details type="collapsible">
-                    <summary>Bezeichnung</summary>
-                <xsl:for-each select="./tei:eventName">
-                    <dd>
-                        <xsl:value-of select="normalize-space(string-join(.//text()))"/>
-                    </dd>
-                </xsl:for-each>
-                </details>
-            </xsl:if>
-            <xsl:if test="./tei:note[@type = 'listorg']/tei:listOrg/tei:org">                
-                <details type="collapsible">
-                    <summary>Veranstaltet von</summary>
-                <xsl:for-each select="./tei:note[@type = 'listorg']/tei:listOrg/tei:org">
-                    <dd>
-                        <xsl:choose>
-                            <xsl:when test="./tei:orgName/@key">
-                                <a href="{./tei:orgName/@key}.html">
+
+            <xsl:call-template name="collapsible-list">
+                <xsl:with-param name="summary" select="'Bezeichnung'"/>
+                <xsl:with-param name="count" select="count(./tei:eventName)"/>
+                <xsl:with-param name="items" as="node()*">
+                    <xsl:for-each select="./tei:eventName">
+                        <dd>
+                            <xsl:value-of select="normalize-space(string-join(.//text()))"/>
+                        </dd>
+                    </xsl:for-each>
+                </xsl:with-param>
+            </xsl:call-template>
+
+            <xsl:call-template name="collapsible-list">
+                <xsl:with-param name="summary" select="'Veranstaltet von'"/>
+                <xsl:with-param name="count" select="count(./tei:note[@type = 'listorg']/tei:listOrg/tei:org)"/>
+                <xsl:with-param name="items" as="node()*">
+                    <xsl:for-each select="./tei:note[@type = 'listorg']/tei:listOrg/tei:org">
+                        <dd>
+                            <xsl:choose>
+                                <xsl:when test="./tei:orgName/@key">
+                                    <a href="{./tei:orgName/@key}.html">
+                                        <xsl:value-of select="normalize-space(string-join(./tei:orgName//text()))"/>
+                                    </a>
+                                </xsl:when>
+                                <xsl:otherwise>
                                     <xsl:value-of select="normalize-space(string-join(./tei:orgName//text()))"/>
-                                </a>
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <xsl:value-of select="normalize-space(string-join(./tei:orgName//text()))"/>
-                            </xsl:otherwise>
-                        </xsl:choose>
-                        <xsl:if test="@role">
-                            <xsl:text> (</xsl:text>
-                            <xsl:value-of select="@role"/>
-                            <xsl:text>)</xsl:text>
-                        </xsl:if>
-                    </dd>
-                </xsl:for-each>
-                </details>
-            </xsl:if>
-            <xsl:if test="./tei:listPlace/tei:place">
-                <details type="collapsible">
-                    <summary>Ort</summary>
-                <xsl:for-each select="./tei:listPlace/tei:place">
-                    <dd>
-                        <xsl:choose>
-                            <xsl:when test="./tei:placeName/@key">
-                                <a href="{./tei:placeName/@key}.html">
+                                </xsl:otherwise>
+                            </xsl:choose>
+                            <xsl:if test="@role">
+                                <xsl:text> (</xsl:text>
+                                <xsl:value-of select="@role"/>
+                                <xsl:text>)</xsl:text>
+                            </xsl:if>
+                        </dd>
+                    </xsl:for-each>
+                </xsl:with-param>
+            </xsl:call-template>
+
+            <xsl:call-template name="collapsible-list">
+                <xsl:with-param name="summary" select="'Ort'"/>
+                <xsl:with-param name="count" select="count(./tei:listPlace/tei:place)"/>
+                <xsl:with-param name="items" as="node()*">
+                    <xsl:for-each select="./tei:listPlace/tei:place">
+                        <dd>
+                            <xsl:choose>
+                                <xsl:when test="./tei:placeName/@key">
+                                    <a href="{./tei:placeName/@key}.html">
+                                        <xsl:value-of select="normalize-space(string-join(./tei:placeName//text()))"/>
+                                    </a>
+                                </xsl:when>
+                                <xsl:otherwise>
                                     <xsl:value-of select="normalize-space(string-join(./tei:placeName//text()))"/>
-                                </a>
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <xsl:value-of select="normalize-space(string-join(./tei:placeName//text()))"/>
-                            </xsl:otherwise>
-                        </xsl:choose>
-                        <xsl:if test="./tei:placeName/@role">
-                            <xsl:text> (</xsl:text>
-                            <xsl:value-of select="./tei:placeName/@role"/>
-                            <xsl:text>)</xsl:text>
-                        </xsl:if>
-                    </dd>
-                </xsl:for-each>
-                </details>
-            </xsl:if>
-            <xsl:if test="./tei:listPerson/tei:person">
-                <details type="collapsible">
-                    <summary>Beteiligte</summary>
-                <xsl:for-each select="./tei:listPerson/tei:person">
-                    <dd>
-                        <xsl:choose>
-                            <xsl:when test="./tei:persName/@key">
-                                <a href="{./tei:persName/@key}.html">
+                                </xsl:otherwise>
+                            </xsl:choose>
+                            <xsl:if test="./tei:placeName/@role">
+                                <xsl:text> (</xsl:text>
+                                <xsl:value-of select="./tei:placeName/@role"/>
+                                <xsl:text>)</xsl:text>
+                            </xsl:if>
+                        </dd>
+                    </xsl:for-each>
+                </xsl:with-param>
+            </xsl:call-template>
+
+            <xsl:call-template name="collapsible-list">
+                <xsl:with-param name="summary" select="'Beteiligte'"/>
+                <xsl:with-param name="count" select="count(./tei:listPerson/tei:person)"/>
+                <xsl:with-param name="items" as="node()*">
+                    <xsl:for-each select="./tei:listPerson/tei:person">
+                        <dd>
+                            <xsl:choose>
+                                <xsl:when test="./tei:persName/@key">
+                                    <a href="{./tei:persName/@key}.html">
+                                        <xsl:value-of select="normalize-space(string-join(./tei:persName//text()))"/>
+                                    </a>
+                                </xsl:when>
+                                <xsl:otherwise>
                                     <xsl:value-of select="normalize-space(string-join(./tei:persName//text()))"/>
-                                </a>
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <xsl:value-of select="normalize-space(string-join(./tei:persName//text()))"/>
-                            </xsl:otherwise>
-                        </xsl:choose>
-                        <xsl:if test="@role">
-                            <xsl:text> (</xsl:text>
-                            <xsl:value-of select="@role"/>
-                            <xsl:text>)</xsl:text>
-                        </xsl:if>
-                    </dd>
-                </xsl:for-each>
-                </details>
-            </xsl:if>
-            <xsl:if test="./tei:listBibl/tei:bibl[not(@type = 'collections')]">
-                <details type="collapsible">
-                    <summary>Werke</summary>
-                <xsl:for-each select="./tei:listBibl/tei:bibl[not(@type = 'collections')]">
-                    <dd>
-                        <xsl:choose>
-                            <xsl:when test="./tei:title/@key">
-                                <a href="{./tei:title/@key}.html">
+                                </xsl:otherwise>
+                            </xsl:choose>
+                            <xsl:if test="@role">
+                                <xsl:text> (</xsl:text>
+                                <xsl:value-of select="@role"/>
+                                <xsl:text>)</xsl:text>
+                            </xsl:if>
+                        </dd>
+                    </xsl:for-each>
+                </xsl:with-param>
+            </xsl:call-template>
+
+            <xsl:call-template name="collapsible-list">
+                <xsl:with-param name="summary" select="'Werke'"/>
+                <xsl:with-param name="count" select="count(./tei:listBibl/tei:bibl[not(@type = 'collections')])"/>
+                <xsl:with-param name="items" as="node()*">
+                    <xsl:for-each select="./tei:listBibl/tei:bibl[not(@type = 'collections')]">
+                        <dd>
+                            <xsl:choose>
+                                <xsl:when test="./tei:title/@key">
+                                    <a href="{./tei:title/@key}.html">
+                                        <xsl:value-of select="normalize-space(string-join(./tei:title//text()))"/>
+                                    </a>
+                                </xsl:when>
+                                <xsl:otherwise>
                                     <xsl:value-of select="normalize-space(string-join(./tei:title//text()))"/>
-                                </a>
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <xsl:value-of select="normalize-space(string-join(./tei:title//text()))"/>
-                            </xsl:otherwise>
-                        </xsl:choose>
-                        <xsl:if test="./tei:note[@type = 'relation-type']">
-                            <xsl:text> (</xsl:text>
-                            <xsl:value-of select="./tei:note[@type = 'relation-type'][1]"/>
-                            <xsl:text>)</xsl:text>
-                        </xsl:if>
-                    </dd>
-                </xsl:for-each>
-                </details>
-            </xsl:if>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                            <xsl:if test="./tei:note[@type = 'relation-type']">
+                                <xsl:text> (</xsl:text>
+                                <xsl:value-of select="./tei:note[@type = 'relation-type'][1]"/>
+                                <xsl:text>)</xsl:text>
+                            </xsl:if>
+                        </dd>
+                    </xsl:for-each>
+                </xsl:with-param>
+            </xsl:call-template>
+
             <xsl:call-template name="render-idno-list"/>
-            <xsl:if test="./tei:noteGrp/tei:note[@type = 'mentions']">
-                <details type="collapsible">
-                    <summary>Erwähnt in</summary>
-                <xsl:for-each select="./tei:noteGrp/tei:note[@type = 'mentions']">
-                    <dd>
-                        <a href="{replace(@target, '.xml', '.html')}">
-                            <xsl:value-of select="./text()"/>
-                        </a>
-                    </dd>
-                </xsl:for-each>
-                </details>
-            </xsl:if>
+            <xsl:call-template name="render-mentions"/>
         </dl>
     </xsl:template>
-    
+
     <xsl:template match="tei:place" name="place_detail">
         <dl>
             <dt>Ortsname</dt>
@@ -541,18 +539,21 @@
                     </xsl:otherwise>
                 </xsl:choose>
             </dd>
-            <xsl:if test="./tei:location[@type = 'located_in_place']">
-                <details type="collapsible">
-                    <summary>Teil von</summary>
-                <xsl:for-each select="./tei:location[@type = 'located_in_place']">
-                    <dd>
-                        <a href="{./tei:placeName/@key}.html">
-                            <xsl:value-of select="./tei:placeName"/>
-                        </a>
-                    </dd>
-                </xsl:for-each>
-                </details>
-            </xsl:if>
+
+            <xsl:call-template name="collapsible-list">
+                <xsl:with-param name="summary" select="'Teil von'"/>
+                <xsl:with-param name="count" select="count(./tei:location[@type = 'located_in_place'])"/>
+                <xsl:with-param name="items" as="node()*">
+                    <xsl:for-each select="./tei:location[@type = 'located_in_place']">
+                        <dd>
+                            <a href="{./tei:placeName/@key}.html">
+                                <xsl:value-of select="./tei:placeName"/>
+                            </a>
+                        </dd>
+                    </xsl:for-each>
+                </xsl:with-param>
+            </xsl:call-template>
+
             <xsl:if test="./tei:country">
                 <dt>Land</dt>
                 <dd>
@@ -574,24 +575,12 @@
                 </dd>
             </xsl:if>
             <xsl:if test=".//tei:location">
-                
                 <dt>Längengrad</dt>
                 <dd>
                     <xsl:value-of select="tokenize(./tei:location[1]/tei:geo[1], '\s')[2]"/>
                 </dd>
             </xsl:if>
-            <xsl:if test="./tei:noteGrp/tei:note[@type = 'mentions']">
-                <details type="collapsible">
-                    <summary>Erwähnt in</summary>
-                <xsl:for-each select="./tei:noteGrp/tei:note[@type = 'mentions']">
-                    <dd>
-                        <a href="{replace(@target, '.xml', '.html')}">
-                            <xsl:value-of select="./text()"/>
-                        </a>
-                    </dd>
-                </xsl:for-each>
-                </details>
-            </xsl:if>
+            <xsl:call-template name="render-mentions"/>
         </dl>
     </xsl:template>
 </xsl:stylesheet>
