@@ -178,3 +178,7 @@ dd {
   --bs-pagination-disabled-bg: var(--bs-secondary-bg);
   --bs-pagination-disabled-border-color: var(--kb-border-color);
 }
+
+summary {
+  font-weight: 700 ;
+}
