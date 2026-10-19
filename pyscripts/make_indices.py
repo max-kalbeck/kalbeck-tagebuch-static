@@ -1,110 +1,123 @@
 #!/usr/bin/env python3
 import glob
 import os
+import re
 
 import requests
 from acdh_tei_pyutils.tei import TeiReader
 from acdh_tei_pyutils.utils import check_for_hash
 from acdh_xml_pyutils.xml import NSMAP
-from functools import lru_cache
 
+PMB_BASE = "https://pmb.acdh.oeaw.ac.at/entity/"
+PMB_URI_RE = re.compile(r"^https://pmb\.acdh\.oeaw\.ac\.at/entity/(\d+)/?$")
+XML_ID = "{http://www.w3.org/XML/1998/namespace}id"
 
 INDICES_DIR = os.path.join("data", "indices")
 INDICES = [
-    {
-        "url": "https://pmb.acdh.oeaw.ac.at/media/listbibl.xml",
-        "title": "Werkregister",
-        "file_name": "listbibl.xml",
-        "entity_xpath": ".//tei:bibl[@xml:id]",
-    },
-    {
-        "url": "https://pmb.acdh.oeaw.ac.at/media/listperson.xml",
-        "title": "Personenregister",
-        "file_name": "listperson.xml",
-        "entity_xpath": ".//tei:person[@xml:id]",
-    },
-    {
-        "url": "https://pmb.acdh.oeaw.ac.at/media/listplace.xml",
-        "title": "Ortsregister",
-        "file_name": "listplace.xml",
-        "entity_xpath": ".//tei:place[@xml:id]",
-    },
-    {
-        "url": "https://pmb.acdh.oeaw.ac.at/media/listorg.xml",
-        "title": "Institutionsregister",
-        "file_name": "listorg.xml",
-        "entity_xpath": ".//tei:org[@xml:id]",
-    },
-    {
-        "url": "https://pmb.acdh.oeaw.ac.at/media/listevent.xml",
-        "title": "Ereignisregister",
-        "file_name": "listevent.xml",
-        "entity_xpath": ".//tei:event[@xml:id]",
-    },
+     {
+           "url": "https://pmb.acdh.oeaw.ac.at/media/listbibl.xml",
+           "title": "Werkregister",
+           "file_name": "listbibl.xml",
+           "entity_xpath": ".//tei:bibl[@xml:id]",
+       },
+       {
+           "url": "https://pmb.acdh.oeaw.ac.at/media/listperson.xml",
+           "title": "Personenregister",
+           "file_name": "listperson.xml",
+           "entity_xpath": ".//tei:person[@xml:id]",
+       },
+       {
+           "url": "https://pmb.acdh.oeaw.ac.at/media/listplace.xml",
+           "title": "Ortsregister",
+           "file_name": "listplace.xml",
+           "entity_xpath": ".//tei:place[@xml:id]",
+       },
+       {
+           "url": "https://pmb.acdh.oeaw.ac.at/media/listorg.xml",
+           "title": "Institutionsregister",
+           "file_name": "listorg.xml",
+           "entity_xpath": ".//tei:org[@xml:id]",
+       },
+       {
+           "url": "https://pmb.acdh.oeaw.ac.at/media/listevent.xml",
+           "title": "Ereignisregister",
+           "file_name": "listevent.xml",
+           "entity_xpath": ".//tei:event[@xml:id]",
+       },
 ]
 
 os.makedirs(INDICES_DIR, exist_ok=True)
+for f in glob.glob(f"{INDICES_DIR}/*.xml"):
+    os.remove(f)
 
-for x in glob.glob(f"{INDICES_DIR}/*.xml"):
-    os.remove(x)
-
-
-files = glob.glob("./data/editions/*.xml")
-
-
+# 1. ids referenced in the editions
 ids = set()
-for x in files:
-    doc = TeiReader(x)
-    for x in doc.any_xpath("//@ref[starts-with(., '#pmb')]"):
-        for y in x.split():
-            ref = check_for_hash(y)
-            ids.add(ref.replace("pmb", ""))
-            
-            
-@lru_cache(maxsize=None)
-def get_canonical_pmb_id(entity_id):
-    """Return the canonical PMB ID, accounting for merged entities."""
-    url = f"https://pmb.acdh.oeaw.ac.at/entity/{entity_id}/?format=json"
-    response = requests.get(url, timeout=30)
-    response.raise_for_status()
-    return f"pmb{response.json()['id']}"
-    
+for f in glob.glob("./data/editions/*.xml"):
+    doc = TeiReader(f)
+    for ref_attr in doc.any_xpath("//@ref[starts-with(., '#pmb')]"):
+        for y in ref_attr.split():
+            ids.add(check_for_hash(y).replace("pmb", ""))
 
-PMB_URI_TO_ID = {}
-for x in ids:
-    canonical_id = get_canonical_pmb_id(x)
-    PMB_URI_TO_ID[f"https://pmb.acdh.oeaw.ac.at/entity/{x}/"] = canonical_id
+# 2. nominal id -> canonical id, filled on demand (one request per relevant entity)
+CANONICAL = {}
 
+
+def resolve(nominal_ids):
+    """Canonical id for a group of aliases; requests only the first unknown one."""
+    for n in nominal_ids:
+        if n in CANONICAL:
+            return CANONICAL[n]
+    n = nominal_ids[0]
+    try:
+        r = requests.get(f"{PMB_BASE}{n}/?format=json", timeout=30)
+        r.raise_for_status()
+        canonical = str(r.json()["id"])
+    except Exception as e:
+        print(f"Could not resolve {n}: {e}")
+        canonical = n
+    for m in nominal_ids:  # all aliases of this entity share the canonical id
+        CANONICAL[m] = canonical
+    CANONICAL[canonical] = canonical
+    return canonical
+
+
+# 3. build the list files
 for x in INDICES:
     print(f"processing {x['file_name']}")
     save_path = os.path.join(INDICES_DIR, x["file_name"])
     try:
         doc = TeiReader(x["url"])
         seen_ids = set()
-        for ent in doc.any_xpath(f"{x['entity_xpath']}"):
-            uris = ent.xpath("./tei:idno/text()", namespaces=NSMAP)
-            for uri in  ["https://pmb.acdh.oeaw.ac.at/entity/50/",
-                        "https://pmb.acdh.oeaw.ac.at/entity/2316/",
-                        "https://pmb.acdh.oeaw.ac.at/entity/20954/",
-                        "https://pmb.acdh.oeaw.ac.at/entity/65221/",
-                        "https://pmb.acdh.oeaw.ac.at/entity/65223/"
-                        ]:
-                if uri in uris:
-                    print("x['url']", x["url"])
-                    print('uris', uris)
-                    print('uri, PMB_URI_TO_ID[uri]', uri,  PMB_URI_TO_ID[uri])
-                
-            pmb_id = next(
-                (PMB_URI_TO_ID[uri] for uri in uris if uri in PMB_URI_TO_ID), None
-            )
-            # drop entities with no matching pmb id, and any repeat of an id already kept
-            if pmb_id is None or pmb_id in seen_ids:
+        for ent in doc.any_xpath(x["entity_xpath"]):
+            pmb_idnos = []
+            for idno in ent.xpath("./tei:idno", namespaces=NSMAP):
+                m = PMB_URI_RE.match((idno.text or "").strip())
+                if m:
+                    pmb_idnos.append((idno, m.group(1)))
+            nominal = [n for _, n in pmb_idnos]
+
+            # relevant only if one of the aliases is used in the editions
+            relevant = [n for n in nominal if n in ids]
+            if not relevant:
                 ent.getparent().remove(ent)
                 continue
-            ent.attrib["{http://www.w3.org/XML/1998/namespace}id"] = pmb_id
 
-            # drop idno duplicates within this entity, e.g. the same DOI recorded
-            # with differing letter case
+            # at most one request, and only for a referenced alias
+            canonical = resolve(relevant)
+            if canonical in seen_ids:
+                ent.getparent().remove(ent)
+                continue
+            seen_ids.add(canonical)
+            ent.attrib[XML_ID] = f"pmb{canonical}"
+
+            # keep the first pmb idno as canonical, drop the other aliases
+            for i, (idno, _) in enumerate(pmb_idnos):
+                if i == 0:
+                    idno.text = f"{PMB_BASE}{canonical}/"
+                else:
+                    idno.getparent().remove(idno)
+
+            # drop remaining duplicate idnos (e.g. DOI differing by case)
             seen_idno_values = set()
             for idno in ent.xpath("./tei:idno", namespaces=NSMAP):
                 value = (idno.text or "").strip().lower()
@@ -112,8 +125,7 @@ for x in INDICES:
                     idno.getparent().remove(idno)
                 else:
                     seen_idno_values.add(value)
-            seen_ids.add(pmb_id)
 
         doc.tree_to_file(save_path)
-    except Exception:
-        print(f"Problem reading {x["url"]}")
+    except Exception as e:
+        print(f"Problem reading {x['url']}: {e}")
