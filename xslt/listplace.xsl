@@ -126,6 +126,7 @@
                 </script>
             </body>
         </html>
+
         <xsl:for-each select=".//tei:place[@xml:id]">
             <xsl:variable name="filename" select="concat(./@xml:id, '.html')"/>
             <xsl:variable name="name" select="normalize-space(string-join(./tei:placeName[1]//text()))"></xsl:variable>
@@ -176,7 +177,7 @@
                             <script>
                                 var lat = <xsl:value-of select="replace(tokenize(./tei:location[1]/tei:geo[1]/text(), ' ')[1], ',', '.')"/>;
                                 var long = <xsl:value-of select="replace(tokenize(./tei:location[1]/tei:geo[1]/text(), ' ')[2], ',', '.')"/>;
-                                $("#map_detail").css("height", "500px");
+                                document.getElementById("map_detail").style.height = "500px";
                                 var map = L.map('map_detail').setView([Number(lat), Number(long)], 13);
                                 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                                 maxZoom: 19,
@@ -185,6 +186,7 @@
                                 var marker = L.marker([Number(lat), Number(long)]).addTo(map);
                             </script>
                         </xsl:if>
+                        <xsl:call-template name="html_footer"/>
                     </body>
                 </html>
             </xsl:result-document>
