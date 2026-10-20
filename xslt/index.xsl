@@ -40,7 +40,7 @@
                                   <span class="display-6">1895/1897</span>
                              </h1>
                             <div class="logo">
-                                <img src="images/logo_networking_practices_1900_green_cropped.svg" alt="Kalbeck Logo" class="img-fluid"/>
+                                <img src="images/logo_networking_practices_1900_purple_cropped.svg" alt="Kalbeck Logo" class="img-fluid"/>
                             </div>
                             <p class="text-end">Herausgegeben von Henrike Rost. Wien 2026–</p>
                             <p class="lead">Die digitale Edition von Max Kalbecks Tagebücher  erschließt kulturelle Netzwerke in Wien um 1900.
