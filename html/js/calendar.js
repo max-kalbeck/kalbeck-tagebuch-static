@@ -1,7 +1,7 @@
 let calendar;
 let calendarData = [];
 
-const WRITTEN_COLOR = '#58724b';
+const WRITTEN_COLOR = '#49274b';
 const EMPTY_COLOR = '#adb5bd';
 
 function getEntryColor(item) {
