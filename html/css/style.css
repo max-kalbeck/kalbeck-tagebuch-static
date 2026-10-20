@@ -1,9 +1,9 @@
 :root {
   --kb-bg-color: #ffffff ;
-  --kb-border-color: #34412d; /*#0d6efd; */
-  --kb-color: #58724b; /* #68825b; */
-  --kb-color-dark: #48623b;
-  --kb-color-halo: #dbf5ce;
+  --kb-border-color: #250327 ; /* #34412d; #0d6efd; */
+  --kb-color:  #49274b ;       /* #58724b; #68825b; */
+  --kb-color-dark:#39173b ;    /* #48623b; */
+  --kb-color-halo: #ccaace ;   /* #dbf5ce; */
 
 }
 
