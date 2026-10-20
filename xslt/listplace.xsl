@@ -126,6 +126,7 @@
                 </script>
             </body>
         </html>
+
         <xsl:for-each select=".//tei:place[@xml:id]">
             <xsl:variable name="filename" select="concat(./@xml:id, '.html')"/>
             <xsl:variable name="name" select="normalize-space(string-join(./tei:placeName[1]//text()))"></xsl:variable>
@@ -185,6 +186,7 @@
                                 var marker = L.marker([Number(lat), Number(long)]).addTo(map);
                             </script>
                         </xsl:if>
+                        <xsl:call-template name="html_footer"/>
                     </body>
                 </html>
             </xsl:result-document>
