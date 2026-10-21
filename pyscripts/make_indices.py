@@ -11,7 +11,7 @@ from acdh_xml_pyutils.xml import NSMAP
 
 PMB_BASE = "https://pmb.acdh.oeaw.ac.at/entity/"
 PMB_URI_RE = re.compile(
-    r"^https://pmb\.acdh\.oeaw\.at/entity/(\d+)/?$"
+    r"^https://pmb\.acdh\.oeaw\.ac\.at/entity/(\d+)/?$"
 )
 XML_ID = "{http://www.w3.org/XML/1998/namespace}id"
 
@@ -50,8 +50,10 @@ INDICES = [
     },
 ]
 
+
 # Command-line arguments
 parser = argparse.ArgumentParser()
+
 parser.add_argument(
     "-r",
     "--retry",
@@ -62,6 +64,7 @@ parser.add_argument(
     metavar="N",
     help="Retry failed requests N times (default: 1 if specified).",
 )
+
 args = parser.parse_args()
 
 if args.retry < 0:
@@ -75,8 +78,8 @@ for f in glob.glob("./data/editions/*.xml"):
     doc = TeiReader(f)
 
     for ref_attr in doc.any_xpath("//@ref[starts-with(., '#pmb')]"):
-        for y in ref_attr.split():
-            ids.add(check_for_hash(y).replace("pmb", ""))
+        for ref in ref_attr.split():
+            ids.add(check_for_hash(ref).replace("pmb", ""))
 
 
 # 2. Cache canonical IDs and track failed requests.
@@ -86,19 +89,29 @@ for f in glob.glob("./data/editions/*.xml"):
 #
 # FAILED:
 #     nominal ID used for the request -> aliases belonging to the entity
+#
+# UNRESOLVED:
+#     IDs whose canonical mapping is only a temporary fallback
 
 CANONICAL = {}
 FAILED = {}
+UNRESOLVED = set()
 
 
 def request_canonical(nominal_id):
     """Request the canonical PMB ID for a nominal ID."""
-    r = requests.get(
+    response = requests.get(
         f"{PMB_BASE}{nominal_id}/?format=json",
         timeout=30,
     )
-    r.raise_for_status()
-    return str(r.json()["id"])
+    response.raise_for_status()
+
+    canonical = response.json()["id"]
+
+    if canonical is None:
+        raise ValueError("PMB response contains no canonical ID")
+
+    return str(canonical)
 
 
 def resolve(nominal_ids):
@@ -106,34 +119,50 @@ def resolve(nominal_ids):
     if not nominal_ids:
         return None
 
-    for n in nominal_ids:
-        if n in CANONICAL:
-            return CANONICAL[n]
+    # Return a cached result only if it is not a temporary fallback.
+    for nominal_id in nominal_ids:
+        if (
+            nominal_id in CANONICAL
+            and nominal_id not in UNRESOLVED
+        ):
+            return CANONICAL[nominal_id]
+
+    # Avoid issuing another request for an already pending failure.
+    for nominal_id in nominal_ids:
+        if nominal_id in FAILED:
+            return CANONICAL.get(nominal_id, nominal_id)
 
     nominal_id = nominal_ids[0]
 
     try:
         canonical = request_canonical(nominal_id)
 
-    except Exception as e:
-        print(f"Could not resolve {nominal_id}: {e}")
+    except Exception as exc:
+        print(f"Could not resolve {nominal_id}: {exc}")
 
         FAILED[nominal_id] = list(nominal_ids)
+        UNRESOLVED.update(nominal_ids)
 
         # Use the nominal ID as a temporary fallback.
-        # The retry phase can update this mapping later.
         canonical = nominal_id
 
-    for n in nominal_ids:
-        CANONICAL[n] = canonical
+    else:
+        # A successful request resolves all aliases for this entity.
+        UNRESOLVED.difference_update(nominal_ids)
+
+    for alias in nominal_ids:
+        CANONICAL[alias] = canonical
 
     CANONICAL[canonical] = canonical
+
+    if canonical not in UNRESOLVED:
+        UNRESOLVED.discard(canonical)
 
     return canonical
 
 
 def retry_failed(remaining):
-    """Retry failed requests recursively, refreshing the failure list."""
+    """Retry failed requests, updating canonical mappings on success."""
     if remaining <= 0 or not FAILED:
         return
 
@@ -149,24 +178,24 @@ def retry_failed(remaining):
         try:
             canonical = request_canonical(nominal_id)
 
-        except Exception as e:
-            print(f"Retry failed for {nominal_id}: {e}")
+        except Exception as exc:
+            print(f"Retry failed for {nominal_id}: {exc}")
 
-            # Only requests that fail again remain in FAILED.
+            # Only requests that fail again remain pending.
             FAILED[nominal_id] = nominal_ids
 
         else:
-            print(
-                f"Resolved {nominal_id} -> {canonical}"
-            )
+            print(f"Resolved {nominal_id} -> {canonical}")
 
             # Update every alias associated with this entity.
-            for n in nominal_ids:
-                CANONICAL[n] = canonical
+            for alias in nominal_ids:
+                CANONICAL[alias] = canonical
+                UNRESOLVED.discard(alias)
 
             CANONICAL[canonical] = canonical
+            UNRESOLVED.discard(canonical)
 
-    # Recurse only if retries remain and there are outstanding failures.
+    # Retry again only if failures remain and attempts are available.
     retry_failed(remaining - 1)
 
 
@@ -183,8 +212,8 @@ for index in INDICES:
     try:
         doc = TeiReader(index["url"])
 
-    except Exception as e:
-        print(f"Problem reading {index['url']}: {e}")
+    except Exception as exc:
+        print(f"Problem reading {index['url']}: {exc}")
         continue
 
     entities = []
@@ -198,10 +227,14 @@ for index in INDICES:
             if match:
                 pmb_idnos.append((idno, match.group(1)))
 
-        nominal_ids = [n for _, n in pmb_idnos]
+        nominal_ids = [nominal_id for _, nominal_id in pmb_idnos]
 
         # Retain only entities referenced in the editions.
-        relevant = [n for n in nominal_ids if n in ids]
+        relevant = [
+            nominal_id
+            for nominal_id in nominal_ids
+            if nominal_id in ids
+        ]
 
         if not relevant:
             ent.getparent().remove(ent)
@@ -237,7 +270,7 @@ for index, doc, entities in documents:
     seen_ids = set()
 
     for ent, pmb_idnos, relevant in entities:
-        # Retrieve the final canonical ID, including any successful retry.
+        # Retrieve the final canonical ID, including successful retries.
         canonical = resolve(relevant)
 
         if canonical in seen_ids:
@@ -273,5 +306,5 @@ for index, doc, entities in documents:
     try:
         doc.tree_to_file(save_path)
 
-    except Exception as e:
-        print(f"Problem writing {save_path}: {e}")
+    except Exception as exc:
+        print(f"Problem writing {save_path}: {exc}")
