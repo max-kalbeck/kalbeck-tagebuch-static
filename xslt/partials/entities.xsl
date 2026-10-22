@@ -426,11 +426,11 @@
                             <xsl:choose>
                                 <xsl:when test="./tei:orgName/@key">
                                     <a href="{./tei:orgName/@key}.html">
-                                        <xsl:value-of select="normalize-space(string-join(./tei:orgName//text()))"/>
+                                        <xsl:value-of select="normalize-space(string-join(./tei:orgName[1]//text()))"/>
                                     </a>
                                 </xsl:when>
                                 <xsl:otherwise>
-                                    <xsl:value-of select="normalize-space(string-join(./tei:orgName//text()))"/>
+                                    <xsl:value-of select="normalize-space(string-join(./tei:orgName[1]//text()))"/>
                                 </xsl:otherwise>
                             </xsl:choose>
                             <xsl:if test="@role">
@@ -451,17 +451,17 @@
                         <dd>
                             <xsl:choose>
                                 <xsl:when test="./tei:placeName/@key">
-                                    <a href="{./tei:placeName/@key}.html">
-                                        <xsl:value-of select="normalize-space(string-join(./tei:placeName//text()))"/>
+                                    <a href="{./tei:placeName[1]/@key}.html">
+                                        <xsl:value-of select="normalize-space(string-join(./tei:placeName[1]//text()))"/>
                                     </a>
                                 </xsl:when>
                                 <xsl:otherwise>
-                                    <xsl:value-of select="normalize-space(string-join(./tei:placeName//text()))"/>
+                                    <xsl:value-of select="normalize-space(string-join(./tei:placeName[1]//text()))"/>
                                 </xsl:otherwise>
                             </xsl:choose>
                             <xsl:if test="./tei:placeName/@role">
                                 <xsl:text> (</xsl:text>
-                                <xsl:value-of select="./tei:placeName/@role"/>
+                                <xsl:value-of select="./tei:placeName[1]/@role"/>
                                 <xsl:text>)</xsl:text>
                             </xsl:if>
                         </dd>
@@ -477,12 +477,12 @@
                         <dd>
                             <xsl:choose>
                                 <xsl:when test="./tei:persName/@key">
-                                    <a href="{./tei:persName/@key}.html">
-                                        <xsl:value-of select="normalize-space(string-join(./tei:persName//text()))"/>
+                                    <a href="{./tei:persName[1]/@key}.html">
+                                        <xsl:value-of select="normalize-space(string-join(./tei:persName[1]//text()))"/>
                                     </a>
                                 </xsl:when>
                                 <xsl:otherwise>
-                                    <xsl:value-of select="normalize-space(string-join(./tei:persName//text()))"/>
+                                    <xsl:value-of select="normalize-space(string-join(./tei:persName[1]//text()))"/>
                                 </xsl:otherwise>
                             </xsl:choose>
                             <xsl:if test="@role">
@@ -503,12 +503,12 @@
                         <dd>
                             <xsl:choose>
                                 <xsl:when test="./tei:title/@key">
-                                    <a href="{./tei:title/@key}.html">
-                                        <xsl:value-of select="normalize-space(string-join(./tei:title//text()))"/>
+                                    <a href="{./tei:title[1]/@key}.html">
+                                        <xsl:value-of select="normalize-space(string-join(./tei:title[1]//text()))"/>
                                     </a>
                                 </xsl:when>
                                 <xsl:otherwise>
-                                    <xsl:value-of select="normalize-space(string-join(./tei:title//text()))"/>
+                                    <xsl:value-of select="normalize-space(string-join(./tei:title[1]//text()))"/>
                                 </xsl:otherwise>
                             </xsl:choose>
                             <xsl:if test="./tei:note[@type = 'relation-type']">
@@ -532,10 +532,10 @@
             <dd>
                 <xsl:choose>
                     <xsl:when test="./tei:settlement/tei:placeName">
-                        <xsl:value-of select="./tei:settlement/tei:placeName"/>
+                        <xsl:value-of select="./tei:settlement/tei:placeName[1]"/>
                     </xsl:when>
                     <xsl:otherwise>
-                        <xsl:value-of select="./tei:placeName"/>
+                        <xsl:value-of select="./tei:placeName[1]"/>
                     </xsl:otherwise>
                 </xsl:choose>
             </dd>
@@ -547,7 +547,7 @@
                     <xsl:for-each select="./tei:location[@type = 'located_in_place']">
                         <dd>
                             <a href="{./tei:placeName/@key}.html">
-                                <xsl:value-of select="./tei:placeName"/>
+                                <xsl:value-of select="./tei:placeName[1]"/>
                             </a>
                         </dd>
                     </xsl:for-each>
