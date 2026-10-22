@@ -1,14 +1,18 @@
 :root {
   --kb-bg-color: #ffffff ;
   --kb-border-color: #250327 ; /* #34412d; #0d6efd; */
+  --kb-color-lightest: #F9D7Fb;
+  --kb-color-light: #69476b;
   --kb-color:  #49274b ;       /* #58724b; #68825b; */
   --kb-color-dark:#39173b ;    /* #48623b; */
   --kb-color-halo:  color-mix(in srgb, var(--kb-border-color) 5%, transparent); /* #ccaace   #dbf5ce; */
+  --kb-color-halo-solider: color-mix(in srgb, var(--kb-border-color) 10%, transparent);
   --dt-row_background-stripe: 37, 3, 39!important;
-  --bs-link-hover-color: var(--kb-color-dark);
+  --bs-link-hover-color: var(--kb-color);
   --bs-tertiary-bg: var(--dt-row_background-stripe)!important;
   --bs-tertiary-bg: var(--kb-color-halo)!important;
   --bs-tertiary-bg-rgb: var(--dt-row_background-stripe)!important;
+  --bs-border-color:var(--kb-color)!important ;
 }
 
 .navbar {
@@ -33,13 +37,15 @@
   color: var(--bs-btn-color);
 }
 
+
+
 .btn-outline-primary, .btn-outline-secondary {
   --bs-btn-color: var(--kb-color) !important;
   --bs-btn-hover-color: var(--kb-color) !important;
   --bs-btn-border-color: var(--kb-color) !important;
   --bs-btn-hover-color:  var(--kb-color) !important;
   --bs-btn-hover-bg: var(--kb-color-halo) !important;
-  --bs-btn-hover-border-color: var(--kb-border-color) !important;
+  --bs-btn-hover-border-color: var(--kb-color) !important;
   --bs-btn-focus-shadow-rgb: 13,110,253;
   --bs-btn-active-color: #fff;
   --bs-btn-active-bg: var(--kb-color) !important;
@@ -51,29 +57,23 @@
   --bs-gradient: none;
 }
 
+
 .btn-primary, .btn-secondary {
   --bs-btn-color: #fff;
   --bs-btn-bg: var(--kb-color)!important;
-  --bs-btn-border-color: var(--kb-color-dark);
+  --bs-btn-border-color: var(--kb-color);
   --bs-btn-hover-color: #fff;
   --bs-btn-hover-bg: var(--kb-color-dark); /* #0b5ed7; */
-  --bs-btn-hover-border-color: var(--kb-color-light-border) ; /*#0a58ca; */
+  --bs-btn-hover-border-color: var(--kb-color-lightest) ; /*#0a58ca; */
   --bs-btn-focus-shadow-rgb: 49,132,253;
   --bs-btn-active-color: #fff;
-  --bs-btn-active-bg: var(--kb-color-light-border) ;
-  --bs-btn-active-border-color: var(--kb-color-light-border-2)  ;/* #0a53be; */
+  --bs-btn-active-bg: var(--kb-color-light) ;
+  --bs-btn-active-border-color: var(--kb-color-light)  ;/* #0a53be; */
   --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
   --bs-btn-disabled-color: #fff;
   --bs-btn-disabled-bg: var(--kb-color);
   --bs-btn-disabled-border-color: var(--kb-color);
-  
 }
-
-
-.btn{
-
-}
-
 
 .navbar-brand img {
     height: 40px;
@@ -181,7 +181,7 @@ dd {
 }
 
 .pagination {
-  --bs-pagination-color:  var(--kb-border-color);
+  --bs-pagination-color:  var(--kb-color);
   --bs-pagination-bg: var(--bs-body-bg);
   --bs-pagination-border-width: var(--bs-border-width);
   --bs-pagination-border-color: var(--bs-border-color);
@@ -194,9 +194,10 @@ dd {
   --bs-pagination-active-color: #fff;
   --bs-pagination-active-bg: var(--kb-color);
   --bs-pagination-active-border-color: var(--kb-color);
-  --bs-pagination-disabled-color: var(--bs-secondary-color);
-  --bs-pagination-disabled-bg: var(--kb-color-halo);
-  --bs-pagination-disabled-border-color: var(--kb-border-color);
+  --bs-pagination-disabled-color: var(--kb-color-halo-solider);
+  --bs-pagination-disabled-bg: var(--bs-body-bg);
+  --bs-pagination-disabled-border-color: var(--kb-color-halo-solider);
+  --bs-pagination-focus-box-shadow: unset;
 }
 
 summary {
@@ -223,4 +224,37 @@ table.month td.day .day-content:hover {
 
 .leaflet-container a{
   color: var(--kb-color)!important;
+}
+
+
+/* Search */
+.form-control:focus {
+  border-color: var(--kb-color)!important;
+  box-shadow: 0 0 0 0.25rem var(--kb-border-color)!important;
+}
+
+.dt-paging-button{
+  margin-left: .3rem;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.page-link {
+  border-top-left-radius: var(--bs-pagination-border-radius)!important;
+  border-bottom-left-radius: var(--bs-pagination-border-radius)!important;
+  padding: .3rem .6rem;
+  display: block;
+  border-radius: 5px;
+  transition: background-color .2s ease-out;
+  border: 1px solid var(--kb-color) !important;
+}
+
+.disabled * {
+  border: 1px solid var(--kb-color-halo-solider) !important;
+  color: var(--kb-color-halo-solider) !important;
+  cursor: not-allowed!important;
+}
+
+.page-item:not(:first-child) .page-link {
+  margin-left: calc(-1 * var(--bs-border-width));
 }
