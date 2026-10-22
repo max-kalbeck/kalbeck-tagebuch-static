@@ -6,7 +6,9 @@
   --kb-color-halo:  color-mix(in srgb, var(--kb-border-color) 5%, transparent); /* #ccaace   #dbf5ce; */
   --dt-row_background-stripe: 37, 3, 39!important;
   --bs-link-hover-color: var(--kb-color-dark);
-
+  --bs-tertiary-bg: var(--dt-row_background-stripe)!important;
+  --bs-tertiary-bg: var(--kb-color-halo)!important;
+  --bs-tertiary-bg-rgb: var(--dt-row_background-stripe)!important;
 }
 
 .navbar {
@@ -30,12 +32,12 @@
   color: var(--bs-btn-color);
 }
 
-
 .btn-outline-primary, .btn-outline-secondary {
   --bs-btn-color: var(--kb-color) !important;
+  --bs-btn-hover-color: var(--kb-color) !important;
   --bs-btn-border-color: var(--kb-color) !important;
-  --bs-btn-hover-color: #fff;
-  --bs-btn-hover-bg: var(--kb-color) !important;
+  --bs-btn-hover-color:  var(--kb-color) !important;
+  --bs-btn-hover-bg: var(--kb-color-halo) !important;
   --bs-btn-hover-border-color: var(--kb-border-color) !important;
   --bs-btn-focus-shadow-rgb: 13,110,253;
   --bs-btn-active-color: #fff;
@@ -50,7 +52,7 @@
 
 .btn-primary, .btn-secondary {
   --bs-btn-color: #fff;
-  --bs-btn-bg: var(--kb-color);
+  --bs-btn-bg: var(--kb-color)!important;
   --bs-btn-border-color: var(--kb-color-dark);
   --bs-btn-hover-color: #fff;
   --bs-btn-hover-bg: var(--kb-color-dark); /* #0b5ed7; */
@@ -65,6 +67,12 @@
   --bs-btn-disabled-border-color: var(--kb-color);
   
 }
+
+
+.btn{
+
+}
+
 
 .navbar-brand img {
     height: 40px;
@@ -185,3 +193,7 @@ summary {
   font-weight: 700 ;
 }
 
+
+table.month td.day .day-content:hover {
+  background: var(--kb-color-halo) !important;
+}

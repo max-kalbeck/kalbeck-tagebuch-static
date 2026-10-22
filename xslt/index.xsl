@@ -53,7 +53,7 @@
                           <div class="col-10 col-sm-8 col-lg-6">
                              <figure class="figure index-portrait">
                                  <img src="images/kalbeck-tbs-scaled.jpg" class="d-block mx-lg-auto img-fluid" alt="Kalbecks Tagebücher" width="600" loading="lazy"/>
-                                 <figcaption class="pt-3 figure-caption">Max Kalbeck, unknown photographer, Public domain, via <a href="https://commons.wikimedia.org/wiki/File:Max_Kalbeck.jpg">Wikimedia Commons</a></figcaption>
+                                 <figcaption class="pt-3 figure-caption">Max Kalbecks Tagebücher (1895/97); Privatbesitz; <a href="https://creativecommons.org/licenses/by/4.0/deed.de" alt="Creative Commons Namensnennung 4.0 International">CC BY 4.0</a> (Foto: Henrike Rost)</figcaption>
                              </figure>
                           </div>
                        </div>
