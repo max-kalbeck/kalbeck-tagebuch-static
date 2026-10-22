@@ -90,7 +90,23 @@
   color: #fff !important;
 }
 
+.ais-Hits-item:hover {
+  background-color: var(--kb-color-halo)!important;/* rgba(84, 160, 183, 0.16); */
+}
 
+
+ .ais-Snippet-highlighted {
+    background-color: var(--kb-color-lightest)!important; /* rgba(84, 160, 183, 0.16); */
+ }
+
+ .ais-RefinementList-showMore--disabled {
+  color: var(--kb-color-halo-solider)!important;
+  background-color: white !important;
+  border: 1px solid var(--kb-color-halo-solider) !important;
+  opacity: 1!important;
+  cursor: not-allowed!important;
+
+ }
 
 /* .pagination {
   --bs-pagination-color:  var(--kb-color);
