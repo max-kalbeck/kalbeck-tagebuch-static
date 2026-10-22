@@ -19,6 +19,7 @@
   --bs-navbar-hover-color: grey ;
 }
 
+
 .bg-body-tertiary {
   --bs-bg-opacity: 1;
   background-color: var(--kb-color) !important;
@@ -97,6 +98,15 @@ color: black;
 
 a {
 color: var(--kb-color);
+text-decoration: none!important
+}
+
+a:hover, a:focus, a:active {
+text-decoration: underline!important
+}
+
+.navbar a, a.btn {
+  text-decoration: none!important;
 }
 
 h1, h2 {
@@ -196,4 +206,21 @@ summary {
 
 table.month td.day .day-content:hover {
   background: var(--kb-color-halo) !important;
+}
+
+.leaflet-tile {
+    filter: sepia(0.2) hue-rotate(235deg) saturate(0.65);
+}
+
+.leaflet-container::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(73, 39, 75, 0.25);
+    pointer-events: none;
+    z-index: 1000;
+}
+
+.leaflet-container a{
+  color: var(--kb-color)!important;
 }
