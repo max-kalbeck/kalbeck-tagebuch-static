@@ -3,7 +3,9 @@
   --kb-border-color: #250327 ; /* #34412d; #0d6efd; */
   --kb-color:  #49274b ;       /* #58724b; #68825b; */
   --kb-color-dark:#39173b ;    /* #48623b; */
-  --kb-color-halo: #ccaace ;   /* #dbf5ce; */
+  --kb-color-halo:  color-mix(in srgb, var(--kb-border-color) 5%, transparent); /* #ccaace   #dbf5ce; */
+  --dt-row_background-stripe: 37, 3, 39!important;
+  --bs-link-hover-color: var(--kb-color-dark);
 
 }
 
@@ -175,10 +177,11 @@ dd {
   --bs-pagination-active-bg: var(--kb-color);
   --bs-pagination-active-border-color: var(--kb-color);
   --bs-pagination-disabled-color: var(--bs-secondary-color);
-  --bs-pagination-disabled-bg: var(--bs-secondary-bg);
+  --bs-pagination-disabled-bg: var(--kb-color-halo);
   --bs-pagination-disabled-border-color: var(--kb-border-color);
 }
 
 summary {
   font-weight: 700 ;
 }
+
