@@ -29,6 +29,10 @@
   background-color: var(--kb-color) !important;
 }
 
+.bg-kb-color {
+  background-color: var(--kb-color) !important;
+}
+
 
 .navbar-nav{
   --bs-nav-link-hover-color: white;
