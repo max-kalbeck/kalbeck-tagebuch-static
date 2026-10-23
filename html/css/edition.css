@@ -1,3 +1,9 @@
 .float-text {
 	color: #cccccc;
 }
+
+.entity{
+	text-decoration: underline dotted;
+	color: var(--kb-color);
+	cursor: zoom-in;
+}
