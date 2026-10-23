@@ -34,7 +34,7 @@ function createyearcell(val) {
     <div class="col-xs-6" style="width: auto;">
       <button
         id="ybtn${val}"
-        class="btn btn-light rounded-0 yearbtn"
+        class="btn btn-light yearbtn"
         value="${val}"
         onclick="updateyear(this.value)">
         ${val}
