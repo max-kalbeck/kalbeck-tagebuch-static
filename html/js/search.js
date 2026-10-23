@@ -261,4 +261,3 @@ search.addWidgets([
 ]);
 
 search.start();
-
