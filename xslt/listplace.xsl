@@ -172,13 +172,19 @@
                                 </ol>
                             </nav>
                             <div class="container">
-                                <h1>
-                                    <xsl:value-of select="$name"/>
-                                </h1>
-                                <xsl:call-template name="place_detail"/>
-                                <xsl:if test="./tei:location/tei:geo">
-                                    <div id="map_detail"/>
-                                </xsl:if>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                         <h1>
+                                            <xsl:value-of select="$name"/>
+                                        </h1>
+                                        <xsl:call-template name="place_detail"/>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <xsl:if test="./tei:location/tei:geo">
+                                            <div id="map_detail"/>
+                                        </xsl:if>
+                                    </div>
+                                </div>
                                 <div class="text-center p-4">
                                     <xsl:call-template name="blockquote">
                                         <xsl:with-param name="currentTitle" select="$name"/>

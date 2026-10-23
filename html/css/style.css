@@ -259,3 +259,7 @@ table.month td.day .day-content:hover {
 .leaflet-tile-pane {
   filter: url(#duotone-plum);
 }
+
+.citation-row{
+  margin-top: 4rem;
+}
