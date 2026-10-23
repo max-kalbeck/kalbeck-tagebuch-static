@@ -6,14 +6,13 @@
 const map_cfg = {
   div_id: "map",
   initial_zoom: 5,
-  max_zoom: 9,
+  max_zoom: 18,
   min_zoom: 2,
-
   /* Zoom level when clicking a table row */
-  on_row_click_zoom: 9,
+  on_row_click_zoom: 16,
 
   initial_coordinates: [47.0708, 15.4386],
-  base_map_url: "https://tile.openstreetmap.org/{z}/{x}/{y}{r}.png",
+  base_map_url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
   attribution:
     '<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   base_map_label: "Aktuelle Karte",
@@ -27,7 +26,7 @@ const table_cfg = {
   table_div_html_id: "placesTable",
 };
 
-/* Optional WMS overlay configuration */
+/* Optional WMS overlay configuration
 let wms_cfg = {
   label: "Stadtplan 1858 (k.k. Ministerium des Inneren)",
   wms_url: "https://data.wien.gv.at/daten/wms?version=1.1.1",
@@ -44,9 +43,9 @@ let wms_cfg = {
     url: "https://data.wien.gv.at/daten/wms?version%3D1.1.1",
     opacity: 0.5,
   },
-};
+}; */
 
-/* Optional TMS overlay configuration */
+/* Optional TMS overlay configuration 
 let tms_cfg = {
   label: "Europa um 1700",
   tms_url: "https://emt-project.github.io/mapserver/map_01/{z}/{x}/{y}.png",
@@ -57,7 +56,7 @@ let tms_cfg = {
     maxZoom: 9,
     attribution: "Austrian National Library (ÖNB)",
   },
-};
+};*/
 
 /* Extract plain text from the Ortsname cell, which contains a link. */
 function stripHtml(html) {

@@ -123,10 +123,10 @@ div#map {
 
 /* Match bootstrap navlink focus outline color. */
 :focus-visible {
-  outline: 2;
-  box-shadow: 0 0 0 0.25rem var(--kb-color);
+  outline: 1px solid var(--kb-color);
+  /* box-shadow: 0 0 0 0.25rem var(--kb-color); */
   font-weight: 600;
-}
+} */
 
 .entity {
   text-decoration: underline dotted;
@@ -213,18 +213,7 @@ table.month td.day .day-content:hover {
   background: var(--kb-color-halo) !important;
 }
 
-.leaflet-tile {
-    filter: sepia(0.2) hue-rotate(235deg) saturate(0.65);
-}
 
-.leaflet-container::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: rgba(73, 39, 75, 0.25);
-    pointer-events: none;
-    z-index: 1000;
-}
 
 .leaflet-container a{
   color: var(--kb-color)!important;
@@ -261,4 +250,8 @@ table.month td.day .day-content:hover {
 
 .page-item:not(:first-child) .page-link {
   margin-left: calc(-1 * var(--bs-border-width));
+}
+
+.leaflet-tile-pane {
+  filter: url(#duotone-plum);
 }
