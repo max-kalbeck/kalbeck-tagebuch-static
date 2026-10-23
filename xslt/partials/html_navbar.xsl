@@ -48,10 +48,10 @@
                             <li class="nav-item dropdown">
                                  <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Technisches</a>
                                 <ul class="dropdown-menu">
-                                     <li class="dropdown-item">
+                                     <li>
                                         <a title="Kodierungsrichtlinien" class="dropdown-item" href="encoding.html">Kodierungsrichtlinien</a>
                                     </li>
-                                    <li class="dropdown-item">
+                                    <li>
                                         <a title="API" class="dropdown-item" href="api.xml">API</a>
                                     </li>
                                 </ul>
