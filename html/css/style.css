@@ -45,9 +45,16 @@
   color: var(--bs-btn-color);
 }
 
+.btn-light.focus {
+  --bs-btn-bg: var(--kb-color) !important;
+ --bs-btn-color: #fff!important;
+ --bs-btn-border-color: var(--kb-color) !important;
+--bs-btn-hover-bg: var(--kb-color-dark) !important;
+--bs-btn-hover-border-color: var(--kb-color-lightest) !important;
+--bs-btn-hover-color: #fff!important;
+}
 
-
-.btn-outline-primary, .btn-outline-secondary {
+.btn-outline-primary, .btn-outline-secondary, .btn-light {
   --bs-btn-color: var(--kb-color) !important;
   --bs-btn-hover-color: var(--kb-color) !important;
   --bs-btn-border-color: var(--kb-color) !important;
@@ -146,6 +153,8 @@ div#map {
   height: 800px;
 }
 
+
+/* Check this later */ 
 .search-highlight {
   background-color: #ffe066;
   padding: 0 1px;
@@ -164,12 +173,6 @@ div#map {
 
 .underline {
    text-decoration: underline solid;
-}
-
-
-.btn.btn-light.rounded-0.yearbtn.focus {
-  background-color: var(--kb-border-color);
-  color: white;
 }
 
 dd {
