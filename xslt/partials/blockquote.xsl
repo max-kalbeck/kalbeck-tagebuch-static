@@ -18,7 +18,7 @@
         <xsl:variable name="entryAuthor" select="root(.)//tei:titleStmt/tei:author[1]"/>
         <xsl:variable name="isKalbeckAuthor" select="boolean($entryAuthor[normalize-space(.) = 'Kalbeck, Max' or @ref = '#pmb11857'])"/>
 
-        <div>
+        <div class="citation-row">
             <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#{$modalId}">
                 Zitiervorschlag
             </button>
