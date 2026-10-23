@@ -28,6 +28,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h1 class="modal-title fs-5">Zitiervorschlag</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"/>
                         </div>
                         <div class="modal-body">
                             <div class="meta-caption">Empfohlene Zitierweise</div>
@@ -128,9 +129,6 @@
                                     </xsl:otherwise>
                                 </xsl:choose>
                             </blockquote>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
                         </div>
                     </div>
                 </div>
