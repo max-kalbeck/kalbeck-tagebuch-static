@@ -15,6 +15,10 @@
   --bs-border-color:var(--kb-color)!important ;
 }
 
+.btn-close{
+    --bs-btn-close-focus-shadow: 0 0 0 0.25rem var(--kb-color-light)!important;
+}
+
 .navbar {
 	--bs-navbar-color: white; 
 	--bs-navbar-brand-color: white ;
