@@ -90,7 +90,7 @@ function populateMapFromTable(map, on_row_click_zoom, markers, table_cfg) {
 /////////////////////
 // building the map//
 /////////////////////
-function build_map_and_table(map_cfg, table_cfg, wms_cfg = null, tms_cfg = null) {
+function build_map_and_table(map_cfg, table_cfg) { // , wms_cfg = null , tms_cfg = null
   console.log("loading map");
   let map = L.map(map_cfg.div_id).setView(
     map_cfg.initial_coordinates,
@@ -108,24 +108,25 @@ function build_map_and_table(map_cfg, table_cfg, wms_cfg = null, tms_cfg = null)
   // handle the layers
   // order of adding matters!
   tile_layer.addTo(map);
-  // if wms_cfg is provided wms map layer gets added
+  /* // if wms_cfg is provided wms map layer gets added
   if (wms_cfg !== null) {
     // this is for the page gui / switch for toggling overlays
     let wms_layer = L.tileLayer.wms(wms_cfg.wms_url, wms_cfg.layerOptions);
     wms_layer.addTo(map);
     overlay_control[wms_cfg.label] = wms_layer;
-  }
+  } */
 
-  // if tms_cfg is provided tms map layer gets added
+  /* // if tms_cfg is provided tms map layer gets added
   if (tms_cfg !== null) {
     // this is for the page gui / switch for toggling overlays
     let tms_layer = L.tileLayer('https://emt-project.github.io/mapserver/map_01/{z}/{x}/{y}.png', tms_cfg.layerOptions);
     tms_layer.addTo(map);
     overlay_control[tms_cfg.label] = tms_layer;
-  }
-  // this has to happen here, in case historical map gets added
+  } 
+  // this has to happen here, in case historical map gets added */
+  
   L.control.layers(null, overlay_control).addTo(map);
-  markers.addTo(map);
+  markers.addTo(map); 
 
   populateMapFromTable(map, map_cfg.on_row_click_zoom, markers, table_cfg);
 }

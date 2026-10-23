@@ -117,12 +117,28 @@
                 </main>
                 <xsl:call-template name="html_footer"/>
                <xsl:call-template name="datatables_import" />
+               <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+                <filter id="duotone-plum" color-interpolation-filters="sRGB">
+                <!-- convert to grayscale -->
+                <feColorMatrix type="matrix"
+                    values="0.33 0.33 0.33 0 0
+                        0.33 0.33 0.33 0 0
+                        0.33 0.33 0.33 0 0
+                        0    0    0    1 0"/>
+                    <!-- map black -> #49274b, white -> #f4eef5 -->
+                    <feComponentTransfer>
+                    <feFuncR type="table" tableValues="0.286 0.957"/>
+                    <feFuncG type="table" tableValues="0.153 0.933"/>
+                    <feFuncB type="table" tableValues="0.294 0.961"/>
+                    </feComponentTransfer>
+                </filter>
+</svg>
                 <script src="js/datatables_custom/datatables_custom.js"/>
                 <script src="js/map_table_cfg.js"/>
                 <script src="js/make_map_and_table.js"/>
                 
                 <script>
-                    build_map_and_table(map_cfg, table_cfg, wms_cfg=null, tms_cfg=tms_cfg);
+                    build_map_and_table(map_cfg, table_cfg) ; // wms_cfg=null, tms_cfg=tms_cfg);
                 </script>
             </body>
         </html>
