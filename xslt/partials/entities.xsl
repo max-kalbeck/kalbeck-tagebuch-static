@@ -275,7 +275,7 @@
             <xsl:if test="./tei:desc">
                 <dt>Beschreibung</dt>
                 <dd>
-                    <xsl:value-of select="./tei:desc"/>
+                    <xsl:value-of select="./tei:desc[@type = 'entity_type']"/>
                 </dd>
             </xsl:if>
             <xsl:if test="./tei:note">
