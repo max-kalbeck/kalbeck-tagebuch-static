@@ -5,6 +5,16 @@
     xmlns:local="urn:entities"
     version="3.0" exclude-result-prefixes="xsl tei xs map local">
 
+    <xsl:variable name="local-entity-ids" as="map(xs:string, xs:boolean)"
+        select="map:merge(for $id in collection(resolve-uri('../../data/indices?select=list*.xml', static-base-uri()))//@xml:id return map:entry(string($id), true()))"/>
+
+    <!-- entities without an own page in the indices link to the PMB instead of a non-existent local page -->
+    <xsl:function name="local:entity-href" as="xs:string">
+        <xsl:param name="key" as="xs:string"/>
+        <xsl:sequence select="if (map:contains($local-entity-ids, $key)) then concat($key, '.html')
+            else concat('https://pmb.acdh.oeaw.ac.at/entity/', replace($key, '^pmb', ''), '/')"/>
+    </xsl:function>
+
     <!-- computes the 'authority:ID' display label for an idno; @subtype names the source register
          so mirrored pmb links from different sister projects aren't all shown under the same 'pmb:' label -->
     <xsl:function name="local:idno-label" as="xs:string">
@@ -236,7 +246,7 @@
                         <dd>
                             <xsl:choose>
                                 <xsl:when test="@key">
-                                    <a href="{@key}.html">
+                                    <a href="{local:entity-href(@key)}">
                                         <xsl:value-of select="string-join(.//text())"/>
                                     </a>
                                 </xsl:when>
@@ -425,7 +435,7 @@
                         <dd>
                             <xsl:choose>
                                 <xsl:when test="./tei:orgName/@key">
-                                    <a href="{./tei:orgName/@key}.html">
+                                    <a href="{local:entity-href(./tei:orgName[1]/@key)}">
                                         <xsl:value-of select="normalize-space(string-join(./tei:orgName[1]//text()))"/>
                                     </a>
                                 </xsl:when>
@@ -451,7 +461,7 @@
                         <dd>
                             <xsl:choose>
                                 <xsl:when test="./tei:placeName/@key">
-                                    <a href="{./tei:placeName[1]/@key}.html">
+                                    <a href="{local:entity-href(./tei:placeName[1]/@key)}">
                                         <xsl:value-of select="normalize-space(string-join(./tei:placeName[1]//text()))"/>
                                     </a>
                                 </xsl:when>
@@ -477,7 +487,7 @@
                         <dd>
                             <xsl:choose>
                                 <xsl:when test="./tei:persName/@key">
-                                    <a href="{./tei:persName[1]/@key}.html">
+                                    <a href="{local:entity-href(./tei:persName[1]/@key)}">
                                         <xsl:value-of select="normalize-space(string-join(./tei:persName[1]//text()))"/>
                                     </a>
                                 </xsl:when>
@@ -503,7 +513,7 @@
                         <dd>
                             <xsl:choose>
                                 <xsl:when test="./tei:title/@key">
-                                    <a href="{./tei:title[1]/@key}.html">
+                                    <a href="{local:entity-href(./tei:title[1]/@key)}">
                                         <xsl:value-of select="normalize-space(string-join(./tei:title[1]//text()))"/>
                                     </a>
                                 </xsl:when>
@@ -546,7 +556,7 @@
                 <xsl:with-param name="items" as="node()*">
                     <xsl:for-each select="./tei:location[@type = 'located_in_place']">
                         <dd>
-                            <a href="{./tei:placeName/@key}.html">
+                            <a href="{local:entity-href(./tei:placeName[1]/@key)}">
                                 <xsl:value-of select="./tei:placeName[1]"/>
                             </a>
                         </dd>
