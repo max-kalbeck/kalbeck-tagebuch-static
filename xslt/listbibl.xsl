@@ -8,8 +8,7 @@
     <xsl:import href="partials/html_navbar.xsl"/>
     <xsl:import href="partials/html_head.xsl"/>
     <xsl:import href="partials/html_footer.xsl"/>
-    <xsl:import href="partials/tabulator_dl_buttons.xsl"/>
-    <xsl:import href="partials/tabulator_js.xsl"/>
+    <xsl:import href="partials/datatables_import.xsl"/>
     <xsl:import href="partials/entities.xsl"/>
     <xsl:import href="partials/blockquote.xsl"/>
     <xsl:import href="partials/zotero.xsl"/>
@@ -26,12 +25,13 @@
 
             <head>
                 <xsl:call-template name="html_head">
-                    <xsl:with-param name="html_title" select="$doc_title"></xsl:with-param>
+                    <xsl:with-param name="html_title" select="$doc_title" />
                 </xsl:call-template>
                 <xsl:call-template name="zoterMetaTags">
-                    <xsl:with-param name="pageId" select="$link"></xsl:with-param>
-                    <xsl:with-param name="zoteroTitle" select="$doc_title"></xsl:with-param>
+                    <xsl:with-param name="pageId" select="$link" />
+                    <xsl:with-param name="zoteroTitle" select="$doc_title" />
                 </xsl:call-template>
+                <xsl:call-template name="datatables_import" />
             </head>
             
             <body class="d-flex flex-column h-100">
@@ -55,14 +55,14 @@
                             <xsl:value-of select="$doc_title"/>
                         </h1>
                         
-                        <table id="myTable">
+                        <table id="myTable" class="table table-striped" data-dt-order-column="Titel" data-dt-order-dir="asc">
                             <thead>
                                 <tr>
-                                    <th scope="col" width="20" tabulator-headerSort="false" tabulator-download="false" tabulator-visible="false">#</th>
-                                    <th scope="col" tabulator-headerFilter="input"  tabulator-formatter="html">Titel</th>
-                                    <th scope="col" tabulator-headerFilter="input">Autor</th>
-                                    <th scope="col" tabulator-headerFilter="input">Datum</th>
-                                    <th scope="col" tabulator-field="id" tabulator-headerFilter="input">ID</th>
+                                    <!-- <th scope="col" data-dt-visible="false">#</th> -->
+                                    <th scope="col" data-dt-searchlist="true">Titel</th>
+                                    <th scope="col" data-dt-searchlist="true">Autor</th>
+                                    <th scope="col" data-dt-searchlist="true">Datum</th>
+                                    <th scope="col">ID</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -71,14 +71,14 @@
                                         <xsl:value-of select="data(@xml:id)"/>
                                     </xsl:variable>
                                     <tr>
-                                        <td>
+                                        <!-- <td>
                                             <a>
                                               <xsl:attribute name="href">
                                               <xsl:value-of select="concat($id, '.html')"/>
                                               </xsl:attribute>
                                               <i class="bi bi-link-45deg"/>
                                             </a>
-                                        </td>
+                                        </td> -->
                                         <td>
                                                <a>
                                               <xsl:attribute name="href">
@@ -100,7 +100,7 @@
                                 </xsl:for-each>
                             </tbody>
                         </table>
-                        <xsl:call-template name="tabulator_dl_buttons"/>
+                        <div id="custom-info-box" class="small text-muted mt-2" />
 
                         <div class="text-center p-4">
                             <xsl:call-template name="blockquote">
@@ -110,9 +110,7 @@
                     </div>
                 </main>
                 <xsl:call-template name="html_footer"/>
-                <xsl:call-template name="tabulator_js">
-                    <xsl:with-param name="clickme" select="true()"/>
-                </xsl:call-template>
+                <script src="js/datatables_custom/datatables_custom.js"/>
             </body>
         </html>
         <xsl:for-each select=".//tei:bibl[@xml:id]">
@@ -150,15 +148,13 @@
                                 <xsl:call-template name="bibl_detail"/>
                                 <div class="text-center p-4">
                                 <xsl:call-template name="blockquote">
+                                    <xsl:with-param name="currentTitle" select="$name"/>
                                     <xsl:with-param name="pageId" select="$filename"/>
                                 </xsl:call-template>
                             </div>
                             </div>
                         </main>
                         <xsl:call-template name="html_footer"/>
-                         <xsl:call-template name="tabulator_js">
-                    <xsl:with-param name="clickme" select="true()"/>
-                </xsl:call-template>
                     </body>
                 </html>
             </xsl:result-document>

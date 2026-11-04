@@ -1,3 +1,25 @@
 .float-text {
 	color: #cccccc;
+	pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.float-text * {
+	color: #cccccc!important;
+	text-decoration: none!important;
+}
+
+.float-text a[name^="fna_"], .float-text a[name^="fna_"] * {
+  	text-decoration: underline dotted;
+  	color: var(--kb-color)!important;
+    pointer-events: auto;
+    user-select: auto;
+    -webkit-user-select: auto;
+}
+
+.entity{
+	text-decoration: underline dotted;
+	color: var(--kb-color);
+	cursor: zoom-in;
 }

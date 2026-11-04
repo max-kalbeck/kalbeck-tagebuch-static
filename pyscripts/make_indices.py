@@ -1,12 +1,18 @@
 #!/usr/bin/env python3
 import glob
 import os
+import re
 
 from acdh_tei_pyutils.tei import TeiReader
 from acdh_tei_pyutils.utils import check_for_hash
 from acdh_xml_pyutils.xml import NSMAP
 
+PMB_BASE = "https://pmb.acdh.oeaw.ac.at/entity/"
+PMB_URI_RE = re.compile(r"^https://pmb\.acdh\.oeaw\.ac\.at/entity/(\d+)/?$")
+XML_ID = "{http://www.w3.org/XML/1998/namespace}id"
+
 INDICES_DIR = os.path.join("data", "indices")
+
 INDICES = [
     {
         "url": "https://pmb.acdh.oeaw.ac.at/media/listbibl.xml",
@@ -40,46 +46,85 @@ INDICES = [
     },
 ]
 
+
+# 1. Collect IDs referenced in the editions.
+ids = set()
+
+for f in glob.glob("./data/editions/*.xml"):
+    doc = TeiReader(f)
+
+    for ref_attr in doc.any_xpath("//@ref[starts-with(., '#pmb')]"):
+        for ref in ref_attr.split():
+            ids.add(check_for_hash(ref).replace("pmb", ""))
+
+
+# 2. Load the indices, filter, and normalise.
+#
+# An entity lists all of its PMB aliases as <idno subtype="pmb">.
+# The canonical ID is the lowest numeric one.
 os.makedirs(INDICES_DIR, exist_ok=True)
 
-for x in glob.glob(f"{INDICES_DIR}/*.xml"):
-    os.remove(x)
+for index in INDICES:
+    print(f"Processing {index['file_name']}")
 
-
-files = glob.glob("./data/editions/*.xml")
-
-
-ids = set()
-for x in files:
-    doc = TeiReader(x)
-    for x in doc.any_xpath("//@ref[starts-with(., '#pmb')]"):
-        for y in x.split():
-            ref = check_for_hash(y)
-            ids.add(ref.replace("pmb", ""))
-
-PMB_URIS = [
-    {"uri": f"https://pmb.acdh.oeaw.ac.at/entity/{x}/", "pmb_id": f"pmb{x}"}
-    for x in ids
-]
-
-for x in INDICES:
-    print(f"processing {x['file_name']}")
-    save_path = os.path.join(INDICES_DIR, x["file_name"])
-    print(x["url"])
     try:
-        doc = TeiReader(x["url"])
-        for ent in doc.any_xpath(f"{x['entity_xpath']}"):
-            uris = ent.xpath("./tei:idno/text()", namespaces=NSMAP)
-            for pmb_uri in PMB_URIS:
-                if pmb_uri["uri"] in uris:
-                    ent.attrib["{http://www.w3.org/XML/1998/namespace}id"] = pmb_uri[  # noqa
-                        "pmb_id"
-                    ]
-                    break
+        doc = TeiReader(index["url"])
+    except Exception as exc:
+        print(f"Problem reading {index['url']}: {exc}")
+        continue
+
+    seen_ids = set()
+
+    for ent in doc.any_xpath(index["entity_xpath"]):
+        pmb_idnos = []
+
+        for idno in ent.xpath("./tei:idno", namespaces=NSMAP):
+            match = PMB_URI_RE.match((idno.text or "").strip())
+
+            if match:
+                pmb_idnos.append((idno, match.group(1)))
+
+        # Retain only entities referenced in the editions.
+        if not any(nominal_id in ids for _, nominal_id in pmb_idnos):
+            ent.getparent().remove(ent)
+            continue
+
+        canonical = str(min(int(nominal_id) for _, nominal_id in pmb_idnos))
+
+        # Drop entities whose canonical ID was already emitted.
+        if canonical in seen_ids:
+            ent.getparent().remove(ent)
+            continue
+
+        seen_ids.add(canonical)
+
+        # Normalise the entity's XML ID.
+        ent.attrib[XML_ID] = f"pmb{canonical}"
+
+        # Keep only the canonical PMB idno; remove the other aliases.
+        kept = False
+        for idno, nominal_id in pmb_idnos:
+            if nominal_id == canonical and not kept:
+                idno.text = f"{PMB_BASE}{canonical}/"
+                kept = True
             else:
-                ent.getparent().remove(ent)
+                idno.getparent().remove(idno)
 
+        # Remove remaining duplicate idnos, e.g. case-insensitive DOI duplicates.
+        seen_idno_values = set()
+
+        for idno in ent.xpath("./tei:idno", namespaces=NSMAP):
+            value = (idno.text or "").strip().lower()
+
+            if value in seen_idno_values:
+                idno.getparent().remove(idno)
+            else:
+                seen_idno_values.add(value)
+
+    save_path = os.path.join(INDICES_DIR, index["file_name"])
+    print(f"Writing {save_path}")
+
+    try:
         doc.tree_to_file(save_path)
-    except Exception:
-        print(f"Problem reading {x["url"]}")
-
+    except Exception as exc:
+        print(f"Problem writing {save_path}: {exc}")

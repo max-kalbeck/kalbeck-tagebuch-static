@@ -1,15 +1,130 @@
 var BASE_URL = 'https://id.acdh.oeaw.ac.at/kalbeck-tagebuch/';
 var FACS_FILE_ENDING = '.tif?format=image%2Fwebp&param=full/full/0/default.jpg';
+var initialPageIndex = null;
 
-var tileSources = Array.from(
-    document.querySelectorAll('#facsContainer .facsId[data-facs-name]'),
-    function (element) {
-        return {
-            type: 'image',
-            url: `${BASE_URL}${element.dataset.facsName}${FACS_FILE_ENDING}`
-        };
+function parsePageIndexFromLocation() {
+    var hashValue = window.location.hash.replace(/^#/, '');
+    var hashParts = hashValue ? hashValue.split('&') : [];
+
+    for (var i = 0; i < hashParts.length; i++) {
+        var value = hashParts[i];
+        if (!value) continue;
+
+        var match = value.match(/^(?:p|page|facs)-?(\d+)$/i);
+        var pageNumber = match ? parseInt(match[1], 10) : parseInt(value, 10);
+
+        if (!Number.isNaN(pageNumber) && pageNumber > 0) {
+            return pageNumber - 1;
+        }
     }
-);
+
+    return null;
+}
+
+function goToPageFromLocation() {
+    if (typeof viewer.goToPage !== 'function') return;
+
+    var lastPageIndex = tileSources.length - 1;
+    if (lastPageIndex < 0) return;
+
+    // Prefer an explicit page requested via the URL hash; otherwise fall
+    // back to the first page that is neither frontmatter nor backmatter
+    // (i.e. the first <pb> without a @type attribute).
+    var requestedPageIndex = initialPageIndex !== null ? initialPageIndex : defaultPageIndex;
+
+    var targetPageIndex = Math.min(requestedPageIndex, lastPageIndex);
+    // sequenceMode re-fires 'open' on every goToPage call; only navigate once
+    // or we get an open -> goToPage -> open infinite loop.
+    if (typeof viewer.currentPage === 'function' && viewer.currentPage() === targetPageIndex) return;
+    viewer.goToPage(targetPageIndex);
+}
+
+function parseMarkFromLocation() {
+    var hashValue = window.location.hash.replace(/^#/, '');
+    var hashParts = hashValue ? hashValue.split('&') : [];
+
+    for (var i = 0; i < hashParts.length; i++) {
+        var match = hashParts[i].match(/^mark=(.*)$/i);
+        if (!match) continue;
+        try {
+            return decodeURIComponent(match[1].replace(/\+/g, ' ')).trim();
+        } catch (e) {
+            return match[1].trim();
+        }
+    }
+
+    return null;
+}
+
+function escapeRegExp(value) {
+    return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+// Wrap every occurrence of the mark terms in the given container's text in
+// <mark class="search-highlight">, leaving markup/entities untouched.
+function highlightMarkedText(container, markValue) {
+    if (!container || !markValue) return;
+
+    var terms = markValue.split(/\s+/).map(function (t) { return t.trim(); }).filter(Boolean);
+    if (!terms.length) return;
+
+    var pattern = new RegExp('(' + terms.map(escapeRegExp).join('|') + ')', 'gi');
+
+    var walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, {
+        acceptNode: function (node) {
+            var parentTag = node.parentNode && node.parentNode.nodeName;
+            if (parentTag === 'SCRIPT' || parentTag === 'STYLE' || parentTag === 'MARK') return NodeFilter.FILTER_REJECT;
+            return NodeFilter.FILTER_ACCEPT;
+        }
+    }, false);
+
+    var textNodes = [];
+    while (walker.nextNode()) textNodes.push(walker.currentNode);
+
+    textNodes.forEach(function (node) {
+        var text = node.nodeValue;
+        pattern.lastIndex = 0;
+        if (!pattern.test(text)) return;
+        pattern.lastIndex = 0;
+
+        var frag = document.createDocumentFragment();
+        var lastIndex = 0;
+        var match;
+        while ((match = pattern.exec(text)) !== null) {
+            if (match.index > lastIndex) {
+                frag.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
+            }
+            var markEl = document.createElement('mark');
+            markEl.className = 'search-highlight';
+            markEl.textContent = match[0];
+            frag.appendChild(markEl);
+            lastIndex = match.index + match[0].length;
+        }
+        if (lastIndex < text.length) {
+            frag.appendChild(document.createTextNode(text.slice(lastIndex)));
+        }
+        node.parentNode.replaceChild(frag, node);
+    });
+}
+
+var facsElements = Array.from(document.querySelectorAll('#facsContainer .facsId[data-facs-name]'));
+
+var tileSources = facsElements.map(function (element) {
+    return {
+        type: 'image',
+        url: `${BASE_URL}${element.dataset.facsName}${FACS_FILE_ENDING}`
+    };
+});
+
+// Default page to open on: the first facsimile without a @data-facs-type
+// (i.e. neither frontmatter nor backmatter), falling back to the first
+// page if every page is tagged with a type.
+var defaultPageIndex = (function () {
+    var index = facsElements.findIndex(function (element) {
+        return !element.dataset.facsType;
+    });
+    return index < 0 ? 0 : index;
+})();
 
 var viewer = OpenSeadragon({
     id: "osdViewer",
@@ -19,6 +134,7 @@ var viewer = OpenSeadragon({
     },
     sequenceMode: true,
     showReferenceStrip: true,
+    preload: false,
     tileSources: tileSources,
     prefixUrl: "vendor/openseadragon-bin-4.1.1/images/",
 });
@@ -28,9 +144,15 @@ function alignImageToTop() {
 }
 
 var facsSegments = [];
+var initialPageApplied = false;
+initialPageIndex = parsePageIndexFromLocation();
 
 viewer.addHandler('open', function() {
     alignImageToTop();
+    if (!initialPageApplied) {
+        initialPageApplied = true;
+        goToPageFromLocation();
+    }
     updateVisibleText(facsSegments);
 });
 // Partition the editorial text into per-facsimile segments using the
@@ -143,11 +265,19 @@ function updateVisibleText(segments) {
 // wire up partitioning and viewer events after DOM ready
 document.addEventListener('DOMContentLoaded', function() {
     facsSegments = partitionTextByPB();
+    var markValue = parseMarkFromLocation();
+    if (markValue && facsSegments.length) {
+        highlightMarkedText(facsSegments[0].parentNode, markValue);
+    }
     viewer.addHandler('page', function() {
         updateVisibleText(facsSegments);
     });
     if (viewer.isOpen && viewer.isOpen()) {
         alignImageToTop();
+        if (!initialPageApplied) {
+            initialPageApplied = true;
+            goToPageFromLocation();
+        }
         updateVisibleText(facsSegments);
     }
 });                                                     

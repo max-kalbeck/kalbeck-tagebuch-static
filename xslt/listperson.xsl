@@ -8,8 +8,7 @@
     <xsl:import href="partials/html_navbar.xsl"/>
     <xsl:import href="partials/html_head.xsl"/>
     <xsl:import href="partials/html_footer.xsl"/>
-    <xsl:import href="partials/tabulator_dl_buttons.xsl"/>
-    <xsl:import href="partials/tabulator_js.xsl"/>
+    <xsl:import href="partials/datatables_import.xsl"/>
     <xsl:import href="partials/entities.xsl"/>
     <xsl:import href="partials/blockquote.xsl"/>
     <xsl:import href="partials/zotero.xsl"/>
@@ -32,6 +31,7 @@
                     <xsl:with-param name="pageId" select="$link"></xsl:with-param>
                     <xsl:with-param name="zoteroTitle" select="$doc_title"></xsl:with-param>
                 </xsl:call-template>
+                <xsl:call-template name="datatables_import" />
             </head>
             
             <body class="d-flex flex-column h-100">
@@ -54,13 +54,13 @@
                             <xsl:value-of select="$doc_title"/>
                         </h1>
 
-                        <table id="myTable">
+                        <table id="myTable" data-dt-order-column="Nachname" data-dt-order-dir="asc" class="table table-striped">
                             <thead>
                                 <tr>
-                                     <th scope="col" width="20" tabulator-formatter="html" tabulator-headerSort="false" tabulator-download="false" tabulator-visible="false">#</th>
-                                    <th scope="col" tabulator-headerFilter="input" tabulator-formatter="html" tabulator-download="false" tabulator-minWidth="280">Nachname</th>                               
-                                    <th scope="col" tabulator-headerFilter="input">Vorname</th>
-                                    <th scope="col" tabulator-field="id" tabulator-headerFilter="input">ID</th>
+                                    <th scope="col" data-dt-visible="false">#</th>
+                                    <th scope="col" data-dt-searchlist="true">Nachname</th>
+                                    <th scope="col" data-dt-searchlist="true">Vorname</th>
+                                    <th scope="col" data-dt-searchlist="true">ID</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -95,7 +95,7 @@
                                 </xsl:for-each>
                             </tbody>
                         </table>
-                        <xsl:call-template name="tabulator_dl_buttons"/>
+                        <div id="custom-info-box" class="small text-muted mt-2" />
                         <div class="text-center p-4">
                             <xsl:call-template name="blockquote">
                                 <xsl:with-param name="pageId" select="'listperson.html'"/>
@@ -104,16 +104,15 @@
                     </div>
                 </main>
                 <xsl:call-template name="html_footer"/>
-                <xsl:call-template name="tabulator_js">
-                    <xsl:with-param name="clickme" select="true()"/>
-                </xsl:call-template>
+               <xsl:call-template name="datatables_import" />
+               <script src="js/datatables_custom/datatables_custom.js"/>
             </body>
         </html>
 
 
         <xsl:for-each select=".//tei:person[@xml:id]">
             <xsl:variable name="filename" select="concat(./@xml:id, '.html')"/>
-            <xsl:variable name="name" select="normalize-space(string-join(./tei:persName[1]//text()))"></xsl:variable>
+            <xsl:variable name="name" select="normalize-space(string-join(./tei:persName[1]//text(), ' '))"></xsl:variable>
             <xsl:result-document href="{$filename}">
                 <html class="h-100" lang="{$default_lang}">
                     <head>
@@ -143,18 +142,18 @@
                                 <h1>
                                     <xsl:value-of select="$name"/>
                                 </h1>
-                                <xsl:call-template name="person_detail"/>
+                                <xsl:call-template name="person_detail">
+                                    <xsl:with-param name="layout" select="'page'"/>
+                                </xsl:call-template>
                                 <div class="text-center p-4">
                                     <xsl:call-template name="blockquote">
+                                        <xsl:with-param name="currentTitle" select="$name"/>
                                         <xsl:with-param name="pageId" select="$filename"/>
                                     </xsl:call-template>
                                 </div> 
                             </div>
                         </main>
                         <xsl:call-template name="html_footer"/>
-                           <xsl:call-template name="tabulator_js">
-                    <xsl:with-param name="clickme" select="true()"/>
-                </xsl:call-template>
                     </body>
                 </html>
             </xsl:result-document>

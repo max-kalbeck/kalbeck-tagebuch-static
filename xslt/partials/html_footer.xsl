@@ -8,7 +8,7 @@
     <xsl:template name="html_footer">
         <footer class="py-3">
         <div class="container text-center">
-            <div class="d-flex align-items-center gap-2 border-bottom pb-3 mb-4" style="color: #444;"><i class="bi bi-chat"
+            <div class="d-flex align-items-center gap-2 border-bottom pb-3 mb-4" style="color: var(--kb-color);"><i class="bi bi-chat"
                     style="font-size: 1.125rem;"></i><span class="fw-medium" style="font-size: 0.875rem;">Kontakt</span></div>
             <div class="row justify-content-md-center">
                 <div class="col col-lg-4">
@@ -28,15 +28,16 @@
                                 alt="Universität für Musik und Darstellende Kunst Wien logo"/></a>
                     </div>
                     <div class="text-center p-4">
-                        Institut für Musikwissenschaft und Interpretationsforschung (IMI); Universität für Musik und Darstellende Kunst Wien
+                        Institut für Musikwissenschaft und Interpretationsforschung (IMI)
+                        <br/>Universität für Musik und Darstellende Kunst Wien
                         <br/><a href="mailto:rost@mdw.ac.at">rost@mdw.ac.at</a>
                     </div>
                 </div>
             </div>
         </div>
         <div class="text-center">
-            <a href="{$github_url}">
-                <i aria-hidden="true" class="bi bi-github fs-2"></i>
+            © 2026 ÖAW | <a href="imprint.html">Impressum</a> | <a href="{$github_url}">
+                <i aria-hidden="true" class="bi bi-github fs-6"></i>
                 <span class="visually-hidden">GitHub repo</span>
             </a>
         </div>

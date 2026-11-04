@@ -9,8 +9,7 @@
     <xsl:import href="partials/html_navbar.xsl"/>
     <xsl:import href="partials/html_head.xsl"/>
     <xsl:import href="partials/html_footer.xsl"/>
-    <xsl:import href="partials/tabulator_dl_buttons.xsl"/>
-    <xsl:import href="partials/tabulator_js.xsl"/>
+    <xsl:import href="partials/datatables_import.xsl"/>
     <xsl:import href="partials/entities.xsl"/>
     <xsl:import href="partials/blockquote.xsl"/>
     <xsl:import href="partials/zotero.xsl"/>
@@ -32,7 +31,7 @@
                     <xsl:with-param name="pageId" select="$link"></xsl:with-param>
                     <xsl:with-param name="zoteroTitle" select="$doc_title"></xsl:with-param>
                 </xsl:call-template>
-                <link href="vendor/tabulator-tables/css/tabulator_bootstrap5.min.css" rel="stylesheet"/>
+                <xsl:call-template name="datatables_import" />
                 <link rel="stylesheet" href="vendor/leaflet/leaflet.css"/>
                 <script src="vendor/leaflet/leaflet.js"/>
                 <link rel="stylesheet"
@@ -60,14 +59,14 @@
                     <div class="container">
                         <h1><xsl:value-of select="$doc_title"/></h1>
                         <div id="map"/>
-                        <table id="placesTable">
+                        <table id="placesTable" class="table table-striped">
                             <thead>
                                 <tr>
                                     <th scope="col">Ortsname</th>
                                     <th scope="col">Erwähnungen</th>
-                                    <th scope="col">lat</th>
-                                    <th scope="col">lng</th>
-                                    <th scope="col">linkToEntity</th>
+                                    <th scope="col" data-dt-visible="false">lat</th>
+                                    <th scope="col" data-dt-visible="false">lng</th>
+                                    <th scope="col" data-dt-visible="false">linkToEntity</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -77,7 +76,12 @@
                                     </xsl:variable>
                                     <tr>
                                         <td>
-                                            <xsl:value-of select="./tei:placeName[1]/text()"/>
+                                            <a>
+                                                <xsl:attribute name="href">
+                                                    <xsl:value-of select="concat($id, '.html')"/>
+                                                </xsl:attribute>
+                                                <xsl:value-of select="./tei:placeName[1]/text()"/>
+                                            </a>
                                         </td>
                                         <td>
                                             <xsl:value-of select="count(.//tei:note[@type='mentions'])"/>
@@ -103,6 +107,7 @@
                                 </xsl:for-each>
                             </tbody>
                         </table>
+                        <div id="custom-info-box" class="small text-muted mt-2" />
                         <div class="text-center p-4">
                             <xsl:call-template name="blockquote">
                                 <xsl:with-param name="pageId" select="'listplace.html'"/>
@@ -111,15 +116,33 @@
                     </div>
                 </main>
                 <xsl:call-template name="html_footer"/>
-                <script type="text/javascript" src="vendor/tabulator-tables/js/tabulator.min.js"/>
+                <xsl:call-template name="datatables_import" />
+                <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+                    <filter id="duotone-plum" color-interpolation-filters="sRGB">
+                    <!-- convert to grayscale -->
+                    <feColorMatrix type="matrix"
+                        values="0.33 0.33 0.33 0 0
+                            0.33 0.33 0.33 0 0
+                            0.33 0.33 0.33 0 0
+                            0    0    0    1 0"/>
+                        <!-- map black -> #49274b, white -> #f4eef5 -->
+                        <feComponentTransfer>
+                        <feFuncR type="table" tableValues="0.286 0.957"/>
+                        <feFuncG type="table" tableValues="0.153 0.933"/>
+                        <feFuncB type="table" tableValues="0.294 0.961"/>
+                        </feComponentTransfer>
+                    </filter>
+                </svg>
+                <script src="js/datatables_custom/datatables_custom.js"/>
                 <script src="js/map_table_cfg.js"/>
                 <script src="js/make_map_and_table.js"/>
                 
                 <script>
-                    build_map_and_table(map_cfg, table_cfg, wms_cfg=null, tms_cfg=tms_cfg);
+                    build_map_and_table(map_cfg, table_cfg) ; // wms_cfg=null, tms_cfg=tms_cfg);
                 </script>
             </body>
         </html>
+
         <xsl:for-each select=".//tei:place[@xml:id]">
             <xsl:variable name="filename" select="concat(./@xml:id, '.html')"/>
             <xsl:variable name="name" select="normalize-space(string-join(./tei:placeName[1]//text()))"></xsl:variable>
@@ -149,28 +172,34 @@
                                 </ol>
                             </nav>
                             <div class="container">
-                                <h1>
-                                    <xsl:value-of select="$name"/>
-                                </h1>
-                                <xsl:call-template name="place_detail"/>
-                                <xsl:if test="./tei:location/tei:geo">
-                                    <div id="map_detail"/>
-                                </xsl:if>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                         <h1>
+                                            <xsl:value-of select="$name"/>
+                                        </h1>
+                                        <xsl:call-template name="place_detail"/>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <xsl:if test="./tei:location/tei:geo">
+                                            <div id="map_detail"/>
+                                        </xsl:if>
+                                    </div>
+                                </div>
                                 <div class="text-center p-4">
                                     <xsl:call-template name="blockquote">
+                                        <xsl:with-param name="currentTitle" select="$name"/>
                                         <xsl:with-param name="pageId" select="$filename"/>
                                     </xsl:call-template>
                                 </div>
                             </div>
                         </main>
-                        <xsl:call-template name="html_footer"/>
                         <xsl:if test="./tei:location/tei:geo">
                             <link rel="stylesheet" href="vendor/leaflet/leaflet.css"/>
-                            <script src="vendor/leaflet/leaflet.js"></script>
+                            <script src="vendor/leaflet/leaflet.js" />
                             <script>
                                 var lat = <xsl:value-of select="replace(tokenize(./tei:location[1]/tei:geo[1]/text(), ' ')[1], ',', '.')"/>;
                                 var long = <xsl:value-of select="replace(tokenize(./tei:location[1]/tei:geo[1]/text(), ' ')[2], ',', '.')"/>;
-                                $("#map_detail").css("height", "500px");
+                                document.getElementById("map_detail").style.height = "500px";
                                 var map = L.map('map_detail').setView([Number(lat), Number(long)], 13);
                                 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                                 maxZoom: 19,
@@ -179,6 +208,23 @@
                                 var marker = L.marker([Number(lat), Number(long)]).addTo(map);
                             </script>
                         </xsl:if>
+                        <xsl:call-template name="html_footer"/>
+                                        <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+                    <filter id="duotone-plum" color-interpolation-filters="sRGB">
+                        <!-- convert to grayscale -->
+                        <feColorMatrix type="matrix"
+                            values="0.33 0.33 0.33 0 0
+                                0.33 0.33 0.33 0 0
+                                0.33 0.33 0.33 0 0
+                                0    0    0    1 0"/>
+                            <!-- map black -> #49274b, white -> #f4eef5 -->
+                            <feComponentTransfer>
+                                <feFuncR type="table" tableValues="0.286 0.957"/>
+                                <feFuncG type="table" tableValues="0.153 0.933"/>
+                                <feFuncB type="table" tableValues="0.294 0.961"/>
+                            </feComponentTransfer>
+                        </filter>
+                        </svg>
                     </body>
                 </html>
             </xsl:result-document>

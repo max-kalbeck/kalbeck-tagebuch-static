@@ -16,9 +16,8 @@
             <xsl:apply-templates/>
         </div>
     </xsl:template>
-
-    <xsl:template match="tei:div[matches(@type, '^level[0-9]+$')]">
-        <div class="{@type}">
+    <xsl:template match="tei:div[@type='section']">
+        <div class="section">
             <xsl:apply-templates/>
         </div>
     </xsl:template>
@@ -33,9 +32,17 @@
             <xsl:apply-templates/>
         </xsl:element>
     </xsl:template>
+    <xsl:template match="tei:head[parent::tei:div[@type='section']]">
+        <h2>
+            <xsl:if test="@xml:id">
+                <xsl:attribute name="id" select="@xml:id"/>
+            </xsl:if>
+            <xsl:apply-templates/>
+        </h2>
+    </xsl:template>
     <xsl:template match="tei:pb">
         <span class="anchor-pb" id="{concat('pb-', count(preceding::tei:pb) + 1)}"></span>
-        <span class="pb" source="{if(@corresp) then @corresp else @facs}"><xsl:value-of select="./@n"/></span>
+        <span class="{normalize-space(concat('pb ', @type))}" source="{if(@corresp) then @corresp else @facs}"><xsl:value-of select="./@n"/></span>
     </xsl:template>
 
     <xsl:template match="tei:unclear">
@@ -81,10 +88,10 @@
         </xsl:element>
     </xsl:template>
 
-    <xsl:template match="tei:list[@type='unordered']">
+    <xsl:template match="tei:list[not(@type)][ancestor::tei:body] | tei:list[@type='unordered']">
         <xsl:choose>
             <xsl:when test="ancestor::tei:body">
-                <ul class="yes-index">
+                <ul>
                     <xsl:apply-templates/>
                 </ul>
             </xsl:when>
@@ -177,8 +184,30 @@
         </xsl:variable>
         <xsl:variable name="entity-refs" select="tokenize(normalize-space(@ref), '\s+')"/>
         <xsl:variable name="multi-ref-id" select="concat('multi-', generate-id())"/>
+        <xsl:variable name="nested-ref-id" select="concat('nested-', generate-id())"/>
 
         <xsl:choose>
+            <!-- embedded rs: rendered as text only, the enclosing rs below provides the combined trigger/modal -->
+            <xsl:when test="ancestor::tei:rs">
+                <xsl:apply-templates/>
+            </xsl:when>
+            <!-- rs wrapping one or more nested rs: combine the whole chain into a single trigger/modal -->
+            <xsl:when test="descendant::tei:rs">
+                <xsl:variable name="nested-classes" select="
+                    distinct-values(
+                        for $n in (self::tei:rs | descendant::tei:rs)
+                        return
+                            if ($n/@type = 'person') then 'persons'
+                            else if ($n/@type = 'place') then 'places'
+                            else if ($n/@type = ('work', 'bibl')) then 'works'
+                            else if ($n/@type = ('org', 'institution')) then 'orgs'
+                            else if ($n/@type = 'event') then 'events'
+                            else ()
+                    )"/>
+                <span class="{string-join($nested-classes, ' ')} entity" data-bs-toggle="modal" data-bs-target="#{$nested-ref-id}">
+                    <xsl:apply-templates/>
+                </span>
+            </xsl:when>
             <xsl:when test="$entity-class != '' and count($entity-refs) > 1">
                 <span class="{$entity-class} entity" data-bs-toggle="modal" data-bs-target="#{$multi-ref-id}">
                     <xsl:if test="$entity-class = 'orgs' and @xml:id">
@@ -214,6 +243,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h1 class="modal-title fs-5"><xsl:value-of select="$label"/></h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"/>
                     </div>
                     <div class="modal-body">
                         <xsl:for-each select="$entity-refs">
@@ -229,8 +259,37 @@
                             </xsl:if>
                         </xsl:for-each>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
+                </div>
+            </div>
+        </div>
+    </xsl:template>
+
+    <!-- rs chains produced by nested tei:rs (e.g. an event containing the org/institution that constitutes it):
+         gather every rs in the chain, outer to inner, and render one modal listing all of their entities in that order. -->
+    <xsl:template match="tei:rs[descendant::tei:rs][not(ancestor::tei:rs)]" mode="nested-ref-modal">
+        <xsl:variable name="context-rs" select="."/>
+        <xsl:variable name="chain" select="self::tei:rs | descendant::tei:rs"/>
+        <xsl:variable name="nested-ref-id" select="concat('nested-', generate-id())"/>
+        <xsl:variable name="label" select="normalize-space(string-join(.//text()))"/>
+        <xsl:variable name="entity-nodes" select="
+            for $r in $chain return
+                for $ref in tokenize(normalize-space($r/@ref), '\s+') return
+                    root($context-rs)//tei:*[@xml:id = substring-after($ref, '#')][1]"/>
+
+        <div class="modal fade" id="{$nested-ref-id}" data-bs-keyboard="true" tabindex="-1" aria-label="{$label}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5"><xsl:value-of select="$label"/></h1>
+                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"/>
+                    </div>
+                    <div class="modal-body">
+                        <xsl:for-each select="$entity-nodes">
+                            <xsl:call-template name="render-entity-section"/>
+                            <xsl:if test="position() != last()">
+                                <hr/>
+                            </xsl:if>
+                        </xsl:for-each>
                     </div>
                 </div>
             </div>
@@ -240,7 +299,7 @@
     <xsl:template name="render-entity-title">
         <xsl:choose>
             <xsl:when test="self::tei:person">
-                <xsl:value-of select="normalize-space(string-join(./tei:persName[1]//text()))"/>
+                <xsl:value-of select="normalize-space(string-join(./tei:persName[1]//text(), ' '))"/>
             </xsl:when>
             <xsl:when test="self::tei:place">
                 <xsl:value-of select="normalize-space(string-join(./tei:placeName[1]//text()))"/>
@@ -300,12 +359,10 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h1 class="modal-title fs-5"><a href="{$selfLink}"><xsl:value-of select="normalize-space($name)"/></a></h1>
+                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"/>
                     </div>
                     <div class="modal-body">
                         <xsl:call-template name="render-entity-detail"/>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
                     </div>
                 </div>
             </div>

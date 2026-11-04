@@ -9,6 +9,10 @@
 
   
     <xsl:strip-space elements="*"/>
+    <!-- Mixed-content prose elements where a whitespace-only text node is a
+         meaningful word separator between inline elements (e.g. <rs>/<note>/<lb>),
+         not insignificant indentation, and must not be stripped. -->
+    <xsl:preserve-space elements="tei:p tei:subst"/>
     
     <xsl:import href="partials/shared.xsl"/>
     <xsl:import href="partials/html_navbar.xsl"/>
@@ -159,11 +163,17 @@
                             <xsl:apply-templates/>
                         </div>
                     </xsl:for-each>
-                    <xsl:apply-templates select=".//tei:body//tei:rs[@type = ('person', 'place', 'work', 'bibl', 'org', 'institution', 'event')][count(tokenize(normalize-space(@ref), '\s+')) > 1]" mode="multi-ref-modal"/>
+                    <xsl:apply-templates select=".//tei:body//tei:rs[@type = ('person', 'place', 'work', 'bibl', 'org', 'institution', 'event')][count(tokenize(normalize-space(@ref), '\s+')) > 1][not(ancestor::tei:rs)]" mode="multi-ref-modal"/>
+                    <xsl:apply-templates select=".//tei:body//tei:rs[descendant::tei:rs][not(ancestor::tei:rs)]" mode="nested-ref-modal"/>
                     <xsl:if test=".//tei:facsimile/tei:graphic">
                         <div id="facsContainer">
                             <xsl:for-each select=".//tei:facsimile/tei:graphic">
-                                <div class="facsId" data-facs-name="{@url}"/>
+                                <xsl:variable name="facsType" select="//tei:pb[@corresp = concat('#', current()/@xml:id)]/@type"/>
+                                <div class="facsId" data-facs-name="{@url}">
+                                    <xsl:if test="$facsType">
+                                        <xsl:attribute name="data-facs-type" select="$facsType"/>
+                                    </xsl:if>
+                                </div>
                             </xsl:for-each>
                         </div>
                     </xsl:if>
