@@ -34,6 +34,28 @@
   color: red
 }
 
+
+.ais-CurrentRefinements-item {
+  background-color: var(--kb-color-light)!important;
+}
+
+.ais-HierarchicalMenu-count, .ais-Menu-count, .ais-RefinementList-count, .ais-ToggleRefinement-count {
+  color: var(--kb-color)!important;
+  background-color: var(--kb-color-halo)!important;
+}
+
+
+.ais-Breadcrumb, .ais-ClearRefinements, .ais-CurrentRefinements, .ais-GeoSearch, .ais-FrequentlyBoughtTogether, .ais-HierarchicalMenu, .ais-Hits, .ais-Results, .ais-HitsPerPage, .ais-ResultsPerPage, .ais-InfiniteHits, .ais-InfiniteResults, .ais-LookingSimilar, .ais-Menu, .ais-MenuSelect, .ais-NumericMenu, .ais-NumericSelector, .ais-Pagination, .ais-Panel, .ais-PoweredBy, .ais-RangeInput, .ais-RangeSlider, .ais-RatingMenu, .ais-RefinementList, .ais-RelatedProducts, .ais-SearchBox, .ais-RelevantSort, .ais-SortBy, .ais-Stats, .ais-TrendingItems, .ais-ToggleRefinement {
+  color: var(--kb-color)!important;
+}
+
+
+.bg-secondary {
+  --bs-bg-opacity: 1;
+  background-color: var(--kb-color)!important;
+}
+
+
 .ais-ClearRefinements-button--disabled {
 	 visibility: hidden;
 }
@@ -60,8 +82,21 @@
   border: 1px solid var(--kb-color)!important;
 }
 
+
 .btn:hover{
   border-color: var(--kb-color-lightest)!important;
+}
+
+.ais-SearchBox-submit.btn {
+   background-color: unset !important;
+}
+
+.ais-SearchBox-submit.btn:hover {
+    background-color: var(--kb-color-halo) !important;
+}
+
+.ais-SearchBox-input::placeholder {
+  color: var( --kb-color-halo-solider) !important;
 }
 
 /* Pagination */
