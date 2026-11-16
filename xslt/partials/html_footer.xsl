@@ -8,31 +8,51 @@
     <xsl:template name="html_footer">
         <footer class="py-3">
         <div class="container text-center">
-            <div class="d-flex align-items-center gap-2 border-bottom pb-3 mb-4" style="color: var(--kb-color);"><i class="bi bi-chat"
-                    style="font-size: 1.125rem;"></i><span class="fw-medium" style="font-size: 0.875rem;">Kontakt</span></div>
+
             <div class="row justify-content-md-center">
-                <div class="col col-lg-4">
-                    <div><a href="https://www.oeaw.ac.at/acdh/acdh-home">
-                            <img class="footerlogo" src="images/logo.png" alt="ACDH logo"/></a></div>
-                    <div class="text-center p-4">
-                        ACDH Austrian Centre for Digital Humanities Österreichische
-                        Akademie der Wissenschaften
-                        <br/><a href="mailto:acdh-helpdesk@oeaw.ac.at">acdh-helpdesk@oeaw.ac.at</a>
+                <div class="col col-lg-8 d-flex align-items-center gap-2 border-bottom pb-3 mb-4" style="color: var(--kb-color);"><i class="bi bi-chat"
+                    style="font-size: 1.125rem;"></i><span class="fw-medium" style="font-size: 0.875rem;">Kontakt</span></div>
+                 <div class="col col-lg-4 d-flex align-items-center gap-2 border-bottom pb-3 mb-4" style="color: var(--kb-color);"><i class="bi bi-chat"
+                    style="font-size: 1.125rem;"></i><span class="fw-medium" style="font-size: 0.875rem;">Förderung</span></div>       
+            </div>
+            <div class="row justify-content-md-left">
+                 <div class="col col-lg-8">
+                    <div class="row justify-content-md-left">
+                        <div class="col col-lg-4">
+                            <div><a href="https://www.oeaw.ac.at/acdh/acdh-home">
+                                <img class="footerlogo" src="images/logo.png" alt="ACDH logo"/></a></div>
+                            <div class="text-center p-2">
+                                ACDH Austrian Centre for Digital Humanities Österreichische
+                                Akademie der Wissenschaften
+                                <br/><a href="mailto:acdh-helpdesk@oeaw.ac.at">acdh-helpdesk@oeaw.ac.at</a>
+                            </div>
+                        </div>
+                       
+                        <div class="col col-lg-4">
+                            <div>
+                                <a href="https://www.mdw.ac.at/imi/"><img
+                                    class="footerlogo" src="images/mdwLogoohne.png"
+                                    alt="Universität für Musik und Darstellende Kunst Wien logo"/></a>
+                            </div>
+                            <div class="text-center p-2">
+                                Institut für Musikwissenschaft und Interpretationsforschung (IMI)
+                                <br/>Universität für Musik und Darstellende Kunst Wien
+                                <br/><a href="mailto:rost@mdw.ac.at">rost@mdw.ac.at</a>
+                            </div>
+                        </div>
+                         <div class="col col-lg-4" />
                     </div>
                 </div>
-                <div class="col col-lg-4"></div>
-                <div class="col col-lg-4">
+                 <div class="col col-lg-4">
                     <div>
-                        <a href="https://www.mdw.ac.at/imi/"><img
-                                class="footerlogo" src="images/mdwLogoohne.png"
-                                alt="Universität für Musik und Darstellende Kunst Wien logo"/></a>
+                        <img class="footerlogo" src="images/fwf-logo.svg"  alt="Österreichische Wissenschaftsfonds"/>
                     </div>
-                    <div class="text-center p-4">
-                        Institut für Musikwissenschaft und Interpretationsforschung (IMI)
-                        <br/>Universität für Musik und Darstellende Kunst Wien
-                        <br/><a href="mailto:rost@mdw.ac.at">rost@mdw.ac.at</a>
+                    <div class="text-center p-2">
+                        Gefördert aus Mitteln Wissenschaftsfonds FWF<br/>
+                        <a href="https://doi.org/10.55776/PAT1123425">doi:10.55776/PAT1123425</a>
                     </div>
-                </div>
+                 </div>
+
             </div>
         </div>
         <div class="text-center">
