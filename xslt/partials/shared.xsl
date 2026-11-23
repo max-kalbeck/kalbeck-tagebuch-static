@@ -105,38 +105,12 @@
         </xsl:choose>
     </xsl:template>
 
-    <xsl:template match="tei:hi">
-        <span>
-            <xsl:choose>
-                <xsl:when test="@rendition = 'italics'">
-                    <xsl:attribute name="class">
-                        <xsl:text>italic</xsl:text>
-                    </xsl:attribute>
-                </xsl:when>
-                <xsl:when test="@rendition = 'smallcaps'">
-                    <xsl:attribute name="class">
-                        <xsl:text>smallcaps</xsl:text>
-                    </xsl:attribute>
-                </xsl:when>
-                <xsl:when test="@rendition = 'bold'">
-                    <xsl:attribute name="class">
-                        <xsl:text>bold</xsl:text>
-                    </xsl:attribute>
-                </xsl:when>
-                  <xsl:when test="@rend = 'underline'">
-                    <xsl:attribute name="class">
-                        <xsl:text>underline</xsl:text>
-                    </xsl:attribute>
-                </xsl:when>
-            </xsl:choose>
+    <xsl:template match="tei:*[@rendition]">
+        <xsl:element name="{local-name()}">
+            <xsl:attribute name="class"
+                select="string-join(tokenize(normalize-space(@rendition), '\s+') ! replace(., '^#', ''), ' ')"/>
             <xsl:apply-templates/>
-        </span>
-    </xsl:template>
-
-    <xsl:template match="tei:floatingText">
-        <span class="float-text">
-            <xsl:apply-templates/>
-        </span>
+        </xsl:element>
     </xsl:template>
 
     <xsl:template match="tei:ref">
