@@ -32,17 +32,16 @@
                     <div class="container col-xxl-8 pt-3">
                        <div class="row flex-lg-row align-items-center g-5 py-5">
                           <div class="col-lg-6">
-                              <h1 class="lh-base">
-                                  <span class="display-6">Max Kalbeck</span>
-                                 <br/>
-                                  <span class="display-4">Tagebücher</span>
-                                 <br />
-                                  <span class="display-6">1895/1897</span>
+                            <h1 class="lh-base">
+                                <span class="display-6">Max Kalbeck</span><br/>
+                                <span class="display-4">Tagebücher</span><br />
+                                <span class="display-6">1895/1897</span>
                              </h1>
+                              <p class="lead">Herausgegeben von Henrike Rost. Wien 2026–</p>
                             <div class="logo">
                                 <img src="images/logo_networking_practices_1900_purple_cropped.svg" alt="Kalbeck Logo" class="img-fluid"/>
                             </div>
-                            <p class="text-end">Herausgegeben von Henrike Rost. Wien 2026–</p>
+                            
                             <p class="lead">Die digitale Edition von Max Kalbecks Tagebücher  erschließt kulturelle Netzwerke in Wien um 1900.
                                 </p>
                             <div class="d-grid gap-2 d-md-flex justify-content-md-start">
