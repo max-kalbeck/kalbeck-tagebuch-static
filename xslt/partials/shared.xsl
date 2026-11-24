@@ -105,13 +105,49 @@
         </xsl:choose>
     </xsl:template>
 
-    <xsl:template match="tei:*[@rendition]">
+   <!-- <xsl:template match="tei:*[@rendition]">
         <xsl:element name="{local-name()}">
             <xsl:attribute name="class"
                 select="string-join(tokenize(normalize-space(@rendition), '\s+') ! replace(., '^#', ''), ' ')"/>
             <xsl:apply-templates/>
         </xsl:element>
-    </xsl:template>
+    </xsl:template> -->
+
+   <xsl:template match="tei:*[@rendition]" priority="10">
+    <xsl:variable name="classes"
+        select="tokenize(normalize-space(@rendition), '\s+') ! replace(., '^#', '')"/>
+
+    <xsl:variable name="result">
+        <xsl:next-match/>
+    </xsl:variable>
+
+    <xsl:apply-templates select="$result/node()" mode="add-rendition">
+        <xsl:with-param name="classes" select="$classes"/>
+    </xsl:apply-templates>
+</xsl:template>
+
+<xsl:template match="*" mode="add-rendition">
+    <xsl:param name="classes"/>
+
+    <xsl:copy>
+        <xsl:if test="@class or $classes">
+            <xsl:attribute name="class"
+                select="string-join((@class, $classes), ' ')"/>
+        </xsl:if>
+        <xsl:copy-of select="@* except @class"/>
+        <xsl:apply-templates select="node()" mode="copy-output"/>
+    </xsl:copy>
+</xsl:template>
+
+<xsl:template match="@* | node()" mode="copy-output">
+    <xsl:copy>
+        <xsl:apply-templates select="@* | node()" mode="copy-output"/>
+    </xsl:copy>
+</xsl:template>
+
+<xsl:template match="text() | comment() | processing-instruction()" mode="add-rendition">
+    <xsl:copy/>
+</xsl:template>
 
     <xsl:template match="tei:ref">
         <a class="ref {@type}" href="{@target}"><xsl:apply-templates/></a>
@@ -124,6 +160,12 @@
     </xsl:template>
     <xsl:template match="tei:p">
          <p id="{concat('p-', count(preceding::tei:p) + 1)}"><xsl:apply-templates/></p>
+    </xsl:template>
+
+    <xsl:template match="tei:c">
+        <span class="char">
+            <xsl:apply-templates/>
+        </span>
     </xsl:template>
     
     <xsl:template match="tei:table">

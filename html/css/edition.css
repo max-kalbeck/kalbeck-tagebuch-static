@@ -23,3 +23,58 @@
 	color: var(--kb-color);
 	cursor: zoom-in;
 }
+
+.center {
+	text-align:center;
+}
+
+.right {
+	text-align: right;
+}
+
+.left {
+	text-align: left;
+}
+
+.vertical {
+	writing-mode: vertical-rl;
+}
+.right-margin {
+	position: absolute;
+	right: 0;
+}
+.left-margin {
+	position: absolute;
+	left: 0;
+}
+.top-margin {
+	position: absolute;
+	top: 0;
+}
+.bottom-margin {
+	position: absolute;
+	bottom: 0;
+}
+
+.underline {
+	text-decoration: underline;
+}
+.overwritten {
+	text-decoration: line-through;
+}
+
+.gemination-m, .gemination-n {
+    font-size: 0;
+}
+
+.gemination-m:before, gemination-n::before {
+	font-size: 1rem;
+}
+
+.gemination-m::before {
+    content: "m︦";
+}
+
+.gemination-n::before {
+    content: "n︦";
+}
