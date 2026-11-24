@@ -21,7 +21,6 @@
 .entity{
 	text-decoration: underline dotted;
 	color: var(--kb-color);
-	cursor: zoom-in;
 }
 
 .center {
