@@ -62,6 +62,7 @@ current_schema = {
         {"name": "rec_id", "type": "string", "sort": True},
         {"name": "paragraph_index", "type": "int32", "sort": True},
         {"name": "page_index", "type": "int32", "sort": True},
+        {"name": "page_id", "type": "string"},
         {"name": "title", "type": "string"},
         {"name": "page_label", "type": "string"},
         {"name": "url", "type": "string"},
@@ -77,25 +78,31 @@ def iter_paragraph_records(body, base_record):
     """Yield one Typesense record per TEI paragraph in document order."""
     page_index = 0
     page_label = ""
+    page_id = ""
     paragraph_index = 0
 
     for node in body.iter():
         if node.tag == PB_TAG:
             page_index += 1
             page_label = node.get("n") or str(page_index)
+            page_id = (node.get("corresp") or "").lstrip("#")
             continue
 
         if node.tag != P_TAG:
             continue
-
         paragraph_index += 1
         paragraph_record = deepcopy(base_record)
         paragraph_record["id"] = f"{base_record['id']}-p-{paragraph_index}"
         paragraph_record["paragraph_index"] = paragraph_index
         paragraph_record["page_index"] = page_index
         paragraph_record["page_label"] = page_label
-        paragraph_record["url"] = f"{base_record['rec_id']}.html#p-{paragraph_index}"
-        paragraph_record["full_text"] = extract_fulltext(node, tag_blacklist=tag_blacklist)
+        paragraph_record["page_id"] = page_id
+        paragraph_record["url"] = (
+            f"{base_record['rec_id']}.html#p-{paragraph_index}"
+        )
+        paragraph_record["full_text"] = extract_fulltext(
+            node, tag_blacklist=tag_blacklist
+        )
         yield paragraph_record
 
 
