@@ -97,9 +97,8 @@ def iter_paragraph_records(body, base_record):
         paragraph_record["page_index"] = page_index
         paragraph_record["page_label"] = page_label
         paragraph_record["page_id"] = page_id
-        paragraph_record["url"] = (
-            f"{base_record['rec_id']}.html#p-{paragraph_index}"
-        )
+        paragraph_record["url"] = (f"{base_record['rec_id']}.html?page={page_index}#p-{paragraph_index}"
+)
         paragraph_record["full_text"] = extract_fulltext(
             node, tag_blacklist=tag_blacklist
         )
